@@ -1,57 +1,91 @@
-// TradingViewWidget.tsx
-
 "use client";
-import { useEffect, useRef } from "react";
 
-function TradingViewWidget() {
-  const container = useRef<HTMLDivElement | null>(null);
+import { useEffect, useRef, useState } from "react";
+import type { SymbolOption } from "../../types/symbol";
+
+const TIMEFRAMES = [
+  { label: "1H", value: "60" },
+  { label: "4H", value: "240" },
+  { label: "1D", value: "D" },
+  { label: "1W", value: "W" },
+];
+
+export default function TradingViewWidget({
+  symbol,
+}: {
+  symbol: SymbolOption;
+}) {
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const scriptRef = useRef<HTMLScriptElement | null>(null);
+  const [interval, setInterval] = useState("D");
 
   useEffect(() => {
+    if (!containerRef.current) return;
+
+    // Cleanup previous widget
+    containerRef.current.innerHTML = "";
+    if (scriptRef.current) {
+      scriptRef.current.remove();
+      scriptRef.current = null;
+    }
+
     const script = document.createElement("script");
     script.src =
       "https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js";
-    script.type = "text/javascript";
     script.async = true;
-    script.innerHTML = `
-        {
-          "allow_symbol_change": false,
-          "calendar": false,
-          "details": false,
-          "hide_side_toolbar": true,
-          "hide_top_toolbar": false,
-          "hide_legend": false,
-          "hide_volume": true,
-          "hotlist": false,
-          "interval": "D",
-          "locale": "en",
-          "save_image": true,
-          "style": "1",
-          "symbol": "BTCUSD",
-          "theme": "dark",
-          "timezone": "Etc/UTC",
-          "backgroundColor": "#0F0F0F",
-          "gridColor": "rgba(242, 242, 242, 0.06)",
-          "watchlist": [],
-          "withdateranges": false,
-          "compareSymbols": [],
-          "studies": [],
-          "autosize": true
-        }`;
-    container.current?.appendChild(script);
-  }, []);
+    script.type = "text/javascript";
+
+    script.innerHTML = JSON.stringify({
+      symbol: symbol.tvSymbol,
+      interval,
+      autosize: true,
+      timezone: "Etc/UTC",
+      theme: "light",
+      style: "1",
+      locale: "en",
+      allow_symbol_change: false,
+      hide_top_toolbar: true,
+      hide_side_toolbar: true,
+      hide_legend: true,
+      save_image: false,
+      withdateranges: false,
+      hide_volume: true,
+      backgroundColor: "#ffffff",
+      gridColor: "rgba(0, 0, 0, 0.05)",
+      studies: [],
+    });
+
+    containerRef.current.appendChild(script);
+    scriptRef.current = script;
+  }, [symbol, interval]);
 
   return (
-    <div
-      className="tradingview-widget-container w-full"
-      style={{ height: "100%", width: "100%" }}
-    >
-      <div
-        className="tradingview-widget-container__widget"
-        ref={container}
-        style={{ height: "70vh", width: "90%" }}
-      ></div>
+    <div className="w-full flex-3 p-4 border border-gray-300 rounded-lg bg-white">
+      {/* Timeframe selector */}
+      <div className="flex gap-2 mb-3">
+        {TIMEFRAMES.map((tf) => (
+          <button
+            key={tf.value}
+            onClick={() => setInterval(tf.value)}
+            className={`px-3 py-1 text-sm rounded-md ${
+              interval === tf.value
+                ? "bg-black text-white"
+                : "bg-white text-black"
+            }`}
+          >
+            {tf.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Chart */}
+      <div className="tradingview-widget-container">
+        <div
+          ref={containerRef}
+          className="tradingview-widget-container__widget"
+          style={{ height: "70vh", width: "100%" }}
+        />
+      </div>
     </div>
   );
 }
-
-export default TradingViewWidget;
