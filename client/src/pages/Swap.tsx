@@ -1,4 +1,3 @@
-import { useAccount } from "wagmi";
 import TradingViewWidget from "../components/layouts/TradingViewWidget";
 import { useState } from "react";
 import type { SymbolOption } from "../types/symbol";
@@ -13,12 +12,7 @@ function Swap() {
     { label: "PAXG / USD", tvSymbol: "PAXGUSD", key: "PAXG" },
   ];
 
-  // const { address, isConnected } = useAccount();
   const [symbol, setSymbol] = useState(SYMBOLS[0]);
-
-  // if (!isConnected) {
-  //   return <div>Please connect your wallet</div>;
-  // }
 
   return (
     <div className="bg-gray-100">

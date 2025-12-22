@@ -17,10 +17,10 @@ function HistoryTable() {
           <tr>
             <th className="text-left py-2">Asset</th>
             <th className="text-left">Size (USDC)</th>
-            <th className="text-left">Entry</th>
-            <th className="text-left">Exit</th>
+            <th className="text-left">Entry Price</th>
+            <th className="text-left">Exit Price</th>
             <th className="text-left">P&amp;L</th>
-            <th className="text-left">Closed</th>
+            <th className="text-left">Closed At</th>
           </tr>
         </thead>
 
