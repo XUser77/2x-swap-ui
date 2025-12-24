@@ -1,23 +1,23 @@
-// src/hooks/useOpenPosition.ts
+// src/hooks/useClosePosition.ts
 import { useWriteContract, useChainId } from "wagmi";
 import { X2_SWAP_ADDRESS } from "@/config/contracts";
 import x2SwapAbi from "@/abi/X2Swap.json";
 
-export function useOpenPosition() {
+export function useClosePosition() {
   const chainId = useChainId();
   const { writeContractAsync, isPending } = useWriteContract();
 
-  const openPosition = async (amount: bigint) => {
+  const closePosition = async (id: bigint) => {
     return writeContractAsync({
       address: X2_SWAP_ADDRESS[chainId],
       abi: x2SwapAbi,
-      functionName: "openPosition",
-      args: [amount, 500],
+      functionName: "closePosition",
+      args: [id, 500],
     });
   };
 
   return {
-    openPosition,
+    closePosition,
     isPending,
   };
 }

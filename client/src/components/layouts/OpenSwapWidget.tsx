@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import { useAccount } from "wagmi";
+import { useState } from "react";
+import { useAccount, useChainId, usePublicClient } from "wagmi";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import Row from "../fragments/Row";
 
@@ -10,9 +10,15 @@ import { useProfitSplit } from "@/hooks/useProfitSplit";
 import { usePoolLiquidity } from "@/hooks/usePoolLiquidity";
 import { useOpenPosition } from "@/hooks/useOpenPosition";
 import { parseUnits } from "@/lib/helpers";
+import { toast } from "react-hot-toast";
+import { useApproveUsdc } from "@/hooks/useApproveUsdc";
+import { useUsdcAllowance } from "@/hooks/useUsdcAllowance";
+import { X2_SWAP_ADDRESS } from "@/config/contracts";
 
 function OpenSwapWidget() {
   const { isConnected } = useAccount();
+  const chainId = useChainId();
+  const publicClient = usePublicClient();
 
   const [amount, setAmount] = useState(0);
 
@@ -22,9 +28,11 @@ function OpenSwapWidget() {
   const { balance: usdcBalance, decimals } = useUsdcBalance();
   const { poolShare, traderShare } = useProfitSplit();
   const { liquidity } = usePoolLiquidity();
+  const { allowance, refetch: refetchAllowance } = useUsdcAllowance();
 
   // WRITE
   const { openPosition, isPending } = useOpenPosition();
+  const { approve } = useApproveUsdc();
 
   const amountBn = parseUnits(amount, decimals);
 
@@ -42,6 +50,33 @@ function OpenSwapWidget() {
     amount <= maxAmount &&
     !insufficientLiquidity &&
     !isPending;
+
+  const handleOpenPosition = async () => {
+    try {
+      const spender = X2_SWAP_ADDRESS[chainId];
+
+      // 1. Approve if needed
+      if (allowance < amountBn) {
+        toast.loading("Approving USDC...", { id: "approve" });
+
+        const approveHash = await approve(spender, amountBn);
+        await publicClient?.waitForTransactionReceipt({ hash: approveHash });
+
+        toast.success("USDC approved", { id: "approve" });
+        await refetchAllowance();
+      }
+
+      // 2. Open position
+      toast.loading("Opening position...", { id: "open" });
+
+      const openHash = await openPosition(amountBn);
+      await publicClient?.waitForTransactionReceipt({ hash: openHash });
+
+      toast.success("Position opened successfully!", { id: "open" });
+    } catch (err: any) {
+      toast.error(err?.shortMessage || err?.message || "Transaction failed");
+    }
+  };
 
   return (
     <div className="flex-1 w-full max-w-md bg-white rounded-md p-5 border border-gray-300">
@@ -94,7 +129,7 @@ function OpenSwapWidget() {
         <>
           <button
             disabled={!canSubmit}
-            onClick={() => openPosition(amountBn)}
+            onClick={handleOpenPosition}
             className="w-full bg-sky-500 hover:bg-sky-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-xl transition"
           >
             {isPending ? "Opening position..." : "Open 2x position"}

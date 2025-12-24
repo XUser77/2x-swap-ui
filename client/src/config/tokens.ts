@@ -15,7 +15,7 @@ export const USDC: TokenConfig = {
   name: "USD Coin",
   decimals: 6,
   addresses: {
-    [forkedMainnet.id]: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606EB48",
+    [forkedMainnet.id]: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
   },
 };
 

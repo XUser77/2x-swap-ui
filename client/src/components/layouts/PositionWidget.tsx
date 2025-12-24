@@ -7,7 +7,7 @@ import HistoryTable from "../fragments/HistoryTable";
 import EmptyState from "../fragments/EmptyState";
 
 function PositionWidget() {
-  const { isConnected } = useAccount();
+  const { isConnected, address } = useAccount();
 
   return (
     <div className="w-full bg-white rounded-sm border border-gray-300 p-4 mt-10">
@@ -21,7 +21,7 @@ function PositionWidget() {
           {!isConnected ? (
             <EmptyState message="No open positions" />
           ) : (
-            <PositionsTable />
+            <PositionsTable owner={address?.toString()!} />
           )}
         </TabsContent>
 
@@ -29,7 +29,7 @@ function PositionWidget() {
           {!isConnected ? (
             <EmptyState message="No position history" />
           ) : (
-            <HistoryTable />
+            <HistoryTable owner={address?.toString()!} />
           )}
         </TabsContent>
       </Tabs>
