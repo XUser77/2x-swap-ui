@@ -7,17 +7,23 @@ import { usePositionPrice } from "@/hooks/usePositionPrice";
 import { useClosePosition } from "@/hooks/useClosePosition";
 import toast from "react-hot-toast";
 import { usePublicClient } from "wagmi";
+import { usePositionsSyncStore } from "@/stores/usePositionSyncStore";
+import { MobilePositionCard } from "./MobilePositionCard";
 
 type Props = {
-  owner: string;
+  owner: `0x${string}`;
   limit?: number;
 };
 
 function PositionsTable({ owner, limit = 10 }: Props) {
   const [page, setPage] = useState(0);
-
-  // custom hook
-  const { data, loading, error } = useActivePosition(owner, page, limit);
+  const { data, loading, error, refetch } = useActivePosition(
+    owner,
+    page,
+    limit
+  );
+  const version = usePositionsSyncStore((s) => s.version);
+  const bumpPositions = usePositionsSyncStore((s) => s.bump);
   const { closePosition, isPending } = useClosePosition();
   const publicClient = usePublicClient();
   const { prices } = usePositionPrice();
@@ -42,14 +48,21 @@ function PositionsTable({ owner, limit = 10 }: Props) {
     }
   }, [positions, loading, page]);
 
-  const handleClosePosition = async (id: bigint) => {
+  useEffect(() => {
+    refetch();
+  }, [version, refetch]);
+
+  const handleClosePosition = async (
+    id: bigint,
+    asset: "WBTC" | "WETH" | "PAXG"
+  ) => {
     try {
-      toast.loading("Closing position...", { id: "close" });
-
-      const hash = await closePosition(id);
+      const hash = await closePosition(id, asset);
       await publicClient?.waitForTransactionReceipt({ hash });
-
-      toast.success("Position closed successfully!", { id: "close" });
+      toast.success("Position closed successfully!");
+      setTimeout(() => {
+        bumpPositions();
+      }, 1500);
     } catch (err: any) {
       toast.error(err?.shortMessage || err?.message || "Transaction failed");
     }
@@ -58,85 +71,117 @@ function PositionsTable({ owner, limit = 10 }: Props) {
   if (loading) {
     return <div className="flex justify-center w-full">Loading positions…</div>;
   }
-
   if (error) {
     return (
       <div className="flex justify-center w-full">Failed to load positions</div>
     );
   }
-
   if (positions.length === 0) {
     return (
       <div className="flex justify-center w-full">No Positions Available</div>
     );
   }
 
+  const renderDesktopTable = () => {
+    return (
+      <div className="space-y-4">
+        {/* Table */}
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="text-gray-500 border-b">
+              <tr>
+                <th className="text-left py-2 pl-2">Asset</th>
+                <th className="text-left">Size (USDC)</th>
+                <th className="text-left">Entry price</th>
+                <th className="text-left">Current price</th>
+                <th className="text-left">P&amp;L</th>
+                <th className="text-left">Profit Share</th>
+                <th className="text-left">Maturity</th>
+                <th className="text-center">Actions</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {positions.map((p) => (
+                <tr key={p.id} className="border-b last:border-b-0">
+                  <td className="py-3 pl-2 font-medium">{p.asset}-USDC</td>
+                  <td>${p.size.toFixed(2)}</td>
+                  <td>${p.entryPrice.toLocaleString()}</td>
+                  <td>${p.currentPrice.toLocaleString()}</td>
+                  <td
+                    className={`font-medium ${
+                      p.pnl >= 0 ? "text-green-500" : "text-red-500"
+                    }`}
+                  >
+                    {p.pnl >= 0 ? "+" : "-"}${Math.abs(p.pnl).toFixed(2)} (
+                    {p.pnlPercent.toFixed(2)}%)
+                  </td>
+                  <td>{p.profitShare}</td>
+                  <td className="opacity-50">{p.maturity}</td>
+                  <td className="text-center">
+                    <button
+                      disabled={isPending}
+                      onClick={() => handleClosePosition(BigInt(p.id), p.asset)}
+                      className="px-3 py-1 text-sm rounded-lg bg-[#cddff8] hover:bg-[#92befc] text-blue-800 font-semibold disabled:opacity-50"
+                    >
+                      Close
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Pagination */}
+        <div className="flex items-center justify-between">
+          <button
+            disabled={!canPrev}
+            onClick={() => setPage((p) => Math.max(p - 1, 0))}
+            className="px-3 py-1 rounded-md border disabled:opacity-50 bg-blue-900 text-white"
+          >
+            Previous
+          </button>
+
+          <span className="font-semibold text-blue-900">
+            Page {page + 1} of {totalPages}
+          </span>
+
+          <button
+            disabled={!canNext}
+            onClick={() => setPage((p) => p + 1)}
+            className="px-3 py-1 rounded-md border disabled:opacity-50 bg-blue-900 text-white"
+          >
+            Next
+          </button>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="space-y-4">
-      {/* Table */}
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead className="text-gray-500 border-b">
-            <tr>
-              <th className="text-left py-2 pl-2">Asset</th>
-              <th className="text-left">Size (USDC)</th>
-              <th className="text-left">Entry price</th>
-              <th className="text-left">Current price</th>
-              <th className="text-left">P&amp;L</th>
-              <th className="text-left">Profit Share</th>
-              <th className="text-left">Maturity</th>
-              <th className="text-center">Actions</th>
-            </tr>
-          </thead>
+      <div className="hidden md:block">{renderDesktopTable()}</div>
 
-          <tbody>
-            {positions.map((p) => (
-              <tr key={p.id} className="border-b last:border-b-0">
-                <td className="py-3 pl-2 font-medium">{p.asset}-USDC</td>
-                <td>${p.size.toLocaleString()}</td>
-                <td>${p.entryPrice.toLocaleString()}</td>
-                <td>${p.currentPrice.toLocaleString()}</td>
-                <td className="text-green-500 font-medium">
-                  +${p.pnl.toFixed(2)} ({p.pnlPercent.toFixed(2)}%)
-                </td>
-                <td>{p.profitShare}</td>
-                <td>{p.maturity}</td>
-                <td className="text-center">
-                  <button
-                    disabled={isPending}
-                    onClick={() => handleClosePosition(BigInt(p.id))}
-                    className="px-3 py-1 text-sm rounded-lg bg-red-600 hover:bg-red-700 text-white disabled:opacity-50"
-                  >
-                    Close
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <div className="md:hidden space-y-4">
+        {positions.map((p) => (
+          <MobilePositionCard
+            key={p.id}
+            position={p}
+            isPending={isPending}
+            onClose={handleClosePosition}
+          />
+        ))}
 
-      {/* Pagination */}
-      <div className="flex items-center justify-between">
-        <button
-          disabled={!canPrev}
-          onClick={() => setPage((p) => Math.max(p - 1, 0))}
-          className="px-3 py-1 rounded border disabled:opacity-50"
-        >
-          Previous
-        </button>
-
-        <span className="text-sm text-gray-500">
-          Page {page + 1} of {totalPages}
-        </span>
-
-        <button
-          disabled={!canNext}
-          onClick={() => setPage((p) => p + 1)}
-          className="px-3 py-1 rounded border disabled:opacity-50"
-        >
-          Next
-        </button>
+        {/* Mobile pagination */}
+        {canNext && (
+          <button
+            onClick={() => setPage((p) => p + 1)}
+            className="w-full py-3 rounded-lg bg-blue-900 text-white font-semibold"
+          >
+            Load more
+          </button>
+        )}
       </div>
     </div>
   );

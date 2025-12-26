@@ -7,20 +7,20 @@ import PositionWidget from "@/components/layouts/PositionWidget";
 
 function Swap() {
   const SYMBOLS: SymbolOption[] = [
-    { label: "BTC / USD", tvSymbol: "BTCUSD", key: "BTC" },
-    { label: "ETH / USD", tvSymbol: "ETHUSD", key: "ETH" },
-    { label: "PAXG / USD", tvSymbol: "PAXGUSD", key: "PAXG" },
+    { label: "WBTC / USDC", tvSymbol: "WBTCUSDC", key: "WBTC" },
+    { label: "WETH / USDC", tvSymbol: "WETHUSDC", key: "WETH" },
+    { label: "PAXG / USDC", tvSymbol: "PAXGUSDC", key: "PAXG" },
   ];
 
   const [symbol, setSymbol] = useState(SYMBOLS[0]);
 
   return (
-    <div className="bg-gray-100">
+    <div className="bg-[#BFD7F8]">
       <SwapBar SYMBOLS={SYMBOLS} symbol={symbol} setSymbol={setSymbol} />
       <div className="mx-10 py-3">
-        <div className="flex gap-8">
+        <div className="flex flex-col md:flex-row gap-5">
           <TradingViewWidget symbol={symbol} />
-          <OpenSwapWidget />
+          <OpenSwapWidget asset={symbol.key as "WBTC" | "WETH" | "PAXG"} />
         </div>
         <PositionWidget />
       </div>

@@ -4,9 +4,9 @@ import { gql } from "@apollo/client";
 export const GET_OPEN_POSITIONS = gql`
   query GetOpenPositions($owner: String!, $limit: Int!, $offset: Int!) {
     positions(
-      where: { status: { equals: "OPEN" }, owner: { equals: $owner } }
-      orderBy: opened_at
-      orderDirection: desc
+      where: { status: OPEN, owner: $owner }
+      orderBy: "opened_at"
+      orderDirection: "desc"
       limit: $limit
       offset: $offset
     ) {
@@ -29,9 +29,9 @@ export const GET_OPEN_POSITIONS = gql`
 export const GET_CLOSED_HISTORY = gql`
   query GetClosedHistory($owner: String!, $limit: Int!, $offset: Int!) {
     positions(
-      where: { status: { equals: "CLOSED" }, owner: { equals: $owner } }
-      orderBy: closed_at
-      orderDirection: desc
+      where: { status: CLOSED, owner: $owner }
+      orderBy: "closed_at"
+      orderDirection: "desc"
       limit: $limit
       offset: $offset
     ) {

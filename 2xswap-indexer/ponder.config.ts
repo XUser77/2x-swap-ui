@@ -4,12 +4,12 @@ export default createConfig({
   chains: {
     x2swap: {
       id: 31337,
-      rpc: "http://185.146.3.206:8545",
+      rpc: process.env.PONDER_RPC_URL_1,
     },
   },
 
   contracts: {
-    X2Swap: {
+    X2ETHSwap: {
       chain: "x2swap",
       abi: [
         // OpenPosition
@@ -36,8 +36,8 @@ export default createConfig({
           ],
         },
       ],
-      address: "0x30cE1101F89D236E3709408809331794c109bE36",
-      startBlock: 0,
+      address: "0xeB02697D88FF777393F3b3c8DE2231038E65828a",
+      startBlock: 24039203,
     },
   },
 });

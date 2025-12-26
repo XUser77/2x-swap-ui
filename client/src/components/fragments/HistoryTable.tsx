@@ -4,16 +4,22 @@ import { useEffect, useMemo, useState } from "react";
 import { useHistoryPosition } from "@/hooks/useHistoryPosition";
 import { mapClosedPosition } from "@/lib/positions";
 import type { ClosedPosition } from "@/graphql/types";
+import { usePositionsSyncStore } from "@/stores/usePositionSyncStore";
 
 type Props = {
-  owner: string;
+  owner: `0x${string}`;
   limit?: number;
 };
 
 function HistoryTable({ owner, limit = 10 }: Props) {
   const [page, setPage] = useState(0);
 
-  const { data, loading, error } = useHistoryPosition(owner, page, limit);
+  const version = usePositionsSyncStore((s) => s.version);
+  const { data, loading, error, refetch } = useHistoryPosition(
+    owner,
+    page,
+    limit
+  );
 
   const totalCount = data?.positions.totalCount ?? 0;
   const totalPages = Math.ceil(totalCount / limit);
@@ -27,6 +33,10 @@ function HistoryTable({ owner, limit = 10 }: Props) {
       mapClosedPosition(position)
     );
   }, [data]);
+
+  useEffect(() => {
+    refetch();
+  }, [version, refetch]);
 
   // Auto-fix: if user is on an empty page (edge case)
   useEffect(() => {
@@ -72,16 +82,34 @@ function HistoryTable({ owner, limit = 10 }: Props) {
             {history.map((h) => (
               <tr key={h.id} className="border-b last:border-b-0">
                 <td className="py-3 font-medium">{h.asset}-USDC</td>
-                <td>${h.size.toLocaleString()}</td>
+                <td>${h.size.toFixed(2)}</td>
                 <td>${h.entryPrice}</td>
                 <td>${h.exitPrice}</td>
-                <td className="text-green-500 font-medium">
-                  +${h.pnl.toFixed(2)} ({h.pnlPercent.toFixed(2)}%)
+                <td
+                  className={`font-medium ${
+                    h.pnl >= 0 ? "text-green-500" : "text-red-500"
+                  }`}
+                >
+                  {h.pnl >= 0 ? "+" : "-"}${Math.abs(h.pnl).toFixed(2)} (
+                  {h.pnlPercent.toFixed(2)}%)
                 </td>
-                <td>
-                  {h.profitShare}% = ${(h.pnl * h.profitShare) / 100}
+                <td
+                  className={`font-medium ${
+                    h.profitShareValue >= 0 ? "text-green-500" : "text-red-500"
+                  }`}
+                >
+                  {h.pnl >= 0 ? (
+                    <>
+                      {h.profitShare}% = ${h.profitShareValue.toFixed(2)}
+                    </>
+                  ) : (
+                    <>
+                      -${Math.abs(h.profitShareValue).toFixed(2)}
+                      {h.isMaxLoss && " (max loss)"}
+                    </>
+                  )}
                 </td>
-                <td>{h.closedAt}</td>
+                <td className="opacity-50">{h.closedAt}</td>
               </tr>
             ))}
           </tbody>
@@ -93,19 +121,19 @@ function HistoryTable({ owner, limit = 10 }: Props) {
         <button
           disabled={!canPrev}
           onClick={() => setPage((p) => Math.max(p - 1, 0))}
-          className="px-3 py-1 rounded border disabled:opacity-50"
+          className="px-3 py-1 rounded-md border disabled:opacity-50 bg-blue-900 text-white"
         >
           Previous
         </button>
 
-        <span className="text-sm text-gray-500">
+        <span className="font-semibold text-blue-900">
           Page {page + 1} of {totalPages}
         </span>
 
         <button
           disabled={!canNext}
           onClick={() => setPage((p) => p + 1)}
-          className="px-3 py-1 rounded border disabled:opacity-50"
+          className="px-3 py-1 rounded-md border disabled:opacity-50 bg-blue-900 text-white"
         >
           Next
         </button>

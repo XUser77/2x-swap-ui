@@ -1,11 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
-export type SymbolKey = "BTC" | "ETH" | "PAXG";
+export type SymbolKey = "WBTC" | "WETH" | "PAXG";
 
 const idMap: Record<SymbolKey, string> = {
-  BTC: "bitcoin",
-  ETH: "ethereum",
+  WBTC: "bitcoin",
+  WETH: "ethereum",
   PAXG: "pax-gold",
 };
 
@@ -20,9 +20,17 @@ async function fetchPrice(symbol: SymbolKey) {
 
   const data = res.data[idMap[symbol]];
 
+  const price = data.usd as number;
+  const changePercent = data.usd_24h_change as number;
+
+  // derive absolute point change
+  const price24hAgo = price / (1 + changePercent / 100);
+  const changePoint = price - price24hAgo;
+
   return {
-    price: data.usd as number,
-    change24h: data.usd_24h_change as number,
+    price,
+    change24h: changePercent,
+    change24hPoint: changePoint,
   };
 }
 

@@ -1,0 +1,4 @@
+export const MAX_DEVIATION_BPS = 500;
+export const MOCK_UNISWAP_V2 = "0x536ADf9f074159B303001DF782ceeCF8e8f92dC5";
+export const USDC_DECIMALS = 1e6;
+export const PRICE_DECIMALS = 1e18;

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { usePrice, type SymbolKey } from "../../hooks/usePrice";
 import type { SymbolOption } from "../../types/symbol";
+import { useTotalDebt } from "@/hooks/useTotalDebt";
 
 function SwapBar({
   SYMBOLS,
@@ -12,6 +13,7 @@ function SwapBar({
   setSymbol: (symbol: SymbolOption) => void;
 }) {
   const { data, isLoading } = usePrice(symbol.key as SymbolKey);
+  const { totalDebt } = useTotalDebt();
   const [open, setOpen] = useState(false);
 
   const prevPriceRef = useRef<number | null>(null);
@@ -22,6 +24,7 @@ function SwapBar({
       ? data?.price
       : null;
   const change24h = data?.change24h;
+  const change24hPoint = data?.change24hPoint;
 
   useEffect(() => {
     if (price == null) return;
@@ -42,20 +45,21 @@ function SwapBar({
   }, [price]);
 
   return (
-    <div className="flex pt-3 items-center gap-10 px-4 py-2 border-b border-white/10">
+    <div className="flex items-center justify-between gap-10 px-6 py-3 bg-[#DDE9F9] border-b border-[#D1D4DA]">
+      {" "}
       {/* Symbol Selector */}
       <div className="relative flex items-center gap-2">
         <div>
           <button
             onClick={() => setOpen((v) => !v)}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-md  hover:bg-black/10 text-sm font-medium"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white border border-[#D1D4DA] hover:bg-[#F9FBFD] text-sm font-semibold text-[#202020]"
           >
             {symbol.label}
             <span className="text-xs opacity-60">▼</span>
           </button>
 
           {open && (
-            <div className="absolute mt-2 w-40 rounded-md bg-white shadow-lg border border-black/10 z-10">
+            <div className="absolute mt-1 w-44 rounded-xl bg-white border border-[#D1D4DA] shadow-md z-20">
               {SYMBOLS.map((s) => (
                 <button
                   key={s.tvSymbol}
@@ -76,21 +80,31 @@ function SwapBar({
           )}
         </div>
 
-        <div className="bg-gray-200 px-3 rounded-sm">2x</div>
+        <div className="px-3 py-1 rounded-lg bg-[#022368] text-white text-xs font-semibold">
+          2x
+        </div>
       </div>
-
-      <div className="flex justify-center items-center gap-4">
+      <div className=" flex justify-center items-center gap-4">
         {/* Price */}
-        <div className={`font-semibold ${priceClass}`}>
-          Market:{" "}
+        <div className={`font-medium text-[#202020] ${priceClass} text-xs `}>
+          <span className="opacity-50">Oracle: </span>
           {isLoading || price === undefined ? "--" : `$${price?.toFixed(2)}`}
         </div>
-        {/* Oracle */}
-        <div className="font-semibold">Oracle: $88,000</div>
 
         {/* 24h Change */}
-        <div className={`font-semibold`}>
-          24h Change:{" "}
+        <div className="hidden md:block font-semibold text-xs">
+          <span className="opacity-50">24h Change: </span>
+          {change24hPoint !== undefined ? (
+            <span
+              className={`${
+                change24hPoint >= 0 ? "text-green-400" : "text-red-400"
+              }`}
+            >
+              {change24hPoint.toFixed(2)} /{" "}
+            </span>
+          ) : (
+            <span>-- / </span>
+          )}
           {change24h !== undefined ? (
             <span
               className={`${
@@ -105,8 +119,12 @@ function SwapBar({
         </div>
 
         {/* OI */}
-        <div className="font-semibold">OI: $200,000</div>
+        <div className="hidden md:block font-semibold text-xs">
+          <span className="opacity-50">OI: </span>$
+          {(Number(totalDebt) / 1_000_000).toFixed(2)}
+        </div>
       </div>
+      <div></div>
     </div>
   );
 }

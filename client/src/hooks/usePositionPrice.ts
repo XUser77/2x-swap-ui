@@ -6,18 +6,18 @@ export type PriceMap = Record<
 >;
 
 export function usePositionPrice() {
-  const btc = usePrice("BTC");
-  const eth = usePrice("ETH");
+  const WBTC = usePrice("WBTC");
+  const WETH = usePrice("WETH");
   const paxg = usePrice("PAXG");
 
   const prices: PriceMap = {
-    BTC: btc.data,
-    ETH: eth.data,
+    WBTC: WBTC.data,
+    WETH: WETH.data,
     PAXG: paxg.data,
   };
 
   return {
     prices,
-    isLoading: btc.isLoading || eth.isLoading || paxg.isLoading,
+    isLoading: WBTC.isLoading || WETH.isLoading || paxg.isLoading,
   };
 }

@@ -10,6 +10,6 @@ export const config = getDefaultConfig({
   chains: [forkedMainnet],
   ssr: false, // IMPORTANT for Vite
   transports: {
-    [forkedMainnet.id]: http("http://185.146.3.206:8545"),
+    [forkedMainnet.id]: http(import.meta.env.VITE_RPC_URL),
   },
 });

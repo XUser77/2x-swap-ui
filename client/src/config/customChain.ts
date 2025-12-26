@@ -16,11 +16,5 @@ export const forkedMainnet: Chain = {
       http: [import.meta.env.VITE_RPC_URL],
     },
   },
-  blockExplorers: {
-    default: {
-      name: "Local Explorer",
-      url: import.meta.env.VITE_BLOCK_EXPLORER,
-    },
-  },
   testnet: true,
 };

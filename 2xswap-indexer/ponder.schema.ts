@@ -6,7 +6,7 @@ export const position_status = onchainEnum("position_status", [
   "CLOSED",
 ]);
 
-export const asset_enum = onchainEnum("asset_enum", ["BTC", "ETH", "PAXG"]);
+export const asset_enum = onchainEnum("asset_enum", ["WBTC", "WETH", "PAXG"]);
 
 // Table: position
 export const position = onchainTable(

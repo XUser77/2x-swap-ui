@@ -69,7 +69,7 @@ export default function TradingViewWidget({
             onClick={() => setInterval(tf.value)}
             className={`px-3 py-1 text-sm rounded-md ${
               interval === tf.value
-                ? "bg-black text-white"
+                ? "bg-[#022368] text-white"
                 : "bg-white text-black"
             }`}
           >
@@ -82,8 +82,7 @@ export default function TradingViewWidget({
       <div className="tradingview-widget-container">
         <div
           ref={containerRef}
-          className="tradingview-widget-container__widget"
-          style={{ height: "70vh", width: "100%" }}
+          className="tradingview-widget-container__widget h-[30vh] md:h-[80vh] w-full"
         />
       </div>
     </div>
