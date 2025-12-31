@@ -17,12 +17,14 @@ function Swap() {
   return (
     <div className="bg-[#BFD7F8]">
       <SwapBar SYMBOLS={SYMBOLS} symbol={symbol} setSymbol={setSymbol} />
-      <div className="mx-10 py-3">
-        <div className="flex flex-col md:flex-row gap-5">
-          <TradingViewWidget symbol={symbol} />
-          <OpenSwapWidget asset={symbol.key as "WBTC" | "WETH" | "PAXG"} />
+      <div className="max-w-450 mx-auto">
+        <div className="mx-10 py-3">
+          <div className="flex flex-col md:flex-row gap-5">
+            <TradingViewWidget symbol={symbol} />
+            <OpenSwapWidget asset={symbol.key as "WBTC" | "WETH" | "PAXG"} />
+          </div>
+          <PositionWidget />
         </div>
-        <PositionWidget />
       </div>
     </div>
   );

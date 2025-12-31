@@ -8,7 +8,7 @@ export default function EmptyState({ message }: { message: string }) {
         {({ openConnectModal }) => (
           <button
             onClick={openConnectModal}
-            className="bg-black text-white font-semibold p-2 rounded-xl"
+            className="bg-blue-900 text-white font-semibold p-2 rounded-xl"
           >
             Connect Wallet
           </button>

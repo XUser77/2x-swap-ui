@@ -5,6 +5,7 @@ import { useHistoryPosition } from "@/hooks/useHistoryPosition";
 import { mapClosedPosition } from "@/lib/positions";
 import type { ClosedPosition } from "@/graphql/types";
 import { usePositionsSyncStore } from "@/stores/usePositionSyncStore";
+import { MobileHistoryCard } from "./MobileHistoryCard";
 
 type Props = {
   owner: `0x${string}`;
@@ -63,60 +64,71 @@ function HistoryTable({ owner, limit = 10 }: Props) {
 
   return (
     <div className="space-y-4">
-      {/* Table */}
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead className="text-gray-500 border-b">
-            <tr>
-              <th className="text-left py-2">Asset</th>
-              <th className="text-left">Size (USDC)</th>
-              <th className="text-left">Entry Price</th>
-              <th className="text-left">Exit Price</th>
-              <th className="text-left">P&amp;L</th>
-              <th className="text-left">Profit Share</th>
-              <th className="text-left">Closed At</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {history.map((h) => (
-              <tr key={h.id} className="border-b last:border-b-0">
-                <td className="py-3 font-medium">{h.asset}-USDC</td>
-                <td>${h.size.toFixed(2)}</td>
-                <td>${h.entryPrice}</td>
-                <td>${h.exitPrice}</td>
-                <td
-                  className={`font-medium ${
-                    h.pnl >= 0 ? "text-green-500" : "text-red-500"
-                  }`}
-                >
-                  {h.pnl >= 0 ? "+" : "-"}${Math.abs(h.pnl).toFixed(2)} (
-                  {h.pnlPercent.toFixed(2)}%)
-                </td>
-                <td
-                  className={`font-medium ${
-                    h.profitShareValue >= 0 ? "text-green-500" : "text-red-500"
-                  }`}
-                >
-                  {h.pnl >= 0 ? (
-                    <>
-                      {h.profitShare}% = ${h.profitShareValue.toFixed(2)}
-                    </>
-                  ) : (
-                    <>
-                      -${Math.abs(h.profitShareValue).toFixed(2)}
-                      {h.isMaxLoss && " (max loss)"}
-                    </>
-                  )}
-                </td>
-                <td className="opacity-50">{h.closedAt}</td>
+      {/* Desktop table */}
+      <div className="hidden md:block">
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="text-gray-500 border-b">
+              <tr>
+                <th className="text-left py-2">Asset</th>
+                <th className="text-left">Size (USDC)</th>
+                <th className="text-left">Entry Price</th>
+                <th className="text-left">Exit Price</th>
+                <th className="text-left">P&amp;L</th>
+                <th className="text-left">Profit Share</th>
+                <th className="text-left">Closed At</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+
+            <tbody>
+              {history.map((h) => (
+                <tr key={h.id} className="border-b last:border-b-0">
+                  <td className="py-3 font-medium">{h.asset}-USDC</td>
+                  <td>${h.size.toFixed(2)}</td>
+                  <td>${h.entryPrice}</td>
+                  <td>${h.exitPrice}</td>
+                  <td
+                    className={`font-medium ${
+                      h.pnl >= 0 ? "text-green-500" : "text-red-500"
+                    }`}
+                  >
+                    {h.pnl >= 0 ? "+" : "-"}${Math.abs(h.pnl).toFixed(2)} (
+                    {h.pnlPercent.toFixed(2)}%)
+                  </td>
+                  <td
+                    className={`font-medium ${
+                      h.profitShareValue >= 0
+                        ? "text-green-500"
+                        : "text-red-500"
+                    }`}
+                  >
+                    {h.pnl >= 0 ? (
+                      <>
+                        {h.profitShare}% = ${h.profitShareValue.toFixed(2)}
+                      </>
+                    ) : (
+                      <>
+                        -${Math.abs(h.profitShareValue).toFixed(2)}
+                        {h.isMaxLoss && " (max loss)"}
+                      </>
+                    )}
+                  </td>
+                  <td className="opacity-50">{h.closedAt}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
-      {/* Pagination */}
+      {/* Mobile cards */}
+      <div className="md:hidden space-y-4">
+        {history.map((h) => (
+          <MobileHistoryCard key={h.id} history={h} />
+        ))}
+      </div>
+
+      {/* Desktop pagination (unchanged) */}
       <div className="flex items-center justify-between">
         <button
           disabled={!canPrev}

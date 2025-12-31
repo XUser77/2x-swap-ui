@@ -6,6 +6,8 @@ export const position_status = onchainEnum("position_status", [
   "CLOSED",
 ]);
 
+export const pool_type = onchainEnum("pool_type", ["DEPOSIT", "WITHDRAW"]);
+
 export const asset_enum = onchainEnum("asset_enum", ["WBTC", "WETH", "PAXG"]);
 
 // Table: position
@@ -30,6 +32,15 @@ export const position = onchainTable(
     owner_idx: index().on(table.owner),
   })
 );
+
+export const poolActivity = onchainTable("poolActivity", (t) => ({
+  id: t.text().primaryKey(),
+  type: pool_type().notNull(),
+  user: t.hex().notNull(),
+  assets: t.bigint().notNull(),
+  shares: t.bigint().notNull(),
+  timestamp: t.bigint().notNull(),
+}));
 
 // Table: volume_24h
 export const volume_24h = onchainTable("volume_24h", (t) => ({

@@ -1,5 +1,5 @@
 import { ponder } from "ponder:registry";
-import { position, volume_24h } from "ponder:schema";
+import { poolActivity, position, volume_24h } from "ponder:schema";
 import { eq } from "drizzle-orm";
 
 const ONE_YEAR_SECONDS = 365 * 24 * 60 * 60;
@@ -65,5 +65,35 @@ ponder.on("X2ETHSwap:ClosePosition", async ({ event, context }) => {
     id: `${event.block.timestamp}-${event.transaction.hash}-close`,
     timestamp: event.block.timestamp,
     amount: event.args.closeAssetAmount,
+  });
+});
+
+// Handle Pool Deposit
+ponder.on("X2ETHPool:Deposit", async ({ event, context }) => {
+  const { db } = context;
+
+  // Insert the new position into the `poolActivity` table
+  await db.insert(poolActivity).values({
+    id: event.transaction.hash,
+    type: "DEPOSIT",
+    user: event.args.caller,
+    assets: event.args.assets,
+    shares: event.args.shares,
+    timestamp: event.block.timestamp,
+  });
+});
+
+// Handle Pool Withdraw
+ponder.on("X2ETHPool:Withdraw", async ({ event, context }) => {
+  const { db } = context;
+
+  // Insert the new position into the `poolActivity` table
+  await db.insert(poolActivity).values({
+    id: event.transaction.hash,
+    type: "WITHDRAW",
+    user: event.args.owner,
+    assets: event.args.assets,
+    shares: event.args.shares,
+    timestamp: event.block.timestamp,
   });
 });

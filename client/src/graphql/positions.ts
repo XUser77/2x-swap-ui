@@ -49,3 +49,22 @@ export const GET_CLOSED_HISTORY = gql`
     }
   }
 `;
+
+export const GET_CLOSED_POSITION = gql`
+  query GetClosedPositionsForApy($since: BigInt!) {
+    positions(
+      where: { status: CLOSED, closed_at_gte: $since }
+      orderBy: "closed_at"
+      orderDirection: "asc"
+    ) {
+      items {
+        id
+        asset_amount
+        close_asset_amount
+        profit_sharing
+        opened_at
+        closed_at
+      }
+    }
+  }
+`;

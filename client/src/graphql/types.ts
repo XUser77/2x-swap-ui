@@ -29,3 +29,32 @@ export interface PaginatedPositions<T> {
     totalCount: number;
   };
 }
+
+export type ClosedPositionAPY = {
+  asset_amount: string; // BigInt serialized
+  close_asset_amount: string; // BigInt serialized
+  profit_sharing: number; // pool share %, e.g. 20 / 30 / 40
+  opened_at: string; // unix seconds (BigInt)
+  closed_at: string; // unix seconds (BigInt)
+};
+
+export type PoolActivityByUserQuery = {
+  poolActivitys: {
+    items: Array<{
+      type: "DEPOSIT" | "WITHDRAW"; // Enum values from your table
+      assets: string; // BigInt encoded as string
+      timestamp: number;
+    }>;
+    totalCount: number;
+  };
+};
+
+export type VolumeQuery = {
+  volume_24hs: {
+    items: Array<{
+      id: string;
+      timestamp: string;
+      amount: string;
+    }>;
+  };
+};

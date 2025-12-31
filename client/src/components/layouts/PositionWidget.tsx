@@ -15,12 +15,12 @@ function PositionWidget() {
         <TabsList className="bg-transparent p-0 border-b border-white rounded-none ">
           <TabsTrigger
             value="positions"
-            className="relative rounded-none px-1 pb-3 text-sm font-medium text-gray-500 data-[state=active]:text-blue-900 data-[state=active]:border-b-2 data-[state=active]:border-b-blue-900 data-[state=active]:shadow-none md:block"
+            className="relative rounded-none px-1 pb-3 text-sm font-medium text-gray-500 data-[state=active]:text-blue-900 data-[state=active]:border-b-2 data-[state=active]:border-b-blue-900 data-[state=active]:shadow-none"
           >
             Positions
           </TabsTrigger>
           <TabsTrigger
-            className="relative rounded-none px-1 pb-3 text-sm font-medium text-gray-500 data-[state=active]:text-blue-900 data-[state=active]:border-b-2 data-[state=active]:border-b-blue-900 data-[state=active]:shadow-none hidden md:block"
+            className="relative rounded-none px-1 pb-3 text-sm font-medium text-gray-500 data-[state=active]:text-blue-900 data-[state=active]:border-b-2 data-[state=active]:border-b-blue-900 data-[state=active]:shadow-none"
             value="history"
           >
             History
@@ -29,15 +29,15 @@ function PositionWidget() {
 
         <TabsContent value="positions">
           {!isConnected ? (
-            <EmptyState message="No open positions" />
+            <EmptyState message="Active Positions Unavailable" />
           ) : (
             <PositionsTable owner={address!} />
           )}
         </TabsContent>
 
-        <TabsContent value="history" className="hidden md:block">
+        <TabsContent value="history">
           {!isConnected ? (
-            <EmptyState message="No position history" />
+            <EmptyState message="Positions History Unavailable" />
           ) : (
             <HistoryTable owner={address!} />
           )}

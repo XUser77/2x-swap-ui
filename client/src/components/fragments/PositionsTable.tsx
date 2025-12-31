@@ -132,29 +132,6 @@ function PositionsTable({ owner, limit = 10 }: Props) {
             </tbody>
           </table>
         </div>
-
-        {/* Pagination */}
-        <div className="flex items-center justify-between">
-          <button
-            disabled={!canPrev}
-            onClick={() => setPage((p) => Math.max(p - 1, 0))}
-            className="px-3 py-1 rounded-md border disabled:opacity-50 bg-blue-900 text-white"
-          >
-            Previous
-          </button>
-
-          <span className="font-semibold text-blue-900">
-            Page {page + 1} of {totalPages}
-          </span>
-
-          <button
-            disabled={!canNext}
-            onClick={() => setPage((p) => p + 1)}
-            className="px-3 py-1 rounded-md border disabled:opacity-50 bg-blue-900 text-white"
-          >
-            Next
-          </button>
-        </div>
       </div>
     );
   };
@@ -172,16 +149,29 @@ function PositionsTable({ owner, limit = 10 }: Props) {
             onClose={handleClosePosition}
           />
         ))}
+      </div>
 
-        {/* Mobile pagination */}
-        {canNext && (
-          <button
-            onClick={() => setPage((p) => p + 1)}
-            className="w-full py-3 rounded-lg bg-blue-900 text-white font-semibold"
-          >
-            Load more
-          </button>
-        )}
+      {/* Pagination */}
+      <div className="flex items-center justify-between">
+        <button
+          disabled={!canPrev}
+          onClick={() => setPage((p) => Math.max(p - 1, 0))}
+          className="px-3 py-1 rounded-md border disabled:opacity-50 bg-blue-900 text-white"
+        >
+          Previous
+        </button>
+
+        <span className="font-semibold text-blue-900">
+          Page {page + 1} of {totalPages}
+        </span>
+
+        <button
+          disabled={!canNext}
+          onClick={() => setPage((p) => p + 1)}
+          className="px-3 py-1 rounded-md border disabled:opacity-50 bg-blue-900 text-white"
+        >
+          Next
+        </button>
       </div>
     </div>
   );

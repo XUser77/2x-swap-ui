@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useAccount, useChainId, usePublicClient } from "wagmi";
 import { Settings, ChevronDown } from "lucide-react";
 import Row from "../fragments/Row";
@@ -29,7 +29,8 @@ export default function OpenSwapWidget({ asset }: Props) {
   const publicClient = usePublicClient();
   const chainId = useChainId();
 
-  const [assetAmount, setAssetAmount] = useState(0);
+  // STRING STATE
+  const [assetAmount, setAssetAmount] = useState("");
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [showTxDetails, setShowTxDetails] = useState(false);
   const [slippageAuto, setSlippageAuto] = useState(true);
@@ -45,11 +46,19 @@ export default function OpenSwapWidget({ asset }: Props) {
   const { allowance, refetch } = useUsdcAllowance();
   const { price } = usePrice(asset).data ?? { price: 0 };
   const bumpPositions = usePositionsSyncStore((s) => s.bump);
+
   // TODO:
   const { token0: TOKEN0WETH, token1: TOKEN1WETH } = useWETHExchangeTokens();
 
   const { openPosition, isPending } = useOpenPosition();
   const { approve } = useApproveUsdc();
+
+  // SAFE NUMBER PARSING
+  const assetAmountNum = useMemo(() => {
+    const normalized = assetAmount.replace(",", ".");
+    const num = Number(normalized);
+    return Number.isFinite(num) ? Math.max(num, 0) : 0;
+  }, [assetAmount]);
 
   const userBalanceUsdc = Number(usdcBalance / 10n ** BigInt(decimals));
   const poolLiquidityUsdc = Number(liquidity / 10n ** BigInt(decimals));
@@ -58,24 +67,31 @@ export default function OpenSwapWidget({ asset }: Props) {
   const maxLeveragedByPool = poolLiquidityUsdc * leverage * 0.99;
   const maxLeveragedAllowed = Math.min(maxLeveragedByUser, maxLeveragedByPool);
 
-  const leveragedUsdc = price > 0 ? assetAmount * price : 0;
+  const leveragedUsdc = price > 0 ? assetAmountNum * price : 0;
   const clampedLeveragedUsdc = Math.min(leveragedUsdc, maxLeveragedAllowed);
   const userUsdc = clampedLeveragedUsdc / leverage;
   const userUsdcBn = parseUnits(userUsdc, decimals);
-  const minReceived = assetAmount * (1 - Number(feeBps) / 10_000);
+  const feeFactor = 1 - Number(feeBps) / 10_000;
+  const slippageFactor = 1 - maxSlippage / 100;
 
-  const handleAssetChange = (value: number) => {
-    if (Number.isNaN(value)) return;
-    setAssetAmount(Math.max(value, 0));
+  const minReceived =
+    price > 0 ? (clampedLeveragedUsdc * feeFactor * slippageFactor) / price : 0;
+
+  const handleAssetChange = (value: string) => {
+    const sanitized = value.replace(",", ".");
+    if (/^\d*\.?\d*$/.test(sanitized)) {
+      setAssetAmount(sanitized);
+    }
   };
+
   const handleSliderChange = (value: number) => {
     if (price === 0) return;
-    setAssetAmount(value / price);
+    setAssetAmount((value / price).toString());
   };
 
   const handleOpen = async () => {
     try {
-      if (assetAmount <= 0) {
+      if (assetAmountNum <= 0) {
         toast.error("Enter an amount");
         return;
       }
@@ -83,6 +99,7 @@ export default function OpenSwapWidget({ asset }: Props) {
         toast.error("Amount exceeds available liquidity");
         return;
       }
+
       const spender = X2_SWAP_ADDRESS[chainId];
       let path;
 
@@ -97,11 +114,10 @@ export default function OpenSwapWidget({ asset }: Props) {
 
       const deadline = Math.floor(Date.now() / 1000) + deadlineMinutes * 60;
       const maxDeviationBps = Math.floor(maxSlippage * 100);
+
       if (allowance < userUsdcBn) {
         const hash = await approve(spender, userUsdcBn);
-        await publicClient?.waitForTransactionReceipt({
-          hash,
-        });
+        await publicClient?.waitForTransactionReceipt({ hash });
         await refetch();
       }
 
@@ -112,15 +128,11 @@ export default function OpenSwapWidget({ asset }: Props) {
         deadline
       );
 
-      await publicClient?.waitForTransactionReceipt({
-        hash: tx,
-      });
+      await publicClient?.waitForTransactionReceipt({ hash: tx });
       toast.success("Position opened");
-      setAssetAmount(0);
-      setTimeout(() => {
-        bumpPositions();
-      }, 1500);
-    } catch (e) {
+      setAssetAmount("");
+      setTimeout(() => bumpPositions(), 1500);
+    } catch {
       toast.error("Transaction failed");
     }
   };
@@ -136,7 +148,6 @@ export default function OpenSwapWidget({ asset }: Props) {
         />
       </div>
 
-      {/* Advanced */}
       {showAdvanced && (
         <AdvancedExecutionSettings
           slippageAuto={slippageAuto}
@@ -148,15 +159,18 @@ export default function OpenSwapWidget({ asset }: Props) {
         />
       )}
 
-      {/* INPUT: ASSET */}
+      {/* INPUT */}
       <label className="text-md text-gray-500 font-semibold">You buy</label>
       <div className="border rounded-md px-3 py-4 mt-1">
         <div className="flex w-full justify-between">
           <input
-            type="number"
+            type="text"
+            inputMode="decimal"
             value={assetAmount}
-            onChange={(e) => handleAssetChange(Number(e.target.value))}
+            onChange={(e) => handleAssetChange(e.target.value)}
             className="w-[75%] px-2 text-xl"
+            disabled={!isConnected}
+            placeholder="0"
           />
           <p className="bg-gray-200 py-1 px-2 rounded-md text-sm font-semibold">
             {asset}
@@ -168,7 +182,6 @@ export default function OpenSwapWidget({ asset }: Props) {
         </p>
       </div>
 
-      {/* SLIDER (USDC) */}
       <input
         type="range"
         min={0}
@@ -183,15 +196,14 @@ export default function OpenSwapWidget({ asset }: Props) {
         Your balance: {userBalanceUsdc.toLocaleString()} USDC
       </p>
 
-      {/* MIN RECEIVED */}
       <div className="p-3 bg-gray-50 rounded-lg text-sm mb-4">
         <p className="text-gray-700 mb-1">Minimum you will get</p>
         <p className="font-medium text-gray-900">
           {minReceived.toFixed(6)} {asset}
         </p>
+        <p className="text-gray-700 mt-1">After fees and execution</p>
       </div>
 
-      {/* CTA */}
       <button
         onClick={handleOpen}
         disabled={!isConnected || isPending}
@@ -200,7 +212,6 @@ export default function OpenSwapWidget({ asset }: Props) {
         Open 2x position
       </button>
 
-      {/* SUMMARY */}
       <div className="mt-5 space-y-2 text-sm">
         <Row label="Leverage" value="2x" />
         <Row label="Your capital" value={`$${userUsdc.toFixed(2)}`} />
@@ -213,7 +224,6 @@ export default function OpenSwapWidget({ asset }: Props) {
         <Row label="Available Pool Liquidity" value={`$${poolLiquidityUsdc}`} />
       </div>
 
-      {/* TX DETAILS */}
       <div className="mt-4 border-t pt-3 hidden md:block">
         <button
           onClick={() => setShowTxDetails(!showTxDetails)}

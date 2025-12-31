@@ -121,7 +121,7 @@ function SwapBar({
         {/* OI */}
         <div className="hidden md:block font-semibold text-xs">
           <span className="opacity-50">OI: </span>$
-          {(Number(totalDebt) / 1_000_000).toFixed(2)}
+          {((Number(totalDebt) * 2) / 1_000_000).toFixed(2)}
         </div>
       </div>
       <div></div>
