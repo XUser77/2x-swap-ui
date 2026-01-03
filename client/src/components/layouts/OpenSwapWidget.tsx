@@ -133,7 +133,7 @@ export default function OpenSwapWidget({ asset }: Props) {
       setAssetAmount("");
       setTimeout(() => bumpPositions(), 1500);
     } catch {
-      toast.error("Transaction failed");
+      toast.error("Open Position Failed");
     }
   };
 
@@ -206,10 +206,14 @@ export default function OpenSwapWidget({ asset }: Props) {
 
       <button
         onClick={handleOpen}
-        disabled={!isConnected || isPending}
-        className="w-full bg-blue-900 hover:bg-blue-950 text-white py-3 rounded-xl font-semibold disabled:opacity-50"
+        disabled={!isConnected || isPending || !assetAmount}
+        className="w-full bg-blue-900 text-white py-3 rounded-xl font-semibold disabled:bg-gray-400"
       >
-        Open 2x position
+        {isPending
+          ? "Opening..."
+          : assetAmount
+          ? "Open 2x position"
+          : "Enter amount to open"}
       </button>
 
       <div className="mt-5 space-y-2 text-sm">

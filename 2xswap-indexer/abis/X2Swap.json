@@ -12,9 +12,9 @@
         "type": "address"
       },
       {
-        "internalType": "address",
-        "name": "swapRouter_",
-        "type": "address"
+        "internalType": "address[]",
+        "name": "exchanges_",
+        "type": "address[]"
       },
       {
         "internalType": "address",
@@ -158,6 +158,16 @@
         "internalType": "uint256",
         "name": "id",
         "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "exchangeAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes",
+        "name": "path",
+        "type": "bytes"
       }
     ],
     "name": "checkPosition",
@@ -202,6 +212,21 @@
         "internalType": "uint256",
         "name": "maxDeviationBps",
         "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "exchangeAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes",
+        "name": "path",
+        "type": "bytes"
+      },
+      {
+        "internalType": "uint256",
+        "name": "deadline",
+        "type": "uint256"
       }
     ],
     "name": "closePosition",
@@ -217,6 +242,25 @@
         "internalType": "uint256",
         "name": "",
         "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "exchanges",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
       }
     ],
     "stateMutability": "view",
@@ -281,6 +325,25 @@
     "type": "function"
   },
   {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "isExchange",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "nextPositionId",
     "outputs": [
@@ -303,6 +366,21 @@
       {
         "internalType": "uint256",
         "name": "maxDeviationBps",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "exchangeAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes",
+        "name": "path",
+        "type": "bytes"
+      },
+      {
+        "internalType": "uint256",
+        "name": "deadline",
         "type": "uint256"
       }
     ],
@@ -432,19 +510,6 @@
     "outputs": [
       {
         "internalType": "contract IPriceOracle",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "swapRouter",
-    "outputs": [
-      {
-        "internalType": "contract IExchange",
         "name": "",
         "type": "address"
       }

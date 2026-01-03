@@ -15,6 +15,7 @@ import { config } from "./lib/wagmi.ts";
 import { ApolloProvider } from "@apollo/client/react";
 import { apolloClient } from "./apollo/client";
 import "@rainbow-me/rainbowkit/styles.css";
+import Points from "./pages/Points.tsx";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +36,7 @@ createRoot(document.getElementById("root")!).render(
                 <Route element={<AppLayout />}>
                   <Route path="/pool" element={<Pool />} />
                   <Route path="/swap" element={<Swap />} />
+                  <Route path="/points" element={<Points />} />
                 </Route>
               </Routes>
             </BrowserRouter>

@@ -1,6 +1,7 @@
 import { ponder } from "ponder:registry";
 import { poolActivity, position, volume_24h } from "ponder:schema";
 import { eq } from "drizzle-orm";
+import { snapshotTVL } from "../helpers/snapshotTVL";
 
 const ONE_YEAR_SECONDS = 365 * 24 * 60 * 60;
 const PRICE_SCALE = 1_000_000_000_000_00n;
@@ -33,6 +34,8 @@ ponder.on("X2ETHSwap:OpenPosition", async ({ event, context }) => {
     timestamp: event.block.timestamp,
     amount: event.args.assetAmount,
   });
+
+  await snapshotTVL(context, event);
 });
 
 // Handle ClosePosition events
@@ -66,6 +69,8 @@ ponder.on("X2ETHSwap:ClosePosition", async ({ event, context }) => {
     timestamp: event.block.timestamp,
     amount: event.args.closeAssetAmount,
   });
+
+  await snapshotTVL(context, event);
 });
 
 // Handle Pool Deposit
@@ -81,6 +86,8 @@ ponder.on("X2ETHPool:Deposit", async ({ event, context }) => {
     shares: event.args.shares,
     timestamp: event.block.timestamp,
   });
+
+  await snapshotTVL(context, event);
 });
 
 // Handle Pool Withdraw
@@ -96,4 +103,6 @@ ponder.on("X2ETHPool:Withdraw", async ({ event, context }) => {
     shares: event.args.shares,
     timestamp: event.block.timestamp,
   });
+
+  await snapshotTVL(context, event);
 });

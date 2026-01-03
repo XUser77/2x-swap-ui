@@ -48,3 +48,27 @@ export const volume_24h = onchainTable("volume_24h", (t) => ({
   timestamp: t.bigint().notNull(),
   amount: t.bigint().notNull(),
 }));
+
+export const tvl_hourly = onchainTable("tvl_hourly", (t) => ({
+  id: t.bigint().primaryKey(), // timestamp floor to 4h
+  timestamp: t.bigint().notNull(),
+  tvl: t.bigint().notNull(),
+}));
+
+export const tvl_daily = onchainTable("tvl_daily", (t) => ({
+  id: t.bigint().primaryKey(), // timestamp floor to 1 day
+  timestamp: t.bigint().notNull(),
+  tvl: t.bigint().notNull(),
+}));
+
+export const tvl_monthly = onchainTable("tvl_monthly", (t) => ({
+  id: t.bigint().primaryKey(), // timestamp floor to 5 days
+  timestamp: t.bigint().notNull(),
+  tvl: t.bigint().notNull(),
+}));
+
+export const tvl_yearly = onchainTable("tvl_yearly", (t) => ({
+  id: t.bigint().primaryKey(), // timestamp floor to 2 months
+  timestamp: t.bigint().notNull(),
+  tvl: t.bigint().notNull(),
+}));

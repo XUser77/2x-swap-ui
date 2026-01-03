@@ -1,8 +1,8 @@
 "use client";
 
+import { useAvailableLiquidity } from "@/hooks/useAvailableLiquidity";
 import { useLpBalance } from "@/hooks/useLpBalance";
 import { usePreviewWithdraw } from "@/hooks/usePreviewWithdraw";
-import { useTotalDebt } from "@/hooks/useTotalDebt";
 import { useWithdrawPool } from "@/hooks/useWithdrawPool";
 import { useActivityPoolSyncStore } from "@/stores/useActivityPoolSyncStore";
 import { useState, useMemo } from "react";
@@ -12,7 +12,7 @@ import { useAccount, usePublicClient } from "wagmi";
 
 export default function WithdrawPanel() {
   const [amount, setAmount] = useState("");
-  const { totalDebt } = useTotalDebt();
+  const { assets } = useAvailableLiquidity();
   const { isConnected } = useAccount();
   const { assetValue: userBalanceLp } = useLpBalance();
   const { shares } = usePreviewWithdraw(Number(amount));
@@ -42,6 +42,11 @@ export default function WithdrawPanel() {
     try {
       const withdrawAmountBn = parseUnits(amountNum.toString(), 6);
       if (!amountNum || withdrawAmountBn === 0n) return;
+
+      if (typeof assets === "bigint" && withdrawAmountBn > BigInt(assets)) {
+        toast.error("Withdrawal amount exceeds liquidity");
+        return;
+      }
 
       const hash = await withdraw(withdrawAmountBn);
       await publicClient?.waitForTransactionReceipt({ hash });
@@ -92,7 +97,7 @@ export default function WithdrawPanel() {
         </div>
         <div className="flex justify-between">
           <span>Available pool liquidity</span>
-          <span>{`$${(Number(totalDebt) / 1_000_000).toFixed(2)}`}</span>
+          <span>{`$${(Number(assets) / 1_000_000).toFixed(2)}`}</span>
         </div>
         <p className="text-gray-500 text-xs">
           Withdrawals depend on available pool liquidity.

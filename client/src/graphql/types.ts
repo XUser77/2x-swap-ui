@@ -31,9 +31,10 @@ export interface PaginatedPositions<T> {
 }
 
 export type ClosedPositionAPY = {
+  id: string;
   asset_amount: string; // BigInt serialized
   close_asset_amount: string; // BigInt serialized
-  profit_sharing: number; // pool share %, e.g. 20 / 30 / 40
+  profit_sharing: string; // pool share %, e.g. 20 / 30 / 40
   opened_at: string; // unix seconds (BigInt)
   closed_at: string; // unix seconds (BigInt)
 };
@@ -55,6 +56,56 @@ export type VolumeQuery = {
       id: string;
       timestamp: string;
       amount: string;
+    }>;
+  };
+};
+
+export type GetClosedPositionsSince = {
+  positions: {
+    items: Array<{
+      id: string;
+      asset_amount: string; // BigInt / numeric values usually come as strings
+      close_asset_amount: string;
+      profit_sharing: string;
+      opened_at: string; // timestamp (BigInt or ISO, depending on API)
+      closed_at: string;
+    }>;
+  };
+};
+
+export type HourlyTVL = {
+  tvl_hourlys: {
+    items: Array<{
+      id: string;
+      timestamp: string;
+      tvl: string;
+    }>;
+  };
+};
+export type DailyTVL = {
+  tvl_dailys: {
+    items: Array<{
+      id: string;
+      timestamp: string;
+      tvl: string;
+    }>;
+  };
+};
+export type MonthlyTVL = {
+  tvl_monthlys: {
+    items: Array<{
+      id: string;
+      timestamp: string;
+      tvl: string;
+    }>;
+  };
+};
+export type YearlyTVL = {
+  tvl_yearlys: {
+    items: Array<{
+      id: string;
+      timestamp: string;
+      tvl: string;
     }>;
   };
 };

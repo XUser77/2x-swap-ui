@@ -1,75 +1,38 @@
+import { generateTVLData, type Timeframe } from "@/lib/tvlCalculation";
 import { useState } from "react";
 import {
-  LineChart,
-  Line,
   XAxis,
   YAxis,
   Tooltip,
   ResponsiveContainer,
+  type TooltipContentProps,
+  Area,
+  AreaChart,
+  CartesianGrid,
 } from "recharts";
 
-type Timeframe = "D" | "W" | "M" | "Y";
-
-type TVLPoint = {
-  label: string;
-  value: number;
-};
-
-const formatters: Record<Timeframe, (d: Date) => string> = {
-  D: (d) => d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-  W: (d) => d.toLocaleDateString([], { weekday: "short" }),
-  M: (d) => d.toLocaleDateString([], { day: "2-digit", month: "short" }),
-  Y: (d) => d.toLocaleDateString([], { month: "short" }),
-};
-
-function generateTVLData(tf: Timeframe): TVLPoint[] {
-  const now = new Date();
-  const data: TVLPoint[] = [];
-
-  let points = 0;
-  let cursor: Date;
-  let step: (d: Date) => void;
-
-  switch (tf) {
-    case "D":
-      points = 6;
-
-      // ⬇️ Start at 00:00 today
-      cursor = new Date(now);
-      cursor.setHours(0, 0, 0, 0);
-
-      step = (d) => d.setHours(d.getHours() + 4);
-      break;
-
-    case "W":
-      points = 7;
-      cursor = new Date(now);
-      step = (d) => d.setDate(d.getDate() - 1);
-      break;
-
-    case "M":
-      points = 6;
-      cursor = new Date(now);
-      step = (d) => d.setDate(d.getDate() - 5);
-      break;
-
-    case "Y":
-      points = 6;
-      cursor = new Date(now);
-      step = (d) => d.setMonth(d.getMonth() - 2);
-      break;
+function CustomTooltip({
+  active,
+  payload,
+}: TooltipContentProps<number, string>) {
+  if (!active || !payload || !payload.length) {
+    return null;
   }
 
-  for (let i = 0; i < points; i++) {
-    data.push({
-      label: formatters[tf](cursor),
-      value: 1_000_000 + i * 150_000 + Math.random() * 50_000,
-    });
+  const value = payload[0].value ?? 0;
 
-    step(cursor);
-  }
-
-  return data;
+  return (
+    <div className="bg-white border border-gray-200 shadow-md rounded-md p-3 text-sm">
+      <div className="text-gray-600 font-medium mb-1">TVL</div>
+      <div className="text-blue-900 font-semibold text-lg">
+        {new Intl.NumberFormat("en", {
+          style: "currency",
+          currency: "USD",
+          maximumFractionDigits: 0,
+        }).format(value as number)}
+      </div>
+    </div>
+  );
 }
 
 export function TVLChart() {
@@ -96,13 +59,35 @@ export function TVLChart() {
         </div>
       </div>
 
-      <ResponsiveContainer width="100%" height={300}>
-        <LineChart data={data}>
-          <XAxis dataKey="label" />
-          <YAxis hide />
-          <Tooltip />
-          <Line type="monotone" dataKey="value" strokeWidth={3} dot={false} />
-        </LineChart>
+      <ResponsiveContainer width="100%" height={400}>
+        <AreaChart data={data}>
+          <XAxis dataKey="label" tick={{ fontSize: 12 }} />
+
+          <YAxis
+            tickFormatter={(val) =>
+              new Intl.NumberFormat("en", { notation: "compact" }).format(val)
+            }
+            label={{
+              value: "TVL (USD)",
+              angle: -90,
+              position: "insideLeft",
+            }}
+            tick={{ fontSize: 12 }}
+          />
+
+          {/* @ts-ignore */}
+          <Tooltip content={<CustomTooltip />} />
+
+          <CartesianGrid stroke="#e0e0e0" strokeDasharray="3 3" />
+
+          <Area
+            type="monotone"
+            dataKey="value"
+            stroke="#122C34"
+            fill="#2A4494"
+            fillOpacity={0.2}
+          />
+        </AreaChart>
       </ResponsiveContainer>
     </div>
   );

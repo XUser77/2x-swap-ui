@@ -12,6 +12,28 @@ type Activity = {
 
 const PAGE_SIZE = 5;
 
+function MobileActivityCard({ a }: { a: Activity }) {
+  return (
+    <div className="bg-white border rounded-xl p-4 flex justify-between items-center">
+      <div className="flex flex-col gap-1">
+        <span
+          className={`inline-block w-fit px-2 py-1 rounded text-xs font-medium ${
+            a.type === "DEPOSIT"
+              ? "bg-green-100 text-green-600"
+              : "bg-gray-100 text-gray-600"
+          }`}
+        >
+          {a.type}
+        </span>
+
+        <span className="text-sm text-gray-500">{a.date}</span>
+      </div>
+
+      <div className="font-semibold">${formatUnits(BigInt(a.amount), 6)}</div>
+    </div>
+  );
+}
+
 export function RecentPoolActivity() {
   const { address } = useAccount();
   const [page, setPage] = useState(0);
@@ -56,34 +78,43 @@ export function RecentPoolActivity() {
         <div className="flex justify-center w-full">No pool activity yet</div>
       ) : (
         <>
-          <table className="w-full text-md mb-4">
-            <thead className="text-gray-500">
-              <tr className="border-b">
-                <th className="text-left py-2">Type</th>
-                <th className="text-left">Amount (USDC)</th>
-                <th className="text-left">Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {activities.map((a, i) => (
-                <tr key={i} className="border-b last:border-0">
-                  <td className="py-3">
-                    <span
-                      className={`px-2 py-1 rounded text-xs font-medium ${
-                        a.type === "DEPOSIT"
-                          ? "bg-green-100 text-green-600"
-                          : "bg-gray-100 text-gray-600"
-                      }`}
-                    >
-                      {a.type}
-                    </span>
-                  </td>
-                  <td>{`$${formatUnits(BigInt(a.amount), 6)}`}</td>
-                  <td className="text-gray-500">{a.date}</td>
+          <div className="hidden md:block">
+            <table className="w-full text-md mb-4">
+              <thead className="text-gray-500">
+                <tr className="border-b">
+                  <th className="text-left py-2">Type</th>
+                  <th className="text-left">Amount (USDC)</th>
+                  <th className="text-left">Date</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {activities.map((a, i) => (
+                  <tr key={i} className="border-b last:border-0">
+                    <td className="py-3">
+                      <span
+                        className={`px-2 py-1 rounded text-xs font-medium ${
+                          a.type === "DEPOSIT"
+                            ? "bg-green-100 text-green-600"
+                            : "bg-gray-100 text-gray-600"
+                        }`}
+                      >
+                        {a.type}
+                      </span>
+                    </td>
+                    <td>{`$${formatUnits(BigInt(a.amount), 6)}`}</td>
+                    <td className="text-gray-500">{a.date}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Mobile Cards */}
+          <div className="flex flex-col gap-3 md:hidden">
+            {activities.map((a, i) => (
+              <MobileActivityCard key={i} a={a} />
+            ))}
+          </div>
 
           {/* Pagination */}
 

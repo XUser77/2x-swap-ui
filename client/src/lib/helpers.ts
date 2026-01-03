@@ -76,3 +76,17 @@ export function calculatePoolApy(params: {
   // Convert from USDC units to %
   return apy;
 }
+
+export function floorTo4H(timestamp: number) {
+  const ONE_DAY = 86400;
+  const FOUR_H = 14400;
+
+  // start of UTC day
+  const dayStart = timestamp - (timestamp % ONE_DAY);
+
+  // number of 4-h intervals since midnight
+  const sinceDayStart = timestamp - dayStart;
+  const bucketIndex = sinceDayStart / FOUR_H;
+
+  return dayStart + bucketIndex * FOUR_H;
+}
