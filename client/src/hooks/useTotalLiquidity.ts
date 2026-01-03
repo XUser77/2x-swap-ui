@@ -4,19 +4,22 @@ import x2PoolAbi from "@/abi/X2Pool.json";
 
 export function useTotalLiquidity() {
   const chainId = useChainId();
+  let tvl;
 
-  const { data: assets } = useReadContract({
+  const { data: assets, isLoading: assetsLoading } = useReadContract({
     address: X2_POOL_ADDRESS[chainId],
     abi: x2PoolAbi,
     functionName: "totalAssets",
   });
-  const { data: debt } = useReadContract({
+  const { data: debt, isLoading: debtLoading } = useReadContract({
     address: X2_POOL_ADDRESS[chainId],
     abi: x2PoolAbi,
     functionName: "totalDebt",
   });
 
-  const tvl = (assets as bigint) + (debt as bigint);
+  if (!assetsLoading && !debtLoading) {
+    tvl = (assets as bigint) + (debt as bigint);
+  }
 
   return {
     totalLiquidity: tvl,

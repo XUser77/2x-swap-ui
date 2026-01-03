@@ -43,7 +43,11 @@ export default function WithdrawPanel() {
       const withdrawAmountBn = parseUnits(amountNum.toString(), 6);
       if (!amountNum || withdrawAmountBn === 0n) return;
 
-      if (typeof assets === "bigint" && withdrawAmountBn > BigInt(assets)) {
+      if (
+        typeof assets === "bigint" &&
+        withdrawAmountBn > BigInt(assets) &&
+        Number(amount) > Number(userBalanceLp)
+      ) {
         toast.error("Withdrawal amount exceeds liquidity");
         return;
       }
@@ -71,6 +75,7 @@ export default function WithdrawPanel() {
         onChange={(e) => handleInputChange(e.target.value)}
         placeholder="0"
         inputMode="decimal"
+        disabled={!isConnected}
         className="text-lg w-full min-h-10 border border-gray-300 p-3 mt-2 rounded-xl"
       />
 
