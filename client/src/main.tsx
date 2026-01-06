@@ -9,7 +9,6 @@ import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import App from "./App.tsx";
 import Pool from "./pages/Pool.tsx";
 import Swap from "./pages/Swap.tsx";
-import HomeLayout from "./components/layouts/HomeLayout.tsx";
 import AppLayout from "./components/layouts/AppLayout.tsx";
 import { config } from "./lib/wagmi.ts";
 import { ApolloProvider } from "@apollo/client/react";
@@ -28,7 +27,7 @@ createRoot(document.getElementById("root")!).render(
             <BrowserRouter>
               <Routes>
                 {/* Home with its own navbar */}
-                <Route element={<HomeLayout />}>
+                <Route>
                   <Route path="/" element={<App />} />
                 </Route>
 
