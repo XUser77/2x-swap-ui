@@ -1,53 +1,8 @@
 import { useState } from "react";
 import OutcomeCard from "../fragments/OutcomeCard";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-
-type colorType = "green" | "red" | "yellow";
-
-type OutcomeCardProps = {
-  title: string;
-  subtitle: string;
-  color: colorType;
-  bullets: string[];
-  footer: string;
-}[];
-
-const slides: OutcomeCardProps = [
-  {
-    title: "Price Goes Up",
-    subtitle: "The position is closed with profit",
-    color: "green",
-    bullets: [
-      "The Liquidity Pool receives its share first",
-      "User A receives the remaining profit",
-      "Profit is shared according to predefined rules",
-    ],
-    footer:
-      "User A benefits from upside while LPs earn from successful positions.",
-  },
-  {
-    title: "Price Drops (up to 50%)",
-    subtitle: "Loss is absorbed by User A",
-    color: "yellow",
-    bullets: [
-      "The Liquidity Pool is fully returned",
-      "User A absorbs the loss",
-      "LP capital remains protected",
-    ],
-    footer: "Losses are first absorbed by the trader, not the pool.",
-  },
-  {
-    title: "Price Drops Significantly",
-    subtitle: "The loss exceeds User A’s deposit",
-    color: "red",
-    bullets: [
-      "All available funds are returned to the Liquidity Pool",
-      "User A loses their full deposit",
-      "LPs may incur partial loss depending on market movement",
-    ],
-    footer: "Extreme market moves can impact both sides.",
-  },
-];
+import { motion } from "framer-motion";
+import { slides } from "@/lib/OutcomeCardContent";
 
 export default function PossibleOutcomes() {
   const [active, setActive] = useState(0);
@@ -55,19 +10,22 @@ export default function PossibleOutcomes() {
   const prev = () => setActive((a) => (a - 1 + slides.length) % slides.length);
   const next = () => setActive((a) => (a + 1) % slides.length);
 
+  const CARD_WIDTH = 280; // match OutcomeCard width
+  const GAP = 50;
+
   return (
     <section className="relative py-18 text-center bg-[#DCE5FF] overflow-hidden">
       {/* Title */}
-      <h2 className="text-5xl font-semibold text-[#00246B] mb-5">
+      <h2 className="text-2xl md:text-5xl font-semibold text-[#00246B] mb-5">
         Possible Outcomes
       </h2>
-      <p className="text-[#00246B]/60 font-semibold text-2xl max-w-130 mx-auto">
+      <p className="text-[#00246B]/60 font-semibold text-sm md:text-2xl max-w-xs md:max-w-130 mx-auto">
         Every position follows clear, predefined rules. Here’s how profits and
         losses are handled.
       </p>
 
       {/* Slider */}
-      <div className="relative flex items-center justify-center">
+      <div className="hidden md:flex relative items-center justify-center">
         <div className="relative w-full max-w-6xl h-90 flex items-center justify-center">
           {/* Left arrow */}
           <button
@@ -119,8 +77,63 @@ export default function PossibleOutcomes() {
         </div>
       </div>
 
+      <div className="md:hidden relative overflow-hidden pt-10 pb-20 md:pb-10">
+        {/* Side fade (optional but matches image) */}
+        <div className="pointer-events-none absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-[#DCE5FF] to-transparent z-10" />
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-[#DCE5FF] to-transparent z-10" />
+
+        <motion.div
+          className="flex"
+          drag="x"
+          dragElastic={0.12}
+          dragConstraints={{
+            left: -(slides.length - 1) * (CARD_WIDTH + GAP),
+            right: 0,
+          }}
+          animate={{
+            x: -active * (CARD_WIDTH + GAP),
+          }}
+          transition={{
+            type: "spring",
+            stiffness: 260,
+            damping: 28,
+          }}
+          onDragEnd={(_, info) => {
+            const threshold = 60;
+
+            if (info.offset.x < -threshold && active < slides.length - 1) {
+              setActive((a) => a + 1);
+            }
+            if (info.offset.x > threshold && active > 0) {
+              setActive((a) => a - 1);
+            }
+          }}
+          style={{
+            paddingLeft: `calc(50vw - ${CARD_WIDTH / 2}px)`,
+            paddingRight: `calc(50vw - ${CARD_WIDTH / 2}px)`,
+          }}
+        >
+          {slides.map((slide, index) => (
+            <motion.div
+              key={index}
+              className="shrink-0"
+              style={{
+                width: CARD_WIDTH,
+                marginRight: GAP,
+              }}
+              animate={{
+                opacity: index === active ? 1 : 0.5,
+              }}
+              transition={{ duration: 0.2 }}
+            >
+              <OutcomeCard {...slide} active={index === active} />
+            </motion.div>
+          ))}
+        </motion.div>
+      </div>
+
       {/* Footer */}
-      <p className=" text-[#00246B]/70 text-xl">
+      <p className=" text-[#00246B]/70 text-xs md:text-xl">
         All outcomes are enforced by smart contracts.
         <br />
         No interest, no liquidations, no manual intervention.

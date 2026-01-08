@@ -22,7 +22,7 @@ export default function SwapDifferent() {
     setTimeout(() => {
       setIndex(nextIndex);
       setFading(false);
-    }, 250); // PPT-like timing
+    }, 250);
   };
 
   const prev = () => changeSlide(index === 0 ? slides.length - 1 : index - 1);
@@ -31,12 +31,12 @@ export default function SwapDifferent() {
 
   return (
     <section className="relative w-full flex flex-col items-center py-24 bg-linear-to-b from-[#DCE5FF] to-[#BFD1FF]">
-      <h2 className="text-5xl font-semibold text-[#00246B] mb-5">
+      <h2 className="text-2xl md:text-5xl font-semibold text-[#00246B] mb-5">
         How 2xSwap Is Different
       </h2>
 
       {/* Main Card */}
-      <div className="relative w-275 max-w-[70%] mt-3">
+      <div className="relative w-275 max-w-full md:max-w-[70%] mt-3">
         <img
           src={slides[index]}
           alt={`slide-${index}`}
@@ -50,23 +50,23 @@ export default function SwapDifferent() {
         {/* Left Chevron */}
         <button
           onClick={prev}
-          className="absolute right-37.5 top-22.5 -translate-y-1/2
-                     h-8 w-8 rounded-full bg-blue-100
+          className="absolute right-22 top-10 md:right-44 md:top-20 -translate-y-1/2
+                     h-4 w-4 md:h-8 md:w-8 rounded-full bg-blue-100
                      flex items-center justify-center shadow
                      hover:bg-white transition"
         >
-          <ChevronLeft className="h-6 w-6 text-blue-700" />
+          <ChevronLeft className="h-3 w-3 md:h-6 md:w-6 text-blue-700" />
         </button>
 
         {/* Right Chevron */}
         <button
           onClick={next}
-          className="absolute right-20 top-22.5 -translate-y-1/2
-                     h-8 w-8 rounded-full bg-blue-100
+          className="absolute right-10 top-10 md:right-22 md:top-20 -translate-y-1/2
+                     h-4 w-4 md:h-8 md:w-8 rounded-full bg-blue-100
                      flex items-center justify-center shadow
                      hover:bg-white transition"
         >
-          <ChevronRight className="h-6 w-6 text-blue-700" />
+          <ChevronRight className="h-3 w-3 md:h-6 md:w-6 text-blue-700" />
         </button>
       </div>
 

@@ -1,301 +1,298 @@
-import { useState } from "react";
-
-interface FlowBoxProps {
-  title?: string;
-  subtitle?: string;
-  children?: React.ReactNode;
-  className?: string;
-  titleClassName?: string;
-  onMouseEnter?: () => void;
-  onMouseLeave?: () => void;
-}
-
-function FlowBox({
-  title,
-  subtitle,
-  children,
-  className = "",
-  titleClassName = "",
-  onMouseEnter,
-  onMouseLeave,
-}: FlowBoxProps) {
-  return (
-    <div
-      className={`rounded-2xl bg-white shadow-md ${className}`}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-    >
-      {title && (
-        <div
-          className={`bg-[#5B6EF5] text-white px-4 py-2 rounded-t-2xl text-center font-semibold ${titleClassName}`}
-        >
-          {title}
-        </div>
-      )}
-      {subtitle && (
-        <div className="text-center font-medium px-4 py-3 text-sm">
-          {subtitle}
-        </div>
-      )}
-      {children && <div className="px-4 py-3">{children}</div>}
-    </div>
-  );
-}
+import { useEffect, useState } from "react";
+import { FlowTooltip } from "../fragments/FlowTooltip";
+import { HorizontalLine, VerticalLine } from "../fragments/Lines";
+import { FlowBox } from "../fragments/FlowBox";
 
 export default function HowItWorksFlowchart() {
   const [hoveredFlow, setHoveredFlow] = useState<string | null>(null);
+  const [activeCloseAStep, setActiveCloseAStep] = useState(0);
+  const [activeClosePoolStep, setActiveClosePoolStep] = useState(0);
+
+  function startCloseAFlow() {
+    setHoveredFlow("close-a");
+    setActiveCloseAStep(0);
+
+    setTimeout(() => setActiveCloseAStep(1), 100);
+    setTimeout(() => setActiveCloseAStep(2), 500);
+    setTimeout(() => setActiveCloseAStep(3), 850);
+  }
+
+  function stopCloseAFlow() {
+    setHoveredFlow(null);
+    setActiveCloseAStep(0);
+  }
+
+  function startClosePoolFlow() {
+    setHoveredFlow("close-pool");
+    setActiveClosePoolStep(0);
+
+    setTimeout(() => setActiveClosePoolStep(1), 100);
+    setTimeout(() => setActiveClosePoolStep(2), 400);
+  }
+
+  function stopClosePoolFlow() {
+    setHoveredFlow(null);
+    setActiveClosePoolStep(0);
+  }
+
+  function useScale(baseWidth: number) {
+    const [scale, setScale] = useState(1);
+
+    useEffect(() => {
+      function update() {
+        const vw = window.innerWidth;
+
+        const rawScale = vw / baseWidth;
+
+        const isMobile = vw < 640; // Tailwind sm breakpoint
+        const boost = isMobile ? 1.25 : 1;
+
+        setScale(Math.min(1, rawScale * boost));
+      }
+
+      update();
+      window.addEventListener("resize", update);
+      return () => window.removeEventListener("resize", update);
+    }, [baseWidth]);
+
+    return scale;
+  }
+
+  const scale = useScale(1200);
 
   return (
     <div className="w-full bg-linear-to-b from-[#a9b9ff] to-[#B8C9FF] py-16 px-4">
-      <h2 className="text-5xl font-semibold text-center text-[#00246B] mb-5">
+      <h2 className="text-2xl md:text-5xl font-semibold text-center text-[#00246B] mb-5">
         How 2xSwap Works
       </h2>
 
-      <div className="max-w-6xl mx-auto relative" style={{ height: "550px" }}>
-        {/* Flow Lines/Curves - Designer's SVG assets with hover states */}
+      <div className="w-full overflow-hidden ">
         <div
-          className="absolute inset-0 pointer-events-none"
-          style={{ zIndex: 0 }}
+          className="relative left-1/2 origin-top"
+          style={{
+            transform: `translateX(-50%) scale(${scale})`,
+            width: 1200, // ORIGINAL desktop width
+            height: 650 * scale, // ORIGINAL height
+          }}
         >
-          {/* 1. User A → Choose Asset */}
-          <img
-            src={
-              hoveredFlow === "a-choose"
-                ? "/a-choose-on.png"
-                : "/a-choose-off.png"
-            }
-            alt=""
-            className="absolute transition-opacity duration-300"
-            style={{
-              left: "120px",
-              top: "70px",
-              width: "300px",
-              height: "300px",
-            }}
-          />
-
-          {/* 2. User B → Liquidity Pool */}
-          <img
-            src={
-              hoveredFlow === "b-pool" ? "/b-pool-on.png" : "/b-pool-off.png"
-            }
-            alt=""
-            className="absolute transition-opacity duration-300"
-            style={{
-              right: "120px",
-              top: "70px",
-              width: "auto",
-              height: "auto",
-            }}
-          />
-
-          {/* 3. Choose Asset → Smart Contract Open */}
-          <img
-            src={
-              hoveredFlow === "choose-open"
-                ? "/choose-open-on.png"
-                : "/choose-open-off.png"
-            }
-            alt=""
-            className="absolute transition-opacity duration-300"
-            style={{
-              left: "264px",
-              top: "220px",
-              width: "auto",
-              height: "auto",
-            }}
-          />
-
-          {/* 4. Smart Contract Close → User A */}
-          <img
-            src={
-              hoveredFlow === "close-a" ? "/close-a-on.png" : "/close-a-off.png"
-            }
-            alt=""
-            className="absolute transition-opacity duration-300"
-            style={{
-              left: "80px",
-              top: "80px",
-              width: "400px",
-              height: "400px",
-            }}
-          />
-
-          {/* 5. Smart Contract Close → Liquidity Pool */}
-          <img
-            src={
-              hoveredFlow === "close-pool"
-                ? "/close-pool-on.png"
-                : "/close-pool-off.png"
-            }
-            alt=""
-            className="absolute transition-opacity duration-300"
-            style={{
-              right: "80px",
-              top: "80px",
-              width: "300px",
-              height: "300px",
-            }}
-          />
-
-          {/* 6. Smart Contract Open → Smart Contract Close */}
-          <img
-            src={
-              hoveredFlow === "open-close"
-                ? "/open-close-on.png"
-                : "/open-close-off.png"
-            }
-            alt=""
-            className="absolute transition-opacity duration-300"
-            style={{
-              left: "50%",
-              top: "280px",
-              transform: "translateX(-50%)",
-              width: "auto",
-              height: "auto",
-            }}
-          />
-
-          {/* 7. Liquidity Pool → Smart Contract Open */}
-          <img
-            src={
-              hoveredFlow === "pool-open"
-                ? "/pool-open-on.png"
-                : "/pool-open-off.png"
-            }
-            alt=""
-            className="absolute transition-opacity duration-300"
-            style={{
-              right: "264px",
-              top: "220px",
-              width: "auto",
-              height: "auto",
-            }}
-          />
-        </div>
-
-        {/* Content Boxes - Absolutely positioned with hover handlers */}
-        <div className="relative w-full h-full" style={{ zIndex: 1 }}>
-          {/* User A - Top Left */}
           <div
-            className="absolute"
-            style={{ left: "120px", top: "70px" }}
-            onMouseEnter={() => setHoveredFlow("a-choose")}
-            onMouseLeave={() => setHoveredFlow(null)}
+            className="max-w-6xl mx-auto relative"
+            style={{ height: "550px" }}
           >
-            <FlowBox title="User A" subtitle="Wallet" className="w-44" />
-          </div>
+            {/* Lines */}
+            <div className="absolute inset-0 z-5 pointer-events-auto">
+              <VerticalLine
+                flowKey="a-choose"
+                active={hoveredFlow === "a-choose"}
+                setHoveredFlow={setHoveredFlow}
+                className="left-[260px] top-[130px] h-[120px]"
+              />
 
-          {/* Choose Asset - Middle Left */}
-          <div
-            className="absolute"
-            style={{ left: "120px", top: "200px" }}
-            onMouseEnter={() => setHoveredFlow("choose-open")}
-            onMouseLeave={() => setHoveredFlow(null)}
-          >
-            <FlowBox subtitle="Choose Asset & $ to Invest" className="w-44" />
-          </div>
+              <HorizontalLine
+                flowKey="choose-open"
+                active={hoveredFlow === "choose-open"}
+                setHoveredFlow={setHoveredFlow}
+                className="left-[310px] top-[240px] w-[130px]"
+              />
 
-          {/* User B - Top Right */}
-          <div
-            className="absolute"
-            style={{ right: "120px", top: "70px" }}
-            onMouseEnter={() => setHoveredFlow("b-pool")}
-            onMouseLeave={() => setHoveredFlow(null)}
-          >
-            <FlowBox title="User B" subtitle="Wallet" className="w-44" />
-          </div>
+              <VerticalLine
+                flowKey="b-pool"
+                active={hoveredFlow === "b-pool"}
+                setHoveredFlow={setHoveredFlow}
+                className="right-[240px] top-[135px] h-[120px]"
+                arrow="both"
+              />
 
-          {/* Liquidity Pool - Middle Right */}
-          <div
-            className="absolute"
-            style={{ right: "120px", top: "200px" }}
-            onMouseEnter={() => setHoveredFlow("pool-open")}
-            onMouseLeave={() => setHoveredFlow(null)}
-          >
-            <FlowBox subtitle="Liquidity Pool" className="w-44" />
-          </div>
+              <HorizontalLine
+                flowKey="pool-open"
+                active={hoveredFlow === "pool-open"}
+                setHoveredFlow={setHoveredFlow}
+                className="right-[310px] top-[245px] w-[200px]"
+                arrow="left"
+              />
 
-          {/* Smart Contract Open - Top Center */}
-          <div
-            className="absolute"
-            style={{ left: "50%", top: "80px", transform: "translateX(-50%)" }}
-            onMouseEnter={() => setHoveredFlow("open-close")}
-            onMouseLeave={() => setHoveredFlow(null)}
-          >
-            <FlowBox
-              title="Smart Contract - Open"
-              className="w-[320px]"
-              titleClassName="text-sm"
-            >
-              <ol className="text-xs space-y-1 text-left leading-relaxed">
-                <li className="mb-1">
-                  <span className="font-medium">1.</span> Combine funds (A's
-                  deposit + B's liquidity = 2× exposure)
-                </li>
-                <li className="mb-1">
-                  <span className="font-medium">2.</span> Swap to asset through
-                  DEX router
-                </li>
-                <li className="mb-1">
-                  <span className="font-medium">3.</span> Record all terms
-                  on-chain
-                </li>
-                <li className="mb-1">
-                  <span className="font-medium">4.</span> Lock the asset inside
-                  the contract
-                </li>
-                <li>
-                  <span className="font-medium">5.</span> Wait until expiry or
-                  early close by User A
-                </li>
-              </ol>
-            </FlowBox>
-          </div>
+              <VerticalLine
+                flowKey="open-close"
+                active={hoveredFlow === "open-close"}
+                setHoveredFlow={setHoveredFlow}
+                className="left-1/2 top-[280px] h-[100px] -translate-x-1/2"
+              />
 
-          {/* Smart Contract Close - Bottom Center */}
-          <div
-            className="absolute"
-            style={{ left: "50%", top: "360px", transform: "translateX(-50%)" }}
-            onMouseEnter={() => setHoveredFlow("close-a")}
-            onMouseLeave={() => setHoveredFlow(null)}
-          >
-            <FlowBox
-              title="Smart Contract - Close"
-              className="w-[320px]"
-              titleClassName="text-sm"
-            >
-              <ol className="text-xs space-y-1 text-left leading-relaxed">
-                <li className="mb-1">
-                  <span className="font-medium">1.</span> Swap asset back to
-                  USDC
-                </li>
-                <li className="mb-1">
-                  <span className="font-medium">2.</span> Calculate total profit
-                  or loss
-                </li>
-                <li className="mb-1">
-                  <span className="font-medium">3.</span> Distribute
-                  automatically:
-                </li>
-                <ul className="list-none ml-4 space-y-0.5 text-xs">
-                  <li>• User A receives their share</li>
-                  <li>• LPs receive their share (based on LP tokens)</li>
-                </ul>
-              </ol>
-            </FlowBox>
+              <div onMouseEnter={startCloseAFlow} onMouseLeave={stopCloseAFlow}>
+                <HorizontalLine
+                  flowKey="close-a"
+                  active={hoveredFlow === "close-a" && activeCloseAStep >= 1}
+                  setHoveredFlow={() => {}}
+                  className="left-[140px] top-[430px] w-[200px]"
+                  arrow="left"
+                  length={320}
+                />
+                <VerticalLine
+                  flowKey="close-a"
+                  active={hoveredFlow === "close-a" && activeCloseAStep >= 2}
+                  setHoveredFlow={() => {}}
+                  className="left-[140px] top-[110px] h-[100px]"
+                  arrow="up"
+                  length={340}
+                />
+                <HorizontalLine
+                  flowKey="close-a"
+                  active={hoveredFlow === "close-a" && activeCloseAStep >= 3}
+                  setHoveredFlow={() => {}}
+                  className="left-[140px] top-[110px] w-[140px]"
+                  arrow="right"
+                  length={80}
+                />
+              </div>
+
+              <div
+                onMouseEnter={startClosePoolFlow}
+                onMouseLeave={stopClosePoolFlow}
+              >
+                <HorizontalLine
+                  flowKey="close-pool"
+                  active={
+                    hoveredFlow === "close-pool" && activeClosePoolStep >= 1
+                  }
+                  setHoveredFlow={() => {}}
+                  className="right-[240px] top-[430px] w-[250px]"
+                  length={230}
+                />
+                <VerticalLine
+                  flowKey="close-pool"
+                  active={
+                    hoveredFlow === "close-pool" && activeClosePoolStep >= 2
+                  }
+                  setHoveredFlow={() => {}}
+                  className="right-[240px] top-[260px] h-[100px]"
+                  arrow="up"
+                  length={190}
+                />
+              </div>
+            </div>
+
+            {/* Flow Boxes */}
+            <div className="relative w-full h-full z-10 pointer-events-none">
+              <div className="absolute left-[205px] top-[70px]">
+                <FlowBox
+                  title="User A"
+                  subtitle="Wallet"
+                  className="w-33"
+                  titleClassName="text-lg"
+                />
+              </div>
+
+              <div className="absolute left-[200px] top-[210px]">
+                <FlowBox
+                  subtitle="Choose Asset & $ to Invest"
+                  className="w-40"
+                  titleClassName="text-lg"
+                />
+              </div>
+
+              <div className="absolute right-[185px] top-[70px]">
+                <FlowBox
+                  title="User B"
+                  subtitle="Wallet"
+                  className="w-33"
+                  titleClassName="text-lg"
+                />
+              </div>
+
+              <div className="absolute right-[165px] top-[230px]">
+                <FlowBox
+                  subtitle="Liquidity Pool"
+                  className="w-44"
+                  titleClassName="text-lg"
+                />
+              </div>
+
+              {/* Smart Contract - Open */}
+              <div className="absolute left-1/2 top-[45px] -translate-x-1/2">
+                <FlowBox
+                  title="Smart Contract - Open"
+                  className="w-[300px]"
+                  titleClassName="text-lg"
+                >
+                  <ol className="text-md font-medium space-y-1 text-left leading-relaxed">
+                    <li>
+                      1. Combine funds (A's deposit + B's liquidity = 2×
+                      exposure)
+                    </li>
+                    <li>2. Swap to asset through DEX router</li>
+                    <li>3. Record all terms on-chain</li>
+                    <li>4. Lock the asset inside the contract</li>
+                    <li>5. Wait until expiry or early close by User A</li>
+                  </ol>
+                </FlowBox>
+              </div>
+
+              {/* Smart Contract - Close */}
+              <div className="absolute left-1/2 top-[360px] -translate-x-1/2">
+                <FlowBox
+                  title="Smart Contract - Close"
+                  className="w-[260px]"
+                  titleClassName="text-lg"
+                >
+                  <ol className="text-md font-medium space-y-1 text-left">
+                    <li>1. Swap asset back to USDC</li>
+                    <li>2. Calculate total profit or loss</li>
+                    <li>3. Distribute automatically: </li>
+                    <li>• User A receives their share</li>
+                    <li>• LPs receives their share (based on LP tokens)</li>
+                  </ol>
+                </FlowBox>
+              </div>
+            </div>
+
+            <div className="absolute inset-0 z-20 pointer-events-none">
+              <FlowTooltip
+                show={hoveredFlow === "a-choose"}
+                text="User A selects BTC/ETH and the amount of USDC to invest"
+                className="left-[320px] top-[155px]"
+              />
+              <FlowTooltip
+                show={hoveredFlow === "choose-open"}
+                text="User A sends the deposit into the smart contract to initiate the position."
+                className="left-[340px] top-[275px]"
+              />
+              <FlowTooltip
+                show={hoveredFlow === "open-close"}
+                text="When position is closed, settlement logic is executed automatically."
+                className="left-[310px] top-[305px]"
+              />
+              <FlowTooltip
+                show={hoveredFlow === "pool-open"}
+                text="Pool supplies matching liquidity (1:1) to pair with User A’s deposit."
+                className="right-[190px] top-[290px]"
+              />
+              <FlowTooltip
+                show={hoveredFlow === "b-pool"}
+                text="User B deposits liquidity and may withdraw at any moment, provided the pool has idle liquidity available."
+                className="right-[280px] top-[160px]"
+              />
+              <FlowTooltip
+                show={hoveredFlow === "close-a"}
+                text="Trader receives their share of profits or remaining funds after settlement."
+                className="left-[190px] top-[340px]"
+              />
+              <FlowTooltip
+                show={hoveredFlow === "close-pool"}
+                text="Pool receives share of profit or collateral depending on market outcome."
+                className="right-[280px] top-[340px]"
+              />
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Bottom Disclaimer */}
-      <div className="mt-12 bg-[#5B6EF5] text-white text-center py-4 px-8 rounded-full max-w-3xl mx-auto">
-        <p className="text-sm leading-relaxed">
+      <div className="w-full flex justify-center px-4">
+        <div className="max-w-xs text-[8px] md:text-lg md:max-w-3xl w-full rounded-full bg-linear-to-b from-[#446AF4] to-[#4B53E2] px-6 md:px-10 py-3 text-center text-white shadow-lg">
           This visual flow is simplified for explanation purposes.
           <br />
           The underlying smart contract architecture and execution logic may
           differ.
-        </p>
+        </div>
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
-import { createLucideIcon, Send } from "lucide-react";
+import { Send, createLucideIcon } from "lucide-react";
 
-const XIcon = createLucideIcon("X", [
+export const XFooterIcon = createLucideIcon("X", [
   [
     "path",
     {
@@ -13,65 +13,76 @@ const XIcon = createLucideIcon("X", [
 
 export default function Footer() {
   return (
-    <footer className="relative w-full overflow-hidden bg-[#C8D6FF]">
-      {/* Half circle background */}
+    <footer className="relative w-full overflow-hidden bg-[#C8D6FF] md:h-[400px] h-[300px]">
+      {/* Half circle */}
       <img
         src="/footer-curve.png"
         alt="footer curve"
-        className="absolute -bottom-20 left-1/2 -translate-x-1/2 w-full max-w-400"
+        className="
+          absolute -bottom-50 left-1/2 -translate-x-[55%]  -translate-y-[130%] scale-215 md:translate-y-0 md:scale-150
+          w-full 
+        "
       />
 
-      {/* Content */}
-      <div className="relative z-10 flex flex-col items-center text-center px-6 pt-32 pb-10">
+      {/* Content anchored to bottom */}
+      <div
+        className="
+          absolute bottom-10 left-1/2 -translate-x-1/2
+          z-10 w-full px-6
+          flex flex-col items-center text-center
+        "
+      >
         {/* Title */}
-        <h3 className="text-3xl font-semibold text-white mb-6">
+        <h3 className="text-sm md:text-3xl font-semibold text-white mb-6">
           Stay Connect with Us
         </h3>
 
         {/* Buttons */}
-        <div className="flex gap-4 mb-6 ">
+        <div className="flex flex-row gap-4 mb-6">
           <a
-            href="#"
+            href="https://t.me/twoxswap"
             className="
               flex items-center gap-2 px-6 py-2.5
               rounded-lg bg-white text-[#00246B]
               font-medium shadow
-              hover:scale-105 transition min-w-50 justify-center
+              hover:scale-105 transition
+              md:min-w-[200px] justify-center
+              text-xs md:text-lg
             "
           >
-            <Send className="h-4 w-4" />
+            <Send className="h-3 w-3 md:h-4 md:w-4" />
             Join Telegram
           </a>
 
           <a
-            href="#"
+            href="https://x.com/2xswap"
             className="
               flex items-center gap-2 px-6 py-2.5
               rounded-lg bg-white text-[#00246B]
               font-medium shadow
-              hover:scale-105 transition min-w-50 justify-center
+              hover:scale-105 transition
+              md:min-w-[200px] justify-center
+              text-xs md:text-lg
             "
           >
-            <span className="font-bold">
-              <XIcon className="h-4 w-4" />
-            </span>
+            <XFooterIcon className="h-3 w-3 md:h-4 md:w-4" />
             Join Our X
           </a>
         </div>
 
         {/* Copyright */}
-        <p className="text-md text-white/80 mb-2">
+        <p className="text-[10px] md:text-sm text-white/80 mb-2">
           © 2025 2xSwap. All rights reserved.
         </p>
 
         {/* Description */}
-        <p className="text-md text-white mb-4 max-w-xl font-semibold">
+        <p className="text-[10px] md:text-sm text-white mb-4 max-w-xl font-semibold">
           Building a decentralized, transparent, and user-first swapping
           experience.
         </p>
 
         {/* Links */}
-        <div className="flex gap-4 text-md text-white font-medium">
+        <div className="flex flex-wrap justify-center gap-4 text-[10px] md:text-sm text-white font-medium">
           <a href="#" className="hover:underline">
             Terms of Use
           </a>

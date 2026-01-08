@@ -9,15 +9,17 @@ export function ActorCard({ title, description }: ActorCardProps) {
       className="
         w-full max-w-80
         rounded-2xl bg-linear-to-b from-white to-[#e1e8fa]
-        px-8 py-7
+        px-4 py-4 md:px-8 md:py-7
         shadow-lg hover:-translate-y-1 transition
       "
     >
-      <h3 className="text-xl font-bold text-black mb-4 text-center">{title}</h3>
+      <h3 className="text-xs md:text-xl font-semibold text-black mb-4 text-center">
+        {title}
+      </h3>
 
       <div className="h-px w-full bg-gray-200 mb-5" />
 
-      <p className="text-gray-700 text-sm leading-relaxed font-semibold">
+      <p className="text-black text-[10px] md:text-sm leading-relaxed  text-left">
         {description}
       </p>
     </div>

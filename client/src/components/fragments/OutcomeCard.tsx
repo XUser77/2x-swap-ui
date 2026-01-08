@@ -26,11 +26,11 @@ export default function OutcomeCard({
   return (
     <div
       className={`
-        w-105 rounded-2xl bg-white text-left
+        w-20 md:w-105 rounded-2xl bg-white text-left
         p-6 transition-all duration-500
         ${
           active ? "shadow-[0_30px_80px_rgba(30,95,216,0.35)]" : "shadow-md"
-        } min-w-lg
+        } md:min-w-lg min-w-xs min-h-67
       `}
     >
       {/* Header */}
@@ -47,16 +47,18 @@ export default function OutcomeCard({
         </div>
 
         <div>
-          <h3 className="font-bold text-2xl text-gray-900">{title}</h3>
-          <p className="text-sm text-gray-500">{subtitle}</p>
+          <h3 className="font-bold text-lg md:text-2xl text-gray-900">
+            {title}
+          </h3>
+          <p className="text-xs md:text-sm text-gray-500">{subtitle}</p>
         </div>
       </div>
 
       <div className="h-px bg-gray-400 my-2" />
 
       {/* Outcome */}
-      <p className="font-bold text-lg mb-2 text-gray-900">Outcome</p>
-      <ul className="list-disc list-inside text-sm text-gray-900 px-3">
+      <p className="font-bold text-md md:text-lg mb-2 text-gray-900">Outcome</p>
+      <ul className="list-disc list-inside text-xs md:text-sm text-gray-900 px-3">
         {bullets.map((b, i) => (
           <li key={i}>{b}</li>
         ))}

@@ -3,14 +3,14 @@ function InfoCard({ title, content }: { title: string; content: string }) {
     <div
       className="
         group relative overflow-hidden rounded-2xl p-1
-        bg-linear-to-b from-[#071b46] to-[#DCE5FF]
+        bg-linear-to-b from-[#2060D8] to-[#DCE5FF]
         transition-transform duration-300 hover:scale-105
       "
     >
       {/* Inner card */}
       <div
         className="
-          relative overflow-hidden rounded-xl bg-white
+          relative overflow-hidden rounded-xl bg-[#dce5ff]
           py-7 px-10 flex flex-col justify-center gap-4
         "
       >
@@ -35,8 +35,8 @@ function InfoCard({ title, content }: { title: string; content: string }) {
         {/* Content */}
         <h3
           className="
-            relative z-10 text-xl font-semibold text-black
-            transition-colors duration-500 group-hover:text-white
+            relative z-10 text-sm md:text-xl font-semibold text-black
+            transition-colors duration-500 group-hover:text-white text-center md:text-left
           "
         >
           {title}
@@ -44,7 +44,7 @@ function InfoCard({ title, content }: { title: string; content: string }) {
         <p
           className="
             relative z-10 text-black leading-relaxed
-            transition-colors duration-500 group-hover:text-white
+            transition-colors duration-500 group-hover:text-white text-xs md:text-[15px]
           "
         >
           {content}
