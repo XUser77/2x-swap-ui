@@ -45,7 +45,7 @@ function LandingPage() {
             </span>
           </p>
 
-          <div className="flex flex-col gap-4 md:gap-6 items-center mt-10">
+          <div className="flex flex-col gap-4 md:gap-6 items-center mt-10 mx-10">
             <input
               type="email"
               placeholder="user@gmail.com"

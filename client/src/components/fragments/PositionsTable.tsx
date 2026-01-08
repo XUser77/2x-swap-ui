@@ -103,7 +103,10 @@ function PositionsTable({ owner, limit = 10 }: Props) {
 
             <tbody>
               {positions.map((p) => (
-                <tr key={p.id} className="border-b last:border-b-0">
+                <tr
+                  key={p.id}
+                  className="border-b border-gray-200 last:border-b-0"
+                >
                   <td className="py-3 pl-2 font-medium">{p.asset}-USDC</td>
                   <td>${p.size.toFixed(2)}</td>
                   <td>${p.entryPrice.toLocaleString()}</td>

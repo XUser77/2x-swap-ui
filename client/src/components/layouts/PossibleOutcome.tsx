@@ -116,10 +116,9 @@ export default function PossibleOutcomes() {
           {slides.map((slide, index) => (
             <motion.div
               key={index}
-              className="shrink-0"
+              className="shrink-0 mr-10"
               style={{
                 width: CARD_WIDTH,
-                marginRight: GAP,
               }}
               animate={{
                 opacity: index === active ? 1 : 0.5,

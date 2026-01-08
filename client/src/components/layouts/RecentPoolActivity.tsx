@@ -89,7 +89,10 @@ export function RecentPoolActivity() {
               </thead>
               <tbody>
                 {activities.map((a, i) => (
-                  <tr key={i} className="border-b last:border-0">
+                  <tr
+                    key={i}
+                    className="border-b border-gray-200 last:border-0"
+                  >
                     <td className="py-3">
                       <span
                         className={`px-2 py-1 rounded text-xs font-medium ${

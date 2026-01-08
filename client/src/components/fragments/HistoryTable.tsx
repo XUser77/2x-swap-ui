@@ -82,7 +82,10 @@ function HistoryTable({ owner, limit = 10 }: Props) {
 
             <tbody>
               {history.map((h) => (
-                <tr key={h.id} className="border-b last:border-b-0">
+                <tr
+                  key={h.id}
+                  className="border-b border-gray-200 last:border-b-0"
+                >
                   <td className="py-3 font-medium">{h.asset}-USDC</td>
                   <td>${h.size.toFixed(2)}</td>
                   <td>${h.entryPrice}</td>

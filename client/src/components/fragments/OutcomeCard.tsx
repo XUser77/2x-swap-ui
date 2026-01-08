@@ -27,10 +27,10 @@ export default function OutcomeCard({
     <div
       className={`
         w-20 md:w-105 rounded-2xl bg-white text-left
-        p-6 transition-all duration-500
+        p-5 md:p-6 transition-all duration-500
         ${
           active ? "shadow-[0_30px_80px_rgba(30,95,216,0.35)]" : "shadow-md"
-        } md:min-w-lg min-w-xs min-h-67
+        } md:min-w-lg min-w-[280px] min-h-67
       `}
     >
       {/* Header */}

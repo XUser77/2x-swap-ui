@@ -19,7 +19,7 @@ export default function Footer() {
         src="/footer-curve.png"
         alt="footer curve"
         className="
-          absolute -bottom-50 left-1/2 -translate-x-[55%]  -translate-y-[130%] scale-215 md:translate-y-0 md:scale-150
+          absolute -bottom-50 left-1/2 -translate-x-[55%]  -translate-y-[150%] scale-250 md:translate-y-0 md:scale-150
           w-full 
         "
       />
