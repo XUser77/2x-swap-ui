@@ -11,7 +11,8 @@ export default function PossibleOutcomes() {
   const next = () => setActive((a) => (a + 1) % slides.length);
 
   const CARD_WIDTH = 280; // match OutcomeCard width
-  const GAP = 50;
+  const GAP = 30;
+  const PEEK = -20; // how much of next card is visible
 
   return (
     <section className="relative py-18 text-center bg-[#DCE5FF] overflow-hidden">
@@ -85,13 +86,13 @@ export default function PossibleOutcomes() {
         <motion.div
           className="flex"
           drag="x"
-          dragElastic={0.12}
+          dragElastic={0.1}
           dragConstraints={{
-            left: -(slides.length - 1) * (CARD_WIDTH + GAP),
-            right: 0,
+            left: -(slides.length - 1) * (CARD_WIDTH + GAP) + PEEK,
+            right: PEEK,
           }}
           animate={{
-            x: -active * (CARD_WIDTH + GAP),
+            x: -active * (CARD_WIDTH + GAP) + PEEK,
           }}
           transition={{
             type: "spring",
@@ -116,12 +117,13 @@ export default function PossibleOutcomes() {
           {slides.map((slide, index) => (
             <motion.div
               key={index}
-              className="shrink-0 mr-5 md:mr-10"
+              className="shrink-0"
               style={{
                 width: CARD_WIDTH,
+                marginRight: GAP,
               }}
               animate={{
-                opacity: index === active ? 1 : 0.5,
+                opacity: index === active ? 1 : 0.45,
               }}
               transition={{ duration: 0.2 }}
             >
