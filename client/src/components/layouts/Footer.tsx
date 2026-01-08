@@ -13,13 +13,13 @@ export const XFooterIcon = createLucideIcon("X", [
 
 export default function Footer() {
   return (
-    <footer className="relative w-full overflow-hidden bg-[#C8D6FF] md:h-[400px] h-[300px]">
+    <footer className="relative w-full overflow-hidden bg-[#C8D6FF] md:h-[400px] h-[380px]">
       {/* Half circle */}
       <img
         src="/footer-curve.png"
         alt="footer curve"
         className="
-          absolute -bottom-50 left-1/2 -translate-x-[55%]  -translate-y-[150%] scale-250 md:translate-y-0 md:scale-150
+          absolute -bottom-50 left-1/2 -translate-x-[55%]  -translate-y-[165%] scale-280 md:translate-y-0 md:scale-150
           w-full 
         "
       />
