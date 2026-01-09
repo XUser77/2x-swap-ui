@@ -47,7 +47,7 @@ export default function Footer() {
         </h3>
 
         {/* Buttons */}
-        <div className="flex gap-4 mb-1 md:mb-6">
+        <div className="flex gap-4 mb-2 md:mb-6">
           <div
             className="
                px-2 py-1 md:px-6 md:py-2.5
@@ -55,7 +55,7 @@ export default function Footer() {
               font-medium shadow
               hover:scale-105 transition
               md:min-w-[200px]
-              text-[8px] md:text-lg
+              text-[7px] md:text-lg
             "
           >
             <a
@@ -64,7 +64,7 @@ export default function Footer() {
               rel="noopener noreferrer"
               className="flex items-center justify-center gap-1"
             >
-              <Send className="h-3 w-3 md:h-4 md:w-4" />
+              <Send className="h-2 w-2 md:h-4 md:w-4" />
               Join Telegram
             </a>
           </div>
@@ -75,7 +75,7 @@ export default function Footer() {
               font-medium shadow
               hover:scale-105 transition
               md:min-w-[200px]
-              text-[8px] md:text-lg"
+              text-[7px] md:text-lg"
           >
             <a
               href="https://x.com/2xswap"
@@ -83,25 +83,25 @@ export default function Footer() {
               rel="noopener noreferrer"
               className="flex items-center justify-center gap-1"
             >
-              <XFooterIcon className="h-3 w-3 md:h-4 md:w-4" />
+              <XFooterIcon className="h-2 w-2 md:h-4 md:w-4" />
               Join Our X
             </a>
           </div>
         </div>
 
         {/* Copyright */}
-        <p className="text-[7px] md:text-sm text-white">
+        <p className="text-[6px] md:text-sm text-white">
           © 2025 2xSwap. All rights reserved.
         </p>
 
         {/* Description */}
-        <p className="text-[7px] md:text-sm text-white mb-2 max-w-xl font-semibold">
+        <p className="text-[6px] md:text-sm text-white mb-2 max-w-xl font-semibold">
           Building a decentralized, transparent, and user-first swapping
           experience.
         </p>
 
         {/* Links */}
-        <div className="flex flex-wrap justify-center gap-2 text-[7px] md:text-sm text-white font-medium">
+        <div className="flex flex-wrap justify-center gap-2 text-[6px] md:text-sm text-white font-medium">
           <a href="#" className="hover:underline">
             Terms of Use
           </a>
