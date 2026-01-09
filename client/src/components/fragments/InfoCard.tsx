@@ -11,7 +11,7 @@ function InfoCard({ title, content }: { title: string; content: string }) {
       <div
         className="
           relative overflow-hidden rounded-xl bg-[#dce5ff]
-          py-7 px-10 flex flex-col justify-center gap-4
+          py-7 px-10 flex flex-col justify-center gap-4 h-full
         "
       >
         {/* Circle fill */}

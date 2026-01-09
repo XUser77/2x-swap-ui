@@ -2,7 +2,7 @@ import HomeNavbar from "../fragments/HomeNavbar";
 
 function LandingPage() {
   return (
-    <div className="relative min-h-[90vh] overflow-hidden bg-linear-to-b from-[#193088] via-[#3045AA] to-[#a9b9ff] text-white">
+    <div className="relative min-h-[90vh] overflow-hidden bg-linear-to-b from-[#193088] via-[#3045AA] to-[#a9b9ff] text-white pb-20">
       <img
         src="/stars.png"
         className="absolute top-30 opacity-25 rotate-90 scale-250 md:rotate-0 md:scale-125 z-0"

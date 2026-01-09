@@ -1,6 +1,13 @@
 import { Link } from "react-router";
 import { useState } from "react";
-import { ChevronUp } from "lucide-react";
+import {
+  ChevronUp,
+  FileText,
+  FolderOpen,
+  MessageCirclePlus,
+  Send,
+} from "lucide-react";
+import { XFooterIcon } from "../layouts/Footer";
 
 const navPillBase = "flex items-center justify-center h-9 w-36 transition";
 
@@ -11,6 +18,16 @@ export default function HomeNavbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileCommunityOpen, setMobileCommunityOpen] = useState(false);
   const [mobileLearnOpen, setMobileLearnOpen] = useState(false);
+
+  function toggleCommunity() {
+    setMobileCommunityOpen((v) => !v);
+    setMobileLearnOpen(false);
+  }
+
+  function toggleLearn() {
+    setMobileLearnOpen((v) => !v);
+    setMobileCommunityOpen(false);
+  }
 
   return (
     <nav className="w-full relative z-15 flex items-center justify-between px-8 py-6">
@@ -43,24 +60,32 @@ export default function HomeNavbar() {
             <div className="absolute top-full left-0 w-36 bg-white rounded-b-2xl shadow-lg overflow-hidden pt-1">
               <div className="absolute top-0.5 left-1/2 -translate-x-1/2 w-20 h-0.5 bg-gray-300" />
 
-              <Link
-                to="https://x.com/2xswap"
+              <a
+                href="https://x.com/2xswap"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition"
               >
                 X Account
-              </Link>
-              <Link
-                to="https://t.me/twoxswap"
+              </a>
+
+              <a
+                href="https://t.me/twoxswapchat"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition"
               >
                 Telegram Chat
-              </Link>
-              <Link
-                to="https://t.me/twoxswap"
+              </a>
+
+              <a
+                href="https://t.me/twoxswap"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition"
               >
                 Telegram Channel
-              </Link>
+              </a>
             </div>
           )}
         </div>
@@ -87,18 +112,23 @@ export default function HomeNavbar() {
             <div className="absolute top-full left-0 w-36 bg-white rounded-b-2xl shadow-lg overflow-hidden pt-1">
               <div className="absolute top-0.5 left-1/2 -translate-x-1/2 w-20 h-0.5 bg-gray-300" />
 
-              <Link
-                to="https://github.com/Migra-orange"
+              <a
+                href="https://github.com/XUser77/2x-swap"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition"
               >
                 Docs
-              </Link>
-              <Link
-                to="https://docs.google.com/document/d/1GJZweWVdxrDBjw43zoN3OXPjR2ZJ_ZsOHn_8MEmCum4/edit?usp=sharing/"
+              </a>
+
+              <a
+                href="https://2xswap.gitbook.io/2xswap-docs/readme-1"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition"
               >
                 Whitepaper
-              </Link>
+              </a>
             </div>
           )}
         </div>
@@ -150,97 +180,130 @@ export default function HomeNavbar() {
 
       {/* Mobile Menu */}
       <div
-        className={`md:hidden absolute top-full left-0 w-full
-    bg-[#0B1F4A]/95 backdrop-blur-xl
-    border-t border-white/10
-    px-6 py-6 space-y-4 z-50
+        className={`md:hidden absolute top-20 right-4 w-[180px]
+    rounded-2xl bg-white/20 backdrop-blur-xl
+    shadow-[0_20px_60px_rgba(0,0,0,0.35)]
+     py-4 z-50
     transition-all duration-300 ease-out
     ${
       mobileOpen
-        ? "opacity-100 translate-y-0 pointer-events-auto"
-        : "opacity-0 -translate-y-4 pointer-events-none"
+        ? "opacity-100 scale-100 pointer-events-auto"
+        : "opacity-0 scale-95 pointer-events-none"
     }`}
       >
         {/* Community */}
-        <div>
+        <div className="rounded-xl px-3 py-2">
           <button
-            onClick={() => setMobileCommunityOpen(!mobileCommunityOpen)}
-            className="w-full flex justify-between items-center
-                   text-white text-lg font-medium"
+            onClick={toggleCommunity}
+            className={`w-full flex justify-between items-center
+                  text-sm px-2 py-2 rounded-lg ${
+                    mobileCommunityOpen
+                      ? "bg-gray-300 text-[#1E5FD8]"
+                      : "text-white"
+                  }`}
           >
             Community
-            <span
-              className={`transition-transform duration-300
-    ${mobileCommunityOpen ? "rotate-180" : ""}`}
-            >
-              <ChevronUp />
-            </span>
+            <ChevronUp
+              className={`transition-transform duration-300  ${
+                mobileCommunityOpen ? "rotate-180" : "rotate-90"
+              }`}
+              size={16}
+            />
           </button>
 
           <div
-            className={`ml-4 overflow-hidden transition-all duration-300 ease-out ${
+            className={`overflow-hidden transition-all duration-300 ${
               mobileCommunityOpen
-                ? "max-h-40 opacity-100 mt-3 space-y-2"
+                ? "max-h-40 opacity-100 mt-2"
                 : "max-h-0 opacity-0"
             }`}
           >
-            <Link to="https://x.com/2xswap" className="block text-white/80">
-              X Account
-            </Link>
-            <Link to="https://t.me/twoxswap" className="block text-white/80">
+            <a
+              href="https://x.com/2xswap"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="py-1 px-3 text-white/90 text-xs flex justify-start mt-2"
+            >
+              <XFooterIcon className="w-4 h-4 mr-2" />
+              Account
+            </a>
+
+            <a
+              href="https://t.me/twoxswapchat"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="py-1 px-3 text-white/90 text-xs flex justify-start mt-2"
+            >
+              <MessageCirclePlus className="w-4 h-4 mr-2" />
               Telegram Chat
-            </Link>
-            <Link to="https://t.me/twoxswap" className="block text-white/80">
+            </a>
+
+            <a
+              href="https://t.me/twoxswap"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="py-1 px-3 text-white/90 text-xs flex justify-start mt-2"
+            >
+              <Send className="w-4 h-4 mr-2" />
               Telegram Channel
-            </Link>
+            </a>
           </div>
         </div>
 
         {/* Learn */}
-        <div>
+        <div className=" rounded-xl px-3 py-2">
           <button
-            onClick={() => setMobileLearnOpen(!mobileLearnOpen)}
-            className="w-full flex justify-between items-center
-                   text-white text-lg font-medium"
+            onClick={toggleLearn}
+            className={`w-full flex justify-between items-center
+                  text-sm px-2 py-2 rounded-lg ${
+                    mobileLearnOpen
+                      ? "bg-gray-300 text-[#1E5FD8]"
+                      : "text-white"
+                  }`}
           >
             Learn
-            <span
+            <ChevronUp
               className={`transition-transform duration-300 ${
-                mobileLearnOpen ? "rotate-180" : ""
+                mobileLearnOpen ? "rotate-180" : "rotate-90"
               }`}
-            >
-              <ChevronUp />
-            </span>{" "}
+              size={16}
+            />
           </button>
 
           <div
-            className={`ml-4 overflow-hidden transition-all duration-300 ease-out ${
+            className={`overflow-hidden transition-all duration-300 ${
               mobileLearnOpen
-                ? "max-h-32 opacity-100 mt-3 space-y-2"
+                ? "max-h-32 opacity-100 mt-2"
                 : "max-h-0 opacity-0"
             }`}
           >
-            <Link
-              to="https://github.com/Migra-orange"
-              className="block text-white/80"
+            <a
+              href="https://github.com/XUser77/2x-swap"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="py-1 px-3 text-white/90 text-xs flex justify-start mt-2"
             >
+              <FolderOpen className="w-4 h-4 mr-2" />
               Docs
-            </Link>
-            <Link
-              to="https://docs.google.com/document/d/1GJZweWVdxrDBjw43zoN3OXPjR2ZJ_ZsOHn_8MEmCum4/edit?usp=sharing/"
-              className="block text-white/80"
+            </a>
+
+            <a
+              href="https://2xswap.gitbook.io/2xswap-docs/readme-1"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="py-1 px-3 text-white/90 text-xs flex justify-start mt-2"
             >
+              <FileText className="w-4 h-4 mr-2" />
               Whitepaper
-            </Link>
+            </a>
           </div>
         </div>
 
         {/* Launch App */}
         <Link
           to="/swap"
-          className="block text-center mt-4 py-3 rounded-full
-                 bg-white text-[#1E5FD8] font-medium
-                 shadow-[0_0_15px_rgba(255,255,255,0.6)]"
+          className="block px-5 mt-2 text-center py-3 rounded-xl
+              bg-linear-to-r from-[#6756c7] to-[#3421a1] text-white mx-3"
         >
           Launch App
         </Link>

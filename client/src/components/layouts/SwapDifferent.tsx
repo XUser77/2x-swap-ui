@@ -30,7 +30,7 @@ export default function SwapDifferent() {
   const next = () => changeSlide(index === slides.length - 1 ? 0 : index + 1);
 
   return (
-    <section className="relative w-full flex flex-col items-center py-24 bg-linear-to-b from-[#DCE5FF] to-[#BFD1FF]">
+    <section className="relative w-full flex flex-col items-center py-24 bg-[#bcc7fa]">
       <h2 className="text-2xl md:text-5xl font-semibold text-[#00246B] mb-5">
         How 2xSwap Is Different
       </h2>
@@ -50,7 +50,7 @@ export default function SwapDifferent() {
         {/* Left Chevron */}
         <button
           onClick={prev}
-          className="absolute right-22 top-10 md:right-44 md:top-20 -translate-y-1/2
+          className="absolute right-68 top-79 md:right-44 md:top-20 -translate-y-1/2
                      h-4 w-4 md:h-8 md:w-8 rounded-full bg-blue-100
                      flex items-center justify-center shadow
                      hover:bg-white transition"
@@ -61,7 +61,7 @@ export default function SwapDifferent() {
         {/* Right Chevron */}
         <button
           onClick={next}
-          className="absolute right-10 top-10 md:right-22 md:top-20 -translate-y-1/2
+          className="absolute right-35 top-79 md:right-22 md:top-20 -translate-y-1/2
                      h-4 w-4 md:h-8 md:w-8 rounded-full bg-blue-100
                      flex items-center justify-center shadow
                      hover:bg-white transition"
@@ -71,7 +71,7 @@ export default function SwapDifferent() {
       </div>
 
       {/* Dots */}
-      <div className="absolute bottom-20 flex gap-2">
+      <div className="absolute bottom-29 md:bottom-20  flex gap-2">
         {slides.map((_, i) => (
           <button
             key={i}

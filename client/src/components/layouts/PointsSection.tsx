@@ -4,7 +4,7 @@ export default function PointsSection() {
   return (
     <section
       className="
-        w-full py-28 px-6
+        w-full pt-28 pb-10 px-6
         bg-linear-to-b from-[#BFD1FF] via-[#DCE5FF] to-[#C8D6FF]
         flex flex-col items-center text-center
       "

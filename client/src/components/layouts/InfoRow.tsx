@@ -2,7 +2,7 @@ import InfoCard from "../fragments/InfoCard";
 
 export default function InfoRow() {
   return (
-    <section className="bg-linear-to-b from-[#B8C9FF] to-[#DCE5FF] py-20">
+    <section className="bg-[#a2b2f7] py-20">
       <div className="max-w-xs md:max-w-6xl mx-auto px-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-h-[50vh]">
           {/* Card 1 */}

@@ -15,7 +15,7 @@ export default function PossibleOutcomes() {
   const PEEK = -20; // how much of next card is visible
 
   return (
-    <section className="relative py-18 text-center bg-[#DCE5FF] overflow-hidden">
+    <section className="relative py-18 text-center bg-[#d3dbff] overflow-hidden">
       {/* Title */}
       <h2 className="text-2xl md:text-5xl font-semibold text-[#00246B] mb-5">
         Possible Outcomes

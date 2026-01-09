@@ -138,7 +138,7 @@ export default function OpenSwapWidget({ asset }: Props) {
   };
 
   return (
-    <div className="w-full flex-1 max-w-md bg-white rounded-xl p-5 border">
+    <div className="w-full flex-1 max-w-md bg-white rounded-xl p-5 ">
       {/* Header */}
       <div className="flex justify-between items-center mb-4">
         <h2 className="font-semibold">Open Long 2x Position</h2>
@@ -161,7 +161,7 @@ export default function OpenSwapWidget({ asset }: Props) {
 
       {/* INPUT */}
       <label className="text-md text-gray-500 font-semibold">You buy</label>
-      <div className="border rounded-md px-3 py-4 mt-1">
+      <div className="border border-gray-200 rounded-md px-3 py-4 mt-1">
         <div className="flex w-full justify-between">
           <input
             type="text"

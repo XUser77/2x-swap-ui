@@ -27,7 +27,7 @@ export default function HowItWorksFlowchart() {
     setActiveClosePoolStep(0);
 
     setTimeout(() => setActiveClosePoolStep(1), 100);
-    setTimeout(() => setActiveClosePoolStep(2), 400);
+    setTimeout(() => setActiveClosePoolStep(2), 450);
   }
 
   function stopClosePoolFlow() {
@@ -61,7 +61,7 @@ export default function HowItWorksFlowchart() {
   const scale = useScale(1200);
 
   return (
-    <div className="w-full bg-linear-to-b from-[#a9b9ff] to-[#B8C9FF] py-16 px-4">
+    <div className="w-full bg-[#B8C9FF] py-16 px-4">
       <h2 className="text-2xl md:text-5xl font-semibold text-center text-[#00246B] mb-5">
         How 2xSwap Works
       </h2>
@@ -72,7 +72,7 @@ export default function HowItWorksFlowchart() {
           style={{
             transform: `translateX(-50%) scale(${scale})`,
             width: 1200, // ORIGINAL desktop width
-            height: 650 * scale, // ORIGINAL height
+            height: 750 * scale, // ORIGINAL height
           }}
         >
           <div
@@ -115,7 +115,8 @@ export default function HowItWorksFlowchart() {
                 flowKey="open-close"
                 active={hoveredFlow === "open-close"}
                 setHoveredFlow={setHoveredFlow}
-                className="left-1/2 top-[280px] h-[100px] -translate-x-1/2"
+                className="left-1/2 top-[350px] -translate-x-1/2"
+                length={100}
               />
 
               <div onMouseEnter={startCloseAFlow} onMouseLeave={stopCloseAFlow}>
@@ -123,7 +124,7 @@ export default function HowItWorksFlowchart() {
                   flowKey="close-a"
                   active={hoveredFlow === "close-a" && activeCloseAStep >= 1}
                   setHoveredFlow={() => {}}
-                  className="left-[140px] top-[430px] w-[200px]"
+                  className="left-[140px] top-[470px] w-[200px]"
                   arrow="left"
                   length={320}
                 />
@@ -133,7 +134,7 @@ export default function HowItWorksFlowchart() {
                   setHoveredFlow={() => {}}
                   className="left-[140px] top-[110px] h-[100px]"
                   arrow="up"
-                  length={340}
+                  length={380}
                 />
                 <HorizontalLine
                   flowKey="close-a"
@@ -155,7 +156,7 @@ export default function HowItWorksFlowchart() {
                     hoveredFlow === "close-pool" && activeClosePoolStep >= 1
                   }
                   setHoveredFlow={() => {}}
-                  className="right-[240px] top-[430px] w-[250px]"
+                  className="right-[240px] top-[470px] w-[250px]"
                   length={230}
                 />
                 <VerticalLine
@@ -164,9 +165,9 @@ export default function HowItWorksFlowchart() {
                     hoveredFlow === "close-pool" && activeClosePoolStep >= 2
                   }
                   setHoveredFlow={() => {}}
-                  className="right-[240px] top-[260px] h-[100px]"
+                  className="right-[240px] top-[270px] "
                   arrow="up"
-                  length={190}
+                  length={220}
                 />
               </div>
             </div>
@@ -228,7 +229,7 @@ export default function HowItWorksFlowchart() {
               </div>
 
               {/* Smart Contract - Close */}
-              <div className="absolute left-1/2 top-[360px] -translate-x-1/2">
+              <div className="absolute left-1/2 top-[425px] -translate-x-1/2">
                 <FlowBox
                   title="Smart Contract - Close"
                   className="w-[260px]"
@@ -259,7 +260,7 @@ export default function HowItWorksFlowchart() {
               <FlowTooltip
                 show={hoveredFlow === "open-close"}
                 text="When position is closed, settlement logic is executed automatically."
-                className="left-[310px] top-[305px]"
+                className="left-[310px] top-[335px]"
               />
               <FlowTooltip
                 show={hoveredFlow === "pool-open"}
@@ -274,12 +275,12 @@ export default function HowItWorksFlowchart() {
               <FlowTooltip
                 show={hoveredFlow === "close-a"}
                 text="Trader receives their share of profits or remaining funds after settlement."
-                className="left-[190px] top-[340px]"
+                className="left-[190px] top-[380px]"
               />
               <FlowTooltip
                 show={hoveredFlow === "close-pool"}
                 text="Pool receives share of profit or collateral depending on market outcome."
-                className="right-[280px] top-[340px]"
+                className="right-[280px] top-[380px]"
               />
             </div>
           </div>
