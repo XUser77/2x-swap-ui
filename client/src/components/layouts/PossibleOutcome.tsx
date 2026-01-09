@@ -11,7 +11,7 @@ export default function PossibleOutcomes() {
   const next = () => setActive((a) => (a + 1) % slides.length);
 
   const CARD_WIDTH = 280; // match OutcomeCard width
-  const GAP = 30;
+  const GAP = 50;
   const PEEK = -20; // how much of next card is visible
 
   return (

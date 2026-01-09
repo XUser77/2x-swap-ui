@@ -30,7 +30,7 @@ export default function OutcomeCard({
         p-5 md:p-6 transition-all duration-500
         ${
           active ? "shadow-[0_30px_80px_rgba(30,95,216,0.35)]" : "shadow-md"
-        } md:min-w-lg min-w-[280px] min-h-67
+        } md:min-w-lg min-w-[300px] min-h-67
       `}
     >
       {/* Header */}

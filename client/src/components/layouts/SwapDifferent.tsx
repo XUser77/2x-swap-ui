@@ -51,7 +51,7 @@ export default function SwapDifferent() {
         <button
           onClick={prev}
           className="
-    absolute top-[92%] left-[30%] md:top-[12%] md:left-[75%]
+    absolute top-[91%] left-[30%] md:top-[12%] md:left-[75%]
     -translate-y-1/2
     h-6 w-6 md:h-10 md:w-10
     rounded-full bg-blue-100
@@ -59,14 +59,14 @@ export default function SwapDifferent() {
     hover:bg-white transition
   "
         >
-          <ChevronLeft className="h-4 w-4 md:h-6 md:w-6 text-blue-700" />
+          <ChevronLeft className="h-3 w-3 md:h-6 md:w-6 text-blue-700" />
         </button>
 
         {/* Right Chevron */}
         <button
           onClick={next}
           className="
-    absolute top-[92%] right-[30%] md:top-[12%] md:right-[10%]
+    absolute top-[91%] right-[30%] md:top-[12%] md:right-[10%]
     -translate-y-1/2
     h-6 w-6 md:h-10 md:w-10
     rounded-full bg-blue-100
@@ -74,18 +74,18 @@ export default function SwapDifferent() {
     hover:bg-white transition
   "
         >
-          <ChevronRight className="h-4 w-4 md:h-6 md:w-6 text-blue-700" />
+          <ChevronRight className="h-3 w-3 md:h-6 md:w-6 text-blue-700" />
         </button>
       </div>
 
       {/* Dots */}
-      <div className="absolute bottom-29 md:bottom-20  flex gap-2">
+      <div className="absolute bottom-30.5 md:bottom-20  flex gap-2">
         {slides.map((_, i) => (
           <button
             key={i}
             onClick={() => changeSlide(i)}
-            className={`h-2 w-2 rounded-full transition ${
-              i === index ? "bg-blue-600 w-6" : "bg-blue-300"
+            className={`h-1 w-1 md:h-2 md:w-2 rounded-full transition ${
+              i === index ? "bg-blue-600 w-3 md:w-6" : "bg-blue-300"
             }`}
           />
         ))}
