@@ -50,23 +50,31 @@ export default function SwapDifferent() {
         {/* Left Chevron */}
         <button
           onClick={prev}
-          className="absolute right-68 top-79 md:right-44 md:top-20 -translate-y-1/2
-                     h-4 w-4 md:h-8 md:w-8 rounded-full bg-blue-100
-                     flex items-center justify-center shadow
-                     hover:bg-white transition"
+          className="
+    absolute top-[92%] left-[30%] md:top-[12%] md:left-[75%]
+    -translate-y-1/2
+    h-6 w-6 md:h-10 md:w-10
+    rounded-full bg-blue-100
+    flex items-center justify-center shadow
+    hover:bg-white transition
+  "
         >
-          <ChevronLeft className="h-3 w-3 md:h-6 md:w-6 text-blue-700" />
+          <ChevronLeft className="h-4 w-4 md:h-6 md:w-6 text-blue-700" />
         </button>
 
         {/* Right Chevron */}
         <button
           onClick={next}
-          className="absolute right-35 top-79 md:right-22 md:top-20 -translate-y-1/2
-                     h-4 w-4 md:h-8 md:w-8 rounded-full bg-blue-100
-                     flex items-center justify-center shadow
-                     hover:bg-white transition"
+          className="
+    absolute top-[92%] right-[30%] md:top-[12%] md:right-[10%]
+    -translate-y-1/2
+    h-6 w-6 md:h-10 md:w-10
+    rounded-full bg-blue-100
+    flex items-center justify-center shadow
+    hover:bg-white transition
+  "
         >
-          <ChevronRight className="h-3 w-3 md:h-6 md:w-6 text-blue-700" />
+          <ChevronRight className="h-4 w-4 md:h-6 md:w-6 text-blue-700" />
         </button>
       </div>
 
