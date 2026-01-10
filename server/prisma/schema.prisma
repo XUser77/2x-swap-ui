@@ -1,0 +1,175 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum PointSource {
+  TRADING
+  LIQUIDITY
+  REFERRAL
+  CONTRIBUTOR
+}
+
+enum ScoreStatus {
+  PENDING
+  FINAL
+}
+
+model User {
+  id           String @id @default(uuid())
+  wallet       String @unique
+  referralCode String @unique
+
+  // Permanent referral (locked after OTP)
+  referredById String?
+  referredBy   User?   @relation("UserReferral", fields: [referredById], references: [id])
+  referrals    User[]  @relation("UserReferral")
+
+  createdAt DateTime @default(now())
+
+  // Relations
+  trades             TradeScore[]
+  liquiditySnapshots LiquiditySnapshot[]
+  weeklyScores       WeeklyScore[]
+  referralEarnings   ReferralEarning[]   @relation("Referrer")
+  referredActivity   ReferralEarning[]   @relation("Invitee")
+  seasonTotals       SeasonTotal[]
+
+  @@index([wallet])
+}
+
+model Season {
+  id         Int      @id @default(autoincrement())
+  name       String
+  startAt    DateTime
+  endAt      DateTime
+  multiplier Float
+  isActive   Boolean  @default(false)
+
+  weeklyScores   WeeklyScore[]
+  seasonTotals   SeasonTotal[]
+  referralEvents ReferralEarning[]
+  liquiditySnaps LiquiditySnapshot[]
+  tradeScores    TradeScore[]
+
+  @@index([isActive])
+}
+
+model TradeScore {
+  id String @id @default(uuid())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  seasonId Int
+  season   Season @relation(fields: [seasonId], references: [id])
+
+  txHash     String
+  volume     Decimal
+  baseScore  Float
+  multiplier Float
+  finalScore Float
+
+  lpHurt Boolean
+
+  createdAt DateTime @default(now())
+
+  @@index([userId, seasonId])
+  @@index([txHash])
+}
+
+model LiquiditySnapshot {
+  id String @id @default(uuid())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  seasonId Int
+  season   Season @relation(fields: [seasonId], references: [id])
+
+  avgDailyBalance   Decimal
+  loyaltyMultiplier Float
+  baseScore         Float
+  finalScore        Float
+
+  snapshotDate DateTime
+
+  @@index([userId, snapshotDate])
+}
+
+model WeeklyScore {
+  id String @id @default(uuid())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  seasonId Int
+  season   Season @relation(fields: [seasonId], references: [id])
+
+  weekStart DateTime
+
+  traderScore Float
+  lpScore     Float
+
+  traderPoints Float
+  lpPoints     Float
+
+  status ScoreStatus @default(PENDING)
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, seasonId, weekStart])
+}
+
+model ReferralEarning {
+  id String @id @default(uuid())
+
+  referrerId String
+  referrer   User   @relation("Referrer", fields: [referrerId], references: [id])
+
+  inviteeId String
+  invitee   User   @relation("Invitee", fields: [inviteeId], references: [id])
+
+  seasonId Int
+  season   Season @relation(fields: [seasonId], references: [id])
+
+  inviteeActivityPoints Float
+  referralPoints        Float
+
+  capped Boolean
+
+  createdAt DateTime @default(now())
+
+  @@unique([referrerId, inviteeId, seasonId])
+}
+
+model SeasonTotal {
+  id String @id @default(uuid())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  seasonId Int
+  season   Season @relation(fields: [seasonId], references: [id])
+
+  traderPoints      Float
+  lpPoints          Float
+  referralPoints    Float
+  contributorPoints Float
+
+  totalPoints Float
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, seasonId])
+}

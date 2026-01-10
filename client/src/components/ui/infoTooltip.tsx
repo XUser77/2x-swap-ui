@@ -25,7 +25,12 @@ export function InfoTooltip({ content }: InfoTooltipProps) {
           </button>
         </TooltipTrigger>
 
-        <TooltipContent className="max-w-xs">{content}</TooltipContent>
+        <TooltipContent
+          sideOffset={6}
+          className="max-w-xs bg-blue-950 text-white [&>svg]:hidden"
+        >
+          {content}
+        </TooltipContent>
       </Tooltip>
     </TooltipProvider>
   );

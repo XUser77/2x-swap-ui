@@ -6,12 +6,12 @@ import { forkedMainnet } from "./customChain";
 type AddressMap = Record<number, `0x${string}`>;
 
 export const X2_POOL_ADDRESS: AddressMap = {
-  [forkedMainnet.id]: "0xF4C573868c40fe388cBA162806a9c705640386C9",
+  [forkedMainnet.id]: "0xF3666759fa555DF124D48cA2eab185a1fA37410c",
   // [mainnet.id]: "0xPOOL_MAINNET_ADDRESS",
 };
 
 export const X2_SWAP_ADDRESS: AddressMap = {
-  [forkedMainnet.id]: "0xeB02697D88FF777393F3b3c8DE2231038E65828a",
+  [forkedMainnet.id]: "0xA467e237721370855f71a9F878D90E78defd643d",
   // [mainnet.id]: "0xSWAP_MAINNET_ADDRESS",
 };
 

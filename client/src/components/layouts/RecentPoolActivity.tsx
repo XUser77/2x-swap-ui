@@ -81,7 +81,7 @@ export function RecentPoolActivity() {
           <div className="hidden md:block">
             <table className="w-full text-md mb-4">
               <thead className="text-gray-500">
-                <tr className="border-b">
+                <tr className="border-b border-gray-200">
                   <th className="text-left py-2">Type</th>
                   <th className="text-left">Amount (USDC)</th>
                   <th className="text-left">Date</th>

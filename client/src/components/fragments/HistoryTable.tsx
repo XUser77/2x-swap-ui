@@ -68,7 +68,7 @@ function HistoryTable({ owner, limit = 10 }: Props) {
       <div className="hidden md:block">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="text-gray-500 border-b">
+            <thead className="text-gray-500 border-b border-gray-200">
               <tr>
                 <th className="text-left py-2">Asset</th>
                 <th className="text-left">Size (USDC)</th>

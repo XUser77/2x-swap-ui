@@ -88,7 +88,7 @@ function PositionsTable({ owner, limit = 10 }: Props) {
         {/* Table */}
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="text-gray-500 border-b">
+            <thead className="text-gray-500 border-b border-gray-200">
               <tr>
                 <th className="text-left py-2 pl-2">Asset</th>
                 <th className="text-left">Size (USDC)</th>

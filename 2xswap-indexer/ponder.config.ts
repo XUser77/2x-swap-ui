@@ -1,10 +1,12 @@
 import { createConfig } from "ponder";
+import { http } from "viem";
 
 export default createConfig({
   chains: {
     x2swap: {
       id: 31337,
       rpc: process.env.PONDER_RPC_URL_1,
+      ethGetLogsBlockRange: 100,
     },
   },
 
@@ -36,8 +38,8 @@ export default createConfig({
           ],
         },
       ],
-      address: "0xeB02697D88FF777393F3b3c8DE2231038E65828a",
-      startBlock: 24039203,
+      address: "0xA467e237721370855f71a9F878D90E78defd643d",
+      startBlock: 24197879,
     },
     X2ETHPool: {
       chain: "x2swap",
@@ -67,8 +69,8 @@ export default createConfig({
           ],
         },
       ],
-      address: "0xF4C573868c40fe388cBA162806a9c705640386C9",
-      startBlock: 24039203,
+      address: "0xF3666759fa555DF124D48cA2eab185a1fA37410c",
+      startBlock: 24197879,
     },
   },
 });

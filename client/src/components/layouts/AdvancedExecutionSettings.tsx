@@ -18,7 +18,7 @@ export function AdvancedExecutionSettings({
   setDeadlineMinutes,
 }: Props) {
   return (
-    <div className="mb-4 p-2 rounded-lg border bg-gray-50 space-y-3">
+    <div className="mb-4 p-2 rounded-lg border border-gray-200 bg-gray-50 space-y-3">
       <p className="font-semibold text-xs">Advanced Execution Settings</p>
 
       <div className="flex justify-between items-center">
@@ -33,7 +33,7 @@ export function AdvancedExecutionSettings({
             className={`px-3 py-1 rounded-full text-xs font-medium border ${
               slippageAuto
                 ? "bg-blue-900 text-white border-blue-900"
-                : "bg-white text-gray-500"
+                : "bg-white text-gray-500 border-gray-200"
             }`}
           >
             Auto
@@ -45,7 +45,7 @@ export function AdvancedExecutionSettings({
             value={maxSlippage}
             disabled={slippageAuto}
             onChange={(e) => setMaxSlippage(Number(e.target.value))}
-            className={`w-20 border rounded px-2 py-1 text-xs ${
+            className={`w-20 border border-gray-200 rounded px-2 py-1 text-xs ${
               slippageAuto
                 ? "bg-gray-100 text-gray-400 cursor-not-allowed"
                 : "bg-white"
@@ -64,7 +64,7 @@ export function AdvancedExecutionSettings({
           type="number"
           value={deadlineMinutes}
           onChange={(e) => setDeadlineMinutes(Number(e.target.value))}
-          className="w-20 border rounded px-2 py-1 text-xs"
+          className="w-20 border border-gray-200 rounded px-2 py-1 text-xs"
         />
       </div>
 

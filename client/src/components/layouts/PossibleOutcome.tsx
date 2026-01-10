@@ -2,7 +2,7 @@ import { useState } from "react";
 import OutcomeCard from "../fragments/OutcomeCard";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
-import { slides } from "@/lib/OutcomeCardContent";
+import { slides } from "@/lib/outcomeCardContent";
 
 export default function PossibleOutcomes() {
   const [active, setActive] = useState(0);

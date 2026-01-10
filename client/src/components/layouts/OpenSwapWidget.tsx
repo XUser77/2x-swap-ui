@@ -118,8 +118,8 @@ export default function OpenSwapWidget({ asset }: Props) {
       if (allowance < userUsdcBn) {
         const hash = await approve(spender, userUsdcBn);
         await publicClient?.waitForTransactionReceipt({ hash });
-        await refetch();
       }
+      await refetch();
 
       const tx = await openPosition(
         userUsdcBn,
@@ -228,7 +228,7 @@ export default function OpenSwapWidget({ asset }: Props) {
         <Row label="Available Pool Liquidity" value={`$${poolLiquidityUsdc}`} />
       </div>
 
-      <div className="mt-4 border-t pt-3 hidden md:block">
+      <div className="mt-4 border-t border-gray-200 pt-3 hidden md:block">
         <button
           onClick={() => setShowTxDetails(!showTxDetails)}
           className="w-full flex justify-between text-sm font-medium"

@@ -12,7 +12,7 @@ import {
 export async function snapshotTVL(context: Context, event: Event) {
   const { db, client } = context;
 
-  const poolAddress = "0xF4C573868c40fe388cBA162806a9c705640386C9"; // X2Pool address
+  const poolAddress = "0xF3666759fa555DF124D48cA2eab185a1fA37410c"; // X2Pool address
 
   const [assets, debt] = await Promise.all([
     client.readContract({
