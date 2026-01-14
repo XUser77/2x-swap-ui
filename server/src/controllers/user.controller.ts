@@ -1,0 +1,30 @@
+import { Request, Response } from "express";
+import { UserStatsService } from "../services/user.service";
+
+export async function getUserSeasonStatus(req: Request, res: Response) {
+  try {
+    const userId = req.user?.id;
+    if (!userId) return res.status(401).json({ error: "Unauthorized" });
+
+    const data = await UserStatsService.getSeasonStatus(userId);
+    return res.json(data);
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message });
+  }
+}
+
+export async function checkUserExists(req: Request, res: Response) {
+  try {
+    const wallet = req.query.wallet as string;
+
+    if (!wallet) {
+      return res.status(400).json({ error: "wallet is required" });
+    }
+
+    const data = await UserStatsService.checkWallet(wallet);
+
+    return res.json(data);
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message });
+  }
+}

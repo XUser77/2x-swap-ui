@@ -30,7 +30,8 @@ model User {
   wallet       String @unique
   referralCode String @unique
 
-  // Permanent referral (locked after OTP)
+  nonce String?
+
   referredById String?
   referredBy   User?   @relation("UserReferral", fields: [referredById], references: [id])
   referrals    User[]  @relation("UserReferral")
@@ -40,7 +41,6 @@ model User {
   // Relations
   trades             TradeScore[]
   liquiditySnapshots LiquiditySnapshot[]
-  weeklyScores       WeeklyScore[]
   referralEarnings   ReferralEarning[]   @relation("Referrer")
   referredActivity   ReferralEarning[]   @relation("Invitee")
   seasonTotals       SeasonTotal[]
@@ -56,11 +56,10 @@ model Season {
   multiplier Float
   isActive   Boolean  @default(false)
 
-  weeklyScores   WeeklyScore[]
+  tradeScores    TradeScore[]
+  liquiditySnaps LiquiditySnapshot[]
   seasonTotals   SeasonTotal[]
   referralEvents ReferralEarning[]
-  liquiditySnaps LiquiditySnapshot[]
-  tradeScores    TradeScore[]
 
   @@index([isActive])
 }
@@ -107,30 +106,6 @@ model LiquiditySnapshot {
   @@index([userId, snapshotDate])
 }
 
-model WeeklyScore {
-  id String @id @default(uuid())
-
-  userId String
-  user   User   @relation(fields: [userId], references: [id])
-
-  seasonId Int
-  season   Season @relation(fields: [seasonId], references: [id])
-
-  weekStart DateTime
-
-  traderScore Float
-  lpScore     Float
-
-  traderPoints Float
-  lpPoints     Float
-
-  status ScoreStatus @default(PENDING)
-
-  createdAt DateTime @default(now())
-
-  @@unique([userId, seasonId, weekStart])
-}
-
 model ReferralEarning {
   id String @id @default(uuid())
 
@@ -145,8 +120,7 @@ model ReferralEarning {
 
   inviteeActivityPoints Float
   referralPoints        Float
-
-  capped Boolean
+  capped                Boolean
 
   createdAt DateTime @default(now())
 
@@ -162,14 +136,33 @@ model SeasonTotal {
   seasonId Int
   season   Season @relation(fields: [seasonId], references: [id])
 
-  traderPoints      Float
-  lpPoints          Float
-  referralPoints    Float
-  contributorPoints Float
+  traderActivityPoints Float @default(0)
+  lpActivityPoints     Float @default(0)
+  referralPoints       Float @default(0)
+  contributorPoints    Float @default(0)
 
-  totalPoints Float
+  totalPoints Float @default(0)
 
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([userId, seasonId])
+}
+
+model UserLPState {
+  userId String @id
+  pool   String
+
+  lastBalance Decimal
+  lastUpdated DateTime
+
+  currentStreak Int // loyalty days
+}
+
+model WaitlistMail {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+
+  @@index([email])
 }

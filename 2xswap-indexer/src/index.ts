@@ -2,6 +2,7 @@ import { ponder } from "ponder:registry";
 import { poolActivity, position, volume_24h } from "ponder:schema";
 import { eq } from "drizzle-orm";
 import { snapshotTVL } from "../helpers/snapshotTVL";
+import { snapshotLpBalance } from "../helpers/snapshotLpBalance";
 
 const ONE_YEAR_SECONDS = 365 * 24 * 60 * 60;
 const PRICE_SCALE = 1_000_000_000_000_00n;
@@ -52,6 +53,34 @@ ponder.on("X2ETHSwap:ClosePosition", async ({ event, context }) => {
   const exitPrice =
     (event.args.closeAssetAmount * PRICE_SCALE) / existing.target_amount;
 
+  const pnl = Number(exitPrice - existing.entry_price);
+
+  const poolPrincipal = existing.asset_amount / 2n;
+
+  const openAssetAmount = existing.asset_amount;
+  const assetAmountOut = event.args.closeAssetAmount;
+  const profitSharing = BigInt(existing.profit_sharing); // % LP takes
+
+  let poolAmount: bigint;
+
+  if (assetAmountOut >= openAssetAmount) {
+    // PROFIT
+    const profit = assetAmountOut - openAssetAmount;
+    const poolBonus = (profit * profitSharing) / 100n;
+    poolAmount = poolPrincipal + poolBonus;
+  } else {
+    // LOSS
+    if (assetAmountOut >= poolPrincipal) {
+      // Moderate loss → LP fully repaid
+      poolAmount = poolPrincipal;
+    } else {
+      // Severe loss → LP hurt
+      poolAmount = assetAmountOut;
+    }
+  }
+
+  const lpHurt = poolAmount < poolPrincipal;
+
   // Update the position as closed
   await db.sql
     .update(position)
@@ -71,6 +100,15 @@ ponder.on("X2ETHSwap:ClosePosition", async ({ event, context }) => {
   });
 
   await snapshotTVL(context, event);
+
+  await sendTradeScore({
+    wallet: existing.owner,
+    txHash: event.transaction.hash,
+    volume: event.args.closeAssetAmount.toString(),
+    pnl,
+    lpHurt,
+    timestamp: Number(event.block.timestamp),
+  });
 });
 
 // Handle Pool Deposit
@@ -88,6 +126,13 @@ ponder.on("X2ETHPool:Deposit", async ({ event, context }) => {
   });
 
   await snapshotTVL(context, event);
+
+  await snapshotLpBalance({
+    context,
+    pool: "0xF3666759fa555DF124D48cA2eab185a1fA37410c",
+    user: event.args.receiver,
+    event,
+  });
 });
 
 // Handle Pool Withdraw
@@ -105,4 +150,11 @@ ponder.on("X2ETHPool:Withdraw", async ({ event, context }) => {
   });
 
   await snapshotTVL(context, event);
+
+  await snapshotLpBalance({
+    context,
+    pool: "0xF3666759fa555DF124D48cA2eab185a1fA37410c",
+    user: event.args.owner,
+    event,
+  });
 });

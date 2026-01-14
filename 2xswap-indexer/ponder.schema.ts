@@ -72,3 +72,19 @@ export const tvl_yearly = onchainTable("tvl_yearly", (t) => ({
   timestamp: t.bigint().notNull(),
   tvl: t.bigint().notNull(),
 }));
+
+export const lpBalanceCheckpoint = onchainTable(
+  "lp_balance_checkpoint",
+  (t) => ({
+    id: t.text().primaryKey(),
+
+    pool: t.hex().notNull(), // X2Pool address
+    user: t.hex().notNull(), // LP wallet
+
+    shares: t.bigint().notNull(), // LP shares AFTER event
+    assets: t.bigint().notNull(), // underlying assets AFTER event (optional but useful)
+
+    blockNumber: t.bigint().notNull(),
+    timestamp: t.bigint().notNull(),
+  })
+);
