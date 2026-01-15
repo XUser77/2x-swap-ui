@@ -26,14 +26,14 @@ export async function loginWithWallet(req: Request, res: Response) {
 
     const token = signJwt({
       id: user.id,
-      wallet: user.wallet,
+      wallet: user.wallet.toLowerCase(),
     });
 
     return res.json({
       token,
       user: {
         id: user.id,
-        wallet: user.wallet,
+        wallet: user.wallet.toLowerCase(),
       },
     });
   } catch (err: any) {

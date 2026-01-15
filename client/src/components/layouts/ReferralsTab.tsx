@@ -1,57 +1,47 @@
 import { useState } from "react";
-import { ReferralModal } from "../fragments/ReferralModal";
+import { ReferralLearnMore } from "../fragments/ReferralLearnMore";
 import { ReferralStatCard } from "../fragments/ReferralStatCard";
+import {
+  useReferralStats,
+  useReferralCode,
+  useReferralActivity,
+} from "@/hooks/useReferral";
+import { createLucideIcon } from "lucide-react";
+import { shareReferralOnTwitter } from "@/lib/tweetReferral";
 
-type ReferralActivity = {
-  id: string;
-  wallet: string;
-  dateJoined: string;
-  activityType: "Trading" | "Liquidity";
-  totalVolume: number;
-  pointsAttributed: number;
-};
-
-const mockReferralActivities: ReferralActivity[] = [
-  {
-    id: "1",
-    wallet: "0x742d...0bEb",
-    dateJoined: "Dec 15, 2024",
-    activityType: "Trading",
-    totalVolume: 45600,
-    pointsAttributed: 892,
-  },
-  {
-    id: "2",
-    wallet: "0x8ab7...3cD2",
-    dateJoined: "Dec 10, 2024",
-    activityType: "Liquidity",
-    totalVolume: 128000,
-    pointsAttributed: 1245,
-  },
-  {
-    id: "3",
-    wallet: "0x5e2b...a6F8",
-    dateJoined: "Dec 8, 2024",
-    activityType: "Trading",
-    totalVolume: 32400,
-    pointsAttributed: 534,
-  },
-  {
-    id: "4",
-    wallet: "0x9f1c...d6C8",
-    dateJoined: "Dec 1, 2024",
-    activityType: "Liquidity",
-    totalVolume: 89500,
-    pointsAttributed: 749,
-  },
-];
+export const XTwitterIcon = createLucideIcon("X", [
+  [
+    "path",
+    {
+      d: "M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z",
+      stroke: "none",
+      fill: "currentColor",
+    },
+  ],
+]);
 
 export default function ReferralsTab() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const { data: stats } = useReferralStats();
+  const { data: code } = useReferralCode();
+  const { data: activities, isLoading } = useReferralActivity();
+
+  function handleCopy(text?: string) {
+    if (!text) return;
+
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+
+    setTimeout(() => {
+      setCopied(false);
+    }, 3000);
+  }
 
   return (
     <div className="bg-white p-8 space-y-6 rounded-xl">
-      {/* Stats */}
+      {/* Header */}
       <div className="space-y-3">
         <h1 className="font-semibold text-xl">Referrals</h1>
         <p className="text-sm text-gray-600">
@@ -65,11 +55,24 @@ export default function ReferralsTab() {
         </p>
       </div>
 
+      {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <ReferralStatCard label="Referred participants" value={12} />
-        <ReferralStatCard label="Referral points (season)" value={3420} />
-        <ReferralStatCard label="Referral points (all-time)" value={8950} />
-        <ReferralStatCard label="Active referrals (30d)" value={8} />
+        <ReferralStatCard
+          label="Referred participants"
+          value={stats?.referredParticipants ?? 0}
+        />
+        <ReferralStatCard
+          label="Referral points (season)"
+          value={stats?.referralPointsSeason ?? 0}
+        />
+        <ReferralStatCard
+          label="Referral points (all-time)"
+          value={stats?.referralPointsAllTime ?? 0}
+        />
+        <ReferralStatCard
+          label="Active referrals (30d)"
+          value={stats?.activeReferralsLast30Days ?? 0}
+        />
       </div>
 
       {/* Referral code */}
@@ -78,13 +81,23 @@ export default function ReferralsTab() {
         <div className="flex gap-3">
           <input
             readOnly
-            value="https://2xswap.io/ref/XXXX"
+            value={code?.referralCode ?? ""}
             className="flex-1 border border-gray-300 rounded-md px-3 py-2 text-sm bg-gray-50"
           />
-          <button className="border border-gray-300 rounded-md px-4 py-2 hover:bg-gray-50 transition-colors">
-            Copy
+          <button
+            onClick={() => handleCopy(code?.referralCode)}
+            className="border border-gray-300 rounded-md px-4 py-2 hover:bg-gray-50 transition-colors"
+            disabled={copied}
+          >
+            {copied ? "Copied!" : "Copy"}
           </button>
         </div>
+        <button
+          onClick={() => shareReferralOnTwitter(code?.referralCode!)}
+          className="text-sm hover:bg-blue-800/5 border-2 border-blue-800 text-blue-700 py-2 px-3 my-2 rounded-xl flex gap-2 font-semibold"
+        >
+          Share on <XTwitterIcon className="w-4 h-4 text-black" />
+        </button>
         <p className="text-xs text-gray-500 mt-2">
           Referral points are attributed only while the referred wallet is
           active.
@@ -94,60 +107,81 @@ export default function ReferralsTab() {
       {/* Activity table */}
       <div className="bg-white rounded-xl p-6 border border-gray-200">
         <h3 className="font-semibold mb-4">Referral activity</h3>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-gray-200">
-                <th className="text-left py-3 font-medium text-gray-600">
-                  Wallet
-                </th>
-                <th className="text-left py-3 font-medium text-gray-600">
-                  Date joined
-                </th>
-                <th className="text-left py-3 font-medium text-gray-600">
-                  Activity type
-                </th>
-                <th className="text-left py-3 font-medium text-gray-600">
-                  Total volume
-                </th>
-                <th className="text-right py-3 font-medium text-gray-600">
-                  Points attributed
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {mockReferralActivities.map((activity) => (
-                <tr key={activity.id} className="border-b border-gray-100">
-                  <td className="py-4 font-mono text-gray-900">
-                    {activity.wallet}
-                  </td>
-                  <td className="py-4 text-gray-600">{activity.dateJoined}</td>
-                  <td className="py-4">
-                    <span
-                      className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${
-                        activity.activityType === "Trading"
-                          ? "bg-pink-100 text-pink-700"
-                          : "bg-purple-100 text-purple-700"
-                      }`}
-                    >
-                      {activity.activityType}
-                    </span>
-                  </td>
-                  <td className="py-4 text-gray-900">
-                    ${activity.totalVolume.toLocaleString()}
-                  </td>
-                  <td className="py-4 text-right text-gray-900 font-medium">
-                    {activity.pointsAttributed.toLocaleString()}
-                  </td>
+
+        {isLoading ? (
+          <div className="text-sm text-gray-500">Loading activity…</div>
+        ) : activities?.length === 0 ? (
+          <div className="text-sm text-gray-500">
+            There are no referral activities from your invitee
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-gray-200">
+                  <th className="text-left py-3 font-medium text-gray-600">
+                    Wallet
+                  </th>
+                  <th className="text-left py-3 font-medium text-gray-600">
+                    Date joined
+                  </th>
+                  <th className="text-left py-3 font-medium text-gray-600">
+                    Activity type
+                  </th>
+                  <th className="text-left py-3 font-medium text-gray-600">
+                    Total volume
+                  </th>
+                  <th className="text-right py-3 font-medium text-gray-600">
+                    Points attributed
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+
+              <tbody>
+                {activities?.map((activity) => (
+                  <tr
+                    key={activity.wallet}
+                    className="border-b border-gray-100"
+                  >
+                    <td className="py-4 font-mono text-gray-900">
+                      {activity.wallet}
+                    </td>
+
+                    <td className="py-4 text-gray-600">
+                      {new Date(activity.dateJoined).toLocaleDateString()}
+                    </td>
+
+                    <td className="py-4">
+                      <span
+                        className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${
+                          activity.activityType === "Trading"
+                            ? "bg-pink-100 text-pink-700"
+                            : activity.activityType === "Liquidity"
+                            ? "bg-purple-100 text-purple-700"
+                            : "bg-gray-100 text-gray-600"
+                        }`}
+                      >
+                        {activity.activityType}
+                      </span>
+                    </td>
+
+                    <td className="py-4 text-gray-900">
+                      ${activity.totalVolume.toLocaleString()}
+                    </td>
+
+                    <td className="py-4 text-right text-gray-900 font-medium">
+                      {activity.pointsAttributed.toLocaleString()}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
 
       {/* Modal */}
-      <ReferralModal open={isModalOpen} onOpenChange={setIsModalOpen} />
+      <ReferralLearnMore open={isModalOpen} onOpenChange={setIsModalOpen} />
     </div>
   );
 }

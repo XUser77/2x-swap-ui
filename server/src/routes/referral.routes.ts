@@ -1,6 +1,6 @@
 import { Router } from "express";
 import {
-  verifyOtpAndAttachReferral,
+  AttachReferral,
   getReferralStats,
   getReferralCode,
   getReferralActivity,
@@ -10,7 +10,7 @@ import { requireAuth } from "../middleware/auth.middleware";
 const router = Router();
 
 // Referral locking (already exists)
-router.post("/verify-otp", verifyOtpAndAttachReferral);
+router.post("/attach-referral", AttachReferral);
 
 // New read-only referral APIs
 router.get("/stats", requireAuth, getReferralStats);

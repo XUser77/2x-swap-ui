@@ -15,33 +15,36 @@ import { ApolloProvider } from "@apollo/client/react";
 import { apolloClient } from "./apollo/client";
 import "@rainbow-me/rainbowkit/styles.css";
 import Points from "./pages/Points.tsx";
+import { AuthProvider } from "./contexts/AuthContext.tsx";
 
 const queryClient = new QueryClient();
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <WagmiProvider config={config}>
-        <ApolloProvider client={apolloClient}>
-          <RainbowKitProvider>
-            <BrowserRouter>
-              <Routes>
-                {/* Home with its own navbar */}
-                <Route>
-                  <Route path="/" element={<App />} />
-                </Route>
+    <AuthProvider>
+      <QueryClientProvider client={queryClient}>
+        <WagmiProvider config={config}>
+          <ApolloProvider client={apolloClient}>
+            <RainbowKitProvider>
+              <BrowserRouter>
+                <Routes>
+                  {/* Home with its own navbar */}
+                  <Route>
+                    <Route path="/" element={<App />} />
+                  </Route>
 
-                {/* App pages with another navbar */}
-                <Route element={<AppLayout />}>
-                  <Route path="/pool" element={<Pool />} />
-                  <Route path="/swap" element={<Swap />} />
-                  <Route path="/points" element={<Points />} />
-                </Route>
-              </Routes>
-            </BrowserRouter>
-          </RainbowKitProvider>
-        </ApolloProvider>
-      </WagmiProvider>
-    </QueryClientProvider>
+                  {/* App pages with another navbar */}
+                  <Route element={<AppLayout />}>
+                    <Route path="/pool" element={<Pool />} />
+                    <Route path="/swap" element={<Swap />} />
+                    <Route path="/points" element={<Points />} />
+                  </Route>
+                </Routes>
+              </BrowserRouter>
+            </RainbowKitProvider>
+          </ApolloProvider>
+        </WagmiProvider>
+      </QueryClientProvider>
+    </AuthProvider>
   </StrictMode>
 );

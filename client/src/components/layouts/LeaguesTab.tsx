@@ -1,5 +1,6 @@
 "use client";
 
+import { useSeasonStatus } from "@/hooks/useSeasonStatus";
 import { LeagueCard } from "../fragments/LeagueCard";
 
 export type League = {
@@ -17,7 +18,7 @@ export type League = {
 const leagues: League[] = [
   {
     id: "student",
-    name: "Student",
+    name: "Academy Student",
     icon: "学",
     description: "Just starting the journey.",
     bgColor: "bg-gray-100",
@@ -78,13 +79,15 @@ const leagues: League[] = [
   },
 ];
 
-type LeaguesTabProps = {
-  activeLeagueId?: string;
-};
+export default function LeaguesTab() {
+  const { data } = useSeasonStatus(true);
 
-export default function LeaguesTab({
-  activeLeagueId = "jonin",
-}: LeaguesTabProps) {
+  const { rank } = data;
+
+  const activeLeagueId = rank.name;
+
+  console.log(activeLeagueId);
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -104,7 +107,7 @@ export default function LeaguesTab({
           <LeagueCard
             key={league.id}
             league={league}
-            isActive={league.id === activeLeagueId}
+            isActive={league.name === activeLeagueId}
           />
         ))}
       </div>

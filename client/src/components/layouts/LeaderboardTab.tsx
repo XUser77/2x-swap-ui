@@ -1,88 +1,31 @@
 "use client";
 
-import {
-  getLeagueBadgeStyle,
-  getLeagueFromPoints,
-  getRankIcon,
-  type LeaderboardEntry,
-} from "@/lib/pointHelpers";
+import { useState } from "react";
+import { getLeagueBadgeStyle, getRankIcon } from "@/lib/pointHelpers";
+import { useLeaderboard } from "@/hooks/useLeaderboard";
 
-const mockLeaderboardData: LeaderboardEntry[] = [
-  {
-    rank: 1,
-    wallet: "0xA1B2...E5F6",
-    seasonPoints: 152340,
-    totalPoints: 485920,
-  },
-  {
-    rank: 2,
-    wallet: "0x9F8E...5B4A",
-    seasonPoints: 148760,
-    totalPoints: 412870,
-  },
-  {
-    rank: 3,
-    wallet: "0x3C4D...7A8B",
-    seasonPoints: 142180,
-    totalPoints: 398640,
-  },
-  {
-    rank: 4,
-    wallet: "0x7E8F...1C2D",
-    seasonPoints: 138920,
-    totalPoints: 367540,
-  },
-  {
-    rank: 5,
-    wallet: "0x5D6E...9B0C",
-    seasonPoints: 135470,
-    totalPoints: 342190,
-  },
-  {
-    rank: 6,
-    wallet: "0x2B3C...6F7A",
-    seasonPoints: 129850,
-    totalPoints: 298450,
-  },
-  {
-    rank: 7,
-    wallet: "0x8A9B...2E3F",
-    seasonPoints: 124320,
-    totalPoints: 276890,
-  },
-  {
-    rank: 8,
-    wallet: "0x4F5A...8D9E",
-    seasonPoints: 118760,
-    totalPoints: 245320,
-  },
-  {
-    rank: 9,
-    wallet: "0x1E2F...5C6D",
-    seasonPoints: 112940,
-    totalPoints: 198750,
-  },
-  {
-    rank: 10,
-    wallet: "0x6C7D...0A1B",
-    seasonPoints: 108560,
-    totalPoints: 176430,
-  },
-  {
-    rank: 11,
-    wallet: "0x9A0B...3E4F",
-    seasonPoints: 102340,
-    totalPoints: 152840,
-  },
-  {
-    rank: 12,
-    wallet: "0x5E6F...9C0D",
-    seasonPoints: 98750,
-    totalPoints: 134920,
-  },
-];
+const PAGE_SIZE = 10;
 
 export default function LeaderboardTab() {
+  const [page, setPage] = useState(1);
+
+  const { data, isLoading, isFetching } = useLeaderboard(page, PAGE_SIZE);
+
+  if (isLoading) {
+    return (
+      <div className="bg-white rounded-xl border border-gray-200 p-6">
+        Loading leaderboard…
+      </div>
+    );
+  }
+
+  if (!data) return null;
+
+  const { data: rows, totalRankedUsers, totalPages } = data;
+
+  const from = (page - 1) * PAGE_SIZE + 1;
+  const to = Math.min(page * PAGE_SIZE, totalRankedUsers);
+
   return (
     <div className="bg-white rounded-xl border border-gray-200">
       <div className="overflow-x-auto">
@@ -106,8 +49,9 @@ export default function LeaderboardTab() {
               </th>
             </tr>
           </thead>
+
           <tbody>
-            {mockLeaderboardData.map((entry) => (
+            {rows.map((entry) => (
               <tr key={entry.rank} className="border-b border-gray-100">
                 <td className="py-4 px-6">
                   <div className="flex items-center gap-2">
@@ -119,21 +63,25 @@ export default function LeaderboardTab() {
                     </span>
                   </div>
                 </td>
+
                 <td className="py-4 px-6 font-mono text-gray-900">
-                  {entry.wallet}
+                  {`${entry.wallet.slice(0, 8)}…${entry.wallet.slice(-6)}`}
                 </td>
+
                 <td className="py-4 px-6">
                   <span
                     className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${getLeagueBadgeStyle(
-                      getLeagueFromPoints(entry.seasonPoints)
+                      entry.league
                     )}`}
                   >
-                    {`${getLeagueFromPoints(entry.seasonPoints)}`}
+                    {entry.league}
                   </span>
                 </td>
+
                 <td className="py-4 px-6 text-right text-gray-900 font-medium">
                   {entry.seasonPoints.toLocaleString()}
                 </td>
+
                 <td className="py-4 px-6 text-right text-gray-900 font-medium">
                   {entry.totalPoints.toLocaleString()}
                 </td>
@@ -142,6 +90,37 @@ export default function LeaderboardTab() {
           </tbody>
         </table>
       </div>
+
+      {/* Pagination */}
+      <div className="flex items-center justify-between px-6 py-4 text-sm text-gray-600">
+        <div>
+          Showing <span className="font-medium">{from}</span>–
+          <span className="font-medium">{to}</span> of{" "}
+          <span className="font-medium">{totalRankedUsers}</span>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <button
+            disabled={page === 1}
+            onClick={() => setPage((p) => p - 1)}
+            className="px-3 py-1 rounded-lg border border-gray-400 disabled:opacity-50"
+          >
+            Previous
+          </button>
+
+          <button
+            disabled={page === totalPages}
+            onClick={() => setPage((p) => p + 1)}
+            className="px-3 py-1 rounded-lg border border-gray-400 disabled:opacity-50"
+          >
+            Next
+          </button>
+        </div>
+      </div>
+
+      {isFetching && (
+        <div className="px-6 pb-4 text-xs text-gray-400">Updating…</div>
+      )}
     </div>
   );
 }

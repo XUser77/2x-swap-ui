@@ -20,7 +20,7 @@ export class TradingService {
     const { wallet, txHash, volume, pnl, lpHurt, timestamp } = input;
 
     const user = await prisma.user.findUnique({
-      where: { wallet },
+      where: { wallet: wallet.toLowerCase() },
       include: { referredBy: true },
     });
     if (!user) throw new Error("User not found");

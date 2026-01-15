@@ -1,11 +1,10 @@
 import { Request, Response } from "express";
 import { ReferralService } from "../services/referral.service";
-import { signJwt } from "../../lib/jwt";
 
 /**
  * STEP WHERE REFERRAL IS LOCKED
  */
-export async function verifyOtpAndAttachReferral(req: Request, res: Response) {
+export async function AttachReferral(req: Request, res: Response) {
   try {
     const { wallet, referralCode } = req.body;
 
@@ -14,14 +13,8 @@ export async function verifyOtpAndAttachReferral(req: Request, res: Response) {
       referralCode,
     });
 
-    const token = signJwt({
-      id: result.userId,
-      wallet,
-    });
-
     return res.json({
       success: true,
-      token,
       user: {
         id: result.userId,
         wallet,

@@ -3,6 +3,7 @@ import { poolActivity, position, volume_24h } from "ponder:schema";
 import { eq } from "drizzle-orm";
 import { snapshotTVL } from "../helpers/snapshotTVL";
 import { snapshotLpBalance } from "../helpers/snapshotLpBalance";
+import { sendTradeScore } from "../helpers/sendTradeScore";
 
 const ONE_YEAR_SECONDS = 365 * 24 * 60 * 60;
 const PRICE_SCALE = 1_000_000_000_000_00n;

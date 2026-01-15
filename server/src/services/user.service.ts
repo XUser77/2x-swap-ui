@@ -105,7 +105,7 @@ export class UserStatsService {
 
   static async checkWallet(wallet: string) {
     const user = await prisma.user.findUnique({
-      where: { wallet },
+      where: { wallet: wallet.toLowerCase() },
       select: {
         id: true,
         referredById: true,

@@ -7,7 +7,7 @@ export class AuthService {
     const nonce = `Login-${randomBytes(8).toString("hex")}`;
 
     await prisma.user.upsert({
-      where: { wallet },
+      where: { wallet: wallet.toLowerCase() },
       update: { nonce },
       create: {
         wallet,
@@ -21,7 +21,7 @@ export class AuthService {
 
   static async verifySignature(wallet: string, signature: string) {
     const user = await prisma.user.findUnique({
-      where: { wallet },
+      where: { wallet: wallet.toLowerCase() },
     });
 
     if (!user || !user.nonce) {

@@ -5,8 +5,12 @@ import HowPointsWorkTab from "@/components/layouts/HowPointWorksTab";
 import LeaguesTab from "@/components/layouts/LeaguesTab";
 import LeaderboardTab from "@/components/layouts/LeaderboardTab";
 import PointStatus from "@/components/layouts/PointStatus";
+import RequireWallet from "@/components/fragments/RequireWallet";
+import { useAccount } from "wagmi";
 
 export default function Points() {
+  const { isConnected } = useAccount();
+
   return (
     <section className="bg-[#DCE9FF] py-10">
       <div className="max-w-6xl mx-auto px-4">
@@ -62,19 +66,27 @@ export default function Points() {
 
             <div className="p-6">
               <TabsContent value="referrals">
-                <ReferralsTab />
+                <RequireWallet isConnected={isConnected}>
+                  <ReferralsTab />
+                </RequireWallet>
               </TabsContent>
 
               <TabsContent value="how">
-                <HowPointsWorkTab />
+                <RequireWallet isConnected={isConnected}>
+                  <HowPointsWorkTab />
+                </RequireWallet>
               </TabsContent>
 
               <TabsContent value="leagues">
-                <LeaguesTab />
+                <RequireWallet isConnected={isConnected}>
+                  <LeaguesTab />
+                </RequireWallet>
               </TabsContent>
 
               <TabsContent value="leaderboard">
-                <LeaderboardTab />
+                <RequireWallet isConnected={isConnected}>
+                  <LeaderboardTab />
+                </RequireWallet>
               </TabsContent>
             </div>
           </Tabs>

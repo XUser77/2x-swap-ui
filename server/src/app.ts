@@ -11,6 +11,13 @@ import tradingRoutes from "./routes/trading.routes";
 const app = express();
 const allowedOrigins = process.env.FRONTEND_URL;
 
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true,
+  })
+);
+
 app.use(bodyParser.json());
 
 app.use("/api/referral", referralRoutes);
@@ -23,13 +30,6 @@ app.use("/api/trading", tradingRoutes);
 app.get("/health", (_, res) => {
   res.json({ status: "ok" });
 });
-
-app.use(
-  cors({
-    origin: allowedOrigins,
-    credentials: true,
-  })
-);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

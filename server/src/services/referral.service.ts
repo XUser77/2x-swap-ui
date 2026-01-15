@@ -13,7 +13,7 @@ export class ReferralService {
 
   static async attachReferral({ wallet, referralCode }: AttachReferralInput) {
     const user = await prisma.user.upsert({
-      where: { wallet },
+      where: { wallet: wallet.toLowerCase() },
       update: {},
       create: {
         wallet,
@@ -132,7 +132,6 @@ export class ReferralService {
 
     return {
       referralCode: user.referralCode,
-      referralUrl: `https://2xswap.io/ref/${user.referralCode}`,
     };
   }
 

@@ -1,4 +1,4 @@
-async function sendTradeScore(payload: {
+export async function sendTradeScore(payload: {
   wallet: string;
   txHash: string;
   volume: string;
