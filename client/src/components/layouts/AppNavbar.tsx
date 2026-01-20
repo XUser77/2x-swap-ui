@@ -6,9 +6,9 @@ export default function AppNavbar() {
   return (
     <>
       {/* TOP BAR (Desktop + Mobile) */}
-      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 border-b bg-white">
+      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 bg-white">
         {/* Logo */}
-        <NavLink to="/swap" className="text-xl font-semibold">
+        <NavLink to="/" className="text-xl font-semibold">
           2xSwap
         </NavLink>
 

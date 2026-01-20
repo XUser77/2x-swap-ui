@@ -15,6 +15,9 @@ function applySoftCap(score: number) {
 
 export class LiquidityService {
   static async runDailySnapshot(date: Date) {
+    const USDC_DECIMALS = 6;
+    const USDC_SCALE = new Decimal(10).pow(USDC_DECIMALS);
+
     const season = await prisma.season.findFirst({
       where: { isActive: true },
     });
@@ -26,66 +29,95 @@ export class LiquidityService {
     const LP_MIN =
       season.name === "Alpha" ? 200 : season.name === "Beta" ? 500 : 1000;
 
-    // 1. Fetch avgDailyBalance per user from Ponder DB
-
+    /** ---------------- 1. Fetch checkpoints ---------------- */
     const data = await fetchFromPonder<{
       lpBalanceCheckpoints: {
-        user: string;
-        assets: string;
-        timestamp: string;
-      }[];
+        items: {
+          user: string;
+          assets: string;
+          timestamp: string;
+        }[];
+      };
     }>(DAY_QUERY, {
       start: Math.floor(dayStart.getTime() / 1000),
       end: Math.floor(dayEnd.getTime() / 1000),
     });
 
-    const perUser = new Map<
+    /** ---------------- 2. Aggregate per wallet ---------------- */
+    const perWallet = new Map<
       string,
       { sum: number; count: number; endBalance: number }
     >();
 
-    for (const row of data.lpBalanceCheckpoints) {
-      const assets = Number(row.assets);
+    for (const row of data.lpBalanceCheckpoints.items) {
+      const balance = new Decimal(row.assets).div(USDC_SCALE).toNumber();
+      const wallet = row.user.toLowerCase();
 
-      if (!perUser.has(row.user)) {
-        perUser.set(row.user, {
-          sum: 0,
-          count: 0,
-          endBalance: assets,
-        });
+      if (!perWallet.has(wallet)) {
+        perWallet.set(wallet, { sum: 0, count: 0, endBalance: balance });
       }
 
-      const acc = perUser.get(row.user)!;
-      acc.sum += assets;
+      const acc = perWallet.get(wallet)!;
+      acc.sum += balance;
       acc.count += 1;
-      acc.endBalance = assets; // last row wins (ordered by timestamp)
+      acc.endBalance = balance;
     }
 
-    const balances = Array.from(perUser.entries()).map(([userId, v]) => ({
-      userId,
-      avgBalance: v.sum / v.count,
-      endBalance: v.endBalance,
-    }));
+    /** ---------------- 3. Load ALL LP users (carry forward holders) ---------------- */
+    const previousLPStates = await prisma.userLPState.findMany();
 
-    for (const row of balances) {
-      const avgDailyBalance = Number(row.avgBalance);
-      const endBalance = Number(row.endBalance);
+    const allWallets = new Set<string>([
+      ...Array.from(perWallet.keys()),
+      ...previousLPStates.map((s) => s.userId), // temporarily userId, mapped below
+    ]);
+
+    /** ---------------- 4. Resolve wallets → userIds ---------------- */
+    const users = await prisma.user.findMany({
+      where: {
+        OR: [
+          { wallet: { in: Array.from(allWallets) } },
+          { id: { in: previousLPStates.map((s) => s.userId) } },
+        ],
+      },
+    });
+
+    /** ---------------- 5. Process each LP user ---------------- */
+    for (const user of users) {
+      const wallet = user.wallet.toLowerCase();
+      const checkpoint = perWallet.get(wallet);
+      const prevState = previousLPStates.find((s) => s.userId === user.id);
+
+      let avgDailyBalance = 0;
+      let endBalance = prevState ? prevState.lastBalance.toNumber() : 0;
+
+      if (checkpoint) {
+        avgDailyBalance = checkpoint.sum / checkpoint.count;
+        endBalance = checkpoint.endBalance;
+      } else if (prevState) {
+        if (prevState.lastBalance.eq(0)) {
+          await this.resetStreak(user.id);
+          continue;
+        }
+        avgDailyBalance = prevState.lastBalance.toNumber();
+      } else {
+        continue; // no LP ever
+      }
 
       if (avgDailyBalance < LP_MIN) {
-        await this.resetStreak(row.userId);
+        await this.resetStreak(user.id);
         continue;
       }
 
-      // 2. Loyalty streak
+      /** ---------------- 6. Loyalty streak ---------------- */
       const lpState = await prisma.userLPState.upsert({
-        where: { userId: row.userId },
+        where: { userId: user.id },
         update: {
           lastBalance: new Decimal(endBalance),
           lastUpdated: dayEnd,
           currentStreak: { increment: 1 },
         },
         create: {
-          userId: row.userId,
+          userId: user.id,
           pool: "X2POOL",
           lastBalance: new Decimal(endBalance),
           lastUpdated: dayEnd,
@@ -97,15 +129,27 @@ export class LiquidityService {
       if (lpState.currentStreak >= 30) loyaltyMultiplier = 2.0;
       else if (lpState.currentStreak >= 7) loyaltyMultiplier = 1.5;
 
-      // 3. Score
+      /** ---------------- 7. Score ---------------- */
       const baseScore = avgDailyBalance / 1000;
       const rawScore = baseScore * loyaltyMultiplier;
       const finalScore = applySoftCap(rawScore);
 
-      // 4. Persist snapshot
-      await prisma.liquiditySnapshot.create({
-        data: {
-          userId: row.userId,
+      /** ---------------- 8. Persist snapshot ---------------- */
+      await prisma.liquiditySnapshot.upsert({
+        where: {
+          userId_snapshotDate: {
+            userId: user.id,
+            snapshotDate: dayStart,
+          },
+        },
+        update: {
+          avgDailyBalance: new Decimal(avgDailyBalance),
+          loyaltyMultiplier,
+          baseScore,
+          finalScore,
+        },
+        create: {
+          userId: user.id,
           seasonId: season.id,
           avgDailyBalance: new Decimal(avgDailyBalance),
           loyaltyMultiplier,
@@ -115,13 +159,13 @@ export class LiquidityService {
         },
       });
 
-      // 5. Update SeasonTotal (with multiplier)
+      /** ---------------- 9. Update SeasonTotal ---------------- */
       const seasonPoints = finalScore * season.multiplier;
 
       const seasonTotal = await prisma.seasonTotal.upsert({
         where: {
           userId_seasonId: {
-            userId: row.userId,
+            userId: user.id,
             seasonId: season.id,
           },
         },
@@ -130,18 +174,18 @@ export class LiquidityService {
           totalPoints: { increment: seasonPoints },
         },
         create: {
-          userId: row.userId,
+          userId: user.id,
           seasonId: season.id,
           lpActivityPoints: seasonPoints,
           totalPoints: seasonPoints,
         },
       });
 
-      // 6. Referral points
-      await this.applyReferral(row.userId, season, seasonTotal);
+      /** ---------------- 10. Referral ---------------- */
+      await this.applyReferral(user.id, season, seasonTotal);
     }
 
-    return { processed: balances.length };
+    return { processed: users.length };
   }
 
   private static async resetStreak(userId: string) {
@@ -154,7 +198,7 @@ export class LiquidityService {
   private static async applyReferral(
     userId: string,
     season: any,
-    seasonTotal: any
+    seasonTotal: any,
   ) {
     const user = await prisma.user.findUnique({
       where: { id: userId },

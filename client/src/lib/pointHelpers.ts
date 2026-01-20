@@ -27,11 +27,3 @@ export function getLeagueBadgeStyle(league: string): string {
   };
   return styles[league];
 }
-
-// Helper function to get rank icon
-export function getRankIcon(rank: number): string {
-  if (rank === 1) return "👑";
-  if (rank === 2) return "🥈";
-  if (rank === 3) return "🥉";
-  return "";
-}

@@ -37,6 +37,7 @@ export default function ReferralModal({ open, wallet, onComplete }: Props) {
       }
 
       onComplete();
+      toast.success("Account referred successfully");
     } catch (err: any) {
       setError(err.response?.data?.error || "Failed to submit referral");
     } finally {
@@ -62,7 +63,7 @@ export default function ReferralModal({ open, wallet, onComplete }: Props) {
 
         <div className="flex gap-2">
           <button
-            className="flex-1 bg-gray-200  py-1 rounded-xl"
+            className="flex-1 bg-gray-200 py-1 rounded-xl disabled:opacity-80"
             onClick={() => submit()}
             disabled={loading}
           >
@@ -70,7 +71,7 @@ export default function ReferralModal({ open, wallet, onComplete }: Props) {
           </button>
 
           <button
-            className="flex-1 bg-[#113480] hover:bg-[#032368] text-white py-1 rounded-xl"
+            className="flex-1 bg-[#113480] hover:bg-[#032368] text-white py-1 rounded-xl disabled:opacity-80"
             onClick={() => submit(code)}
             disabled={loading}
           >

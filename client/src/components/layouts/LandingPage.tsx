@@ -1,6 +1,50 @@
+import { motion } from "framer-motion";
 import HomeNavbar from "../fragments/HomeNavbar";
+import { container, itemUp } from "@/lib/animation";
+import { useState } from "react";
+import { api } from "@/lib/axios";
+
+function isValidEmail(email: string) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
 
 function LandingPage() {
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
+
+  async function handleSubmit() {
+    setError(null);
+    setSuccess(false);
+
+    if (!email.trim()) {
+      setError("Email is required");
+      return;
+    }
+
+    if (!isValidEmail(email)) {
+      setError("Please enter a valid email");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      await api.post("/api/waitlist/addWaitlist", {
+        email,
+      });
+
+      setSuccess(true);
+      setEmail("");
+    } catch (err: any) {
+      const message = err?.response?.data?.error || "Failed to join waitlist";
+      setError(message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <div className="relative min-h-[90vh] overflow-hidden bg-linear-to-b from-[#193088] via-[#3045AA] to-[#a9b9ff] text-white pb-20">
       <img
@@ -11,20 +55,32 @@ function LandingPage() {
 
       <HomeNavbar />
 
-      {/* Hero Section */}
-      <main className="relative z-10 flex flex-col items-center justify-center px-4 pt-20 md:pt-10 text-center ">
-        <h1 className="text-2xl md:text-5xl font-semibold mb-4">
+      <motion.main
+        variants={container}
+        initial="hidden"
+        animate="show"
+        className="relative z-10 flex flex-col items-center justify-center px-4 pt-20 md:pt-10 text-center"
+      >
+        <motion.h1
+          variants={itemUp}
+          className="text-2xl md:text-5xl font-semibold mb-4"
+        >
           2× exposure to BTC & ETH & RWAs
-        </h1>
+        </motion.h1>
 
-        <p className="max-w-xs text-xs md:max-w-xl md:text-xl font-semibold text-white/80 mb-10">
+        <motion.p
+          variants={itemUp}
+          className="max-w-xs text-xs md:max-w-xl md:text-xl font-semibold text-white/80 mb-10"
+        >
           Decentralized, interest-free, profit-sharing protocol.
           <br />
           No forced liquidation.
-        </p>
+        </motion.p>
 
-        {/* YouTube Video Embed */}
-        <div className="relative w-full max-w-2xl aspect-video rounded-2xl overflow-hidden shadow-2xl bg-black">
+        <motion.div
+          variants={itemUp}
+          className="relative w-full max-w-2xl aspect-video rounded-2xl overflow-hidden shadow-2xl bg-black"
+        >
           <iframe
             width="100%"
             height="100%"
@@ -33,11 +89,11 @@ function LandingPage() {
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             referrerPolicy="strict-origin-when-cross-origin"
             allowFullScreen
-          ></iframe>
-        </div>
+          />
+        </motion.div>
 
         {/* Waitlist */}
-        <div className="mt-15 md:mt-6 w-sm md:w-md">
+        <motion.div variants={itemUp} className="mt-15 md:mt-6 w-sm md:w-md">
           <p className="flex flex-col mb-4 text-xl md:text-3xl font-semibold">
             Join the waitlist
             <span className="text-md md:text-2xl text-white/70">
@@ -48,16 +104,41 @@ function LandingPage() {
           <div className="flex flex-col gap-4 md:gap-6 items-center mt-10 mx-10">
             <input
               type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               placeholder="user@gmail.com"
-              className="w-full px-10 py-1.5 md:py-3 rounded-full text-black outline-none bg-white shadow-md"
+              disabled={loading || success}
+              className="w-full px-10 py-1.5 md:py-3 rounded-full text-black outline-none bg-white shadow-md disabled:opacity-70"
             />
-            <button className="w-full px-6 py-1.5 md:py-3 rounded-full bg-linear-to-b from-[#436FF9] to-[#4C50DF] transition font-medium shadow-md">
-              Submit
+
+            <button
+              onClick={handleSubmit}
+              disabled={loading || success}
+              className="w-full px-6 py-1.5 md:py-3 rounded-full bg-linear-to-b from-[#436FF9] to-[#4C50DF] hover:from-[#3357c1] hover:to-[#4C50DF] transition font-medium shadow-md disabled:opacity-60"
+            >
+              {loading
+                ? "Submitting..."
+                : success
+                  ? "You're on the waitlist"
+                  : "Submit"}
             </button>
+
+            {/* Error */}
+            {error && (
+              <p className="text-sm text-red-200 font-medium">{error}</p>
+            )}
+
+            {/* Success */}
+            {success && (
+              <p className="text-sm text-green-200 font-medium">
+                Successfully joined the waitlist!
+              </p>
+            )}
           </div>
-        </div>
-      </main>
+        </motion.div>
+      </motion.main>
     </div>
   );
 }
+
 export default LandingPage;

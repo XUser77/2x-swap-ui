@@ -34,7 +34,7 @@ export class TradingService {
     const V_MIN =
       season.name === "Alpha" ? 100 : season.name === "Beta" ? 250 : 500;
 
-    const tradeVolume = new Decimal(volume).toNumber();
+    const tradeVolume = new Decimal(volume).div(1e6).toNumber();
     if (tradeVolume < V_MIN) {
       return { skipped: true, reason: "Below V_MIN" };
     }

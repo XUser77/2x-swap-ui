@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { WaitlistService } from "../services/waitlist.service";
+import validator from "validator";
 
 export class WaitlistController {
   static async join(req: Request, res: Response) {
@@ -12,7 +13,13 @@ export class WaitlistController {
         });
       }
 
-      const result = await WaitlistService.addEmail(email.toLowerCase());
+      const normalizedEmail = email.trim().toLowerCase();
+
+      if (!validator.isEmail(normalizedEmail)) {
+        return res.status(400).json({ error: "Invalid email address" });
+      }
+
+      const result = await WaitlistService.addEmail(normalizedEmail);
 
       return res.status(201).json({
         success: true,

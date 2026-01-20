@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { getLeagueBadgeStyle, getRankIcon } from "@/lib/pointHelpers";
+import { getLeagueBadgeStyle } from "@/lib/pointHelpers";
 import { useLeaderboard } from "@/hooks/useLeaderboard";
+import { getRankIcon } from "../fragments/RankIcon";
 
 const PAGE_SIZE = 10;
 
@@ -71,7 +72,7 @@ export default function LeaderboardTab() {
                 <td className="py-4 px-6">
                   <span
                     className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${getLeagueBadgeStyle(
-                      entry.league
+                      entry.league,
                     )}`}
                   >
                     {entry.league}
@@ -79,11 +80,11 @@ export default function LeaderboardTab() {
                 </td>
 
                 <td className="py-4 px-6 text-right text-gray-900 font-medium">
-                  {entry.seasonPoints.toLocaleString()}
+                  {entry.seasonPoints.toFixed(1)}
                 </td>
 
                 <td className="py-4 px-6 text-right text-gray-900 font-medium">
-                  {entry.totalPoints.toLocaleString()}
+                  {entry.totalPoints.toFixed(1)}
                 </td>
               </tr>
             ))}

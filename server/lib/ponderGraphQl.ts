@@ -4,8 +4,10 @@ const PONDER_URL = process.env.PONDER_URL!;
 
 export async function fetchFromPonder<T>(
   query: string,
-  variables: Record<string, any>
+  variables: Record<string, any>,
 ): Promise<T> {
+  console.log(PONDER_URL);
+
   const res = await fetch(PONDER_URL, {
     method: "POST",
     headers: {

@@ -7,6 +7,8 @@ import userRoutes from "./routes/user.routes";
 import leaderboardRoutes from "./routes/leaderboard.routes";
 import waitlistRoutes from "./routes/waitlist.routes";
 import tradingRoutes from "./routes/trading.routes";
+import "./cron/dailyLpSnapshot";
+import "./cron/seasonRotation";
 
 const app = express();
 const allowedOrigins = process.env.FRONTEND_URL;
@@ -15,7 +17,7 @@ app.use(
   cors({
     origin: allowedOrigins,
     credentials: true,
-  })
+  }),
 );
 
 app.use(bodyParser.json());

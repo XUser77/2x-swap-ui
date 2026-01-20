@@ -20,7 +20,7 @@ function PositionsTable({ owner, limit = 10 }: Props) {
   const { data, loading, error, refetch } = useActivePosition(
     owner,
     page,
-    limit
+    limit,
   );
   const version = usePositionsSyncStore((s) => s.version);
   const bumpPositions = usePositionsSyncStore((s) => s.bump);
@@ -37,7 +37,7 @@ function PositionsTable({ owner, limit = 10 }: Props) {
   const positions = useMemo(() => {
     if (!data) return [];
     return data.positions.items.map((position) =>
-      mapOpenPosition(position, prices[position.asset] ?? { price: 0 })
+      mapOpenPosition(position, prices[position.asset] ?? { price: 0 }),
     );
   }, [data, prices]);
 
@@ -54,12 +54,12 @@ function PositionsTable({ owner, limit = 10 }: Props) {
 
   const handleClosePosition = async (
     id: bigint,
-    asset: "WBTC" | "WETH" | "PAXG"
+    asset: "WBTC" | "WETH" | "PAXG",
   ) => {
     try {
       const hash = await closePosition(id, asset);
       await publicClient?.waitForTransactionReceipt({ hash });
-      toast.success("Position closed successfully!");
+      toast.success("Position closed successfully");
       setTimeout(() => {
         bumpPositions();
       }, 1500);

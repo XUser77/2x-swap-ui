@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { preloadImages } from "@/lib/preloadImages";
 
 const slides = [
   "/images/different-1.png",
@@ -12,6 +13,11 @@ const slides = [
 export default function SwapDifferent() {
   const [index, setIndex] = useState(0);
   const [fading, setFading] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    preloadImages(slides).then(() => setLoaded(true));
+  }, []);
 
   const changeSlide = (nextIndex: number) => {
     if (fading || nextIndex === index) return;
@@ -24,6 +30,8 @@ export default function SwapDifferent() {
       setFading(false);
     }, 250);
   };
+
+  if (!loaded) return null;
 
   const prev = () => changeSlide(index === 0 ? slides.length - 1 : index - 1);
 

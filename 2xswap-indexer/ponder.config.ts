@@ -39,7 +39,7 @@ export default createConfig({
         },
       ],
       address: "0xA467e237721370855f71a9F878D90E78defd643d",
-      startBlock: 24197879,
+      startBlock: 24197912,
     },
     X2ETHPool: {
       chain: "x2swap",
@@ -70,7 +70,7 @@ export default createConfig({
         },
       ],
       address: "0xF3666759fa555DF124D48cA2eab185a1fA37410c",
-      startBlock: 24197879,
+      startBlock: 24197912,
     },
   },
 });

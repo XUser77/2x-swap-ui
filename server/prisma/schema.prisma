@@ -103,7 +103,7 @@ model LiquiditySnapshot {
 
   snapshotDate DateTime
 
-  @@index([userId, snapshotDate])
+  @@unique([userId, snapshotDate])
 }
 
 model ReferralEarning {

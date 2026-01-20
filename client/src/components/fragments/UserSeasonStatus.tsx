@@ -30,11 +30,11 @@ export default function UserSeasonStatus() {
         <div className="flex items-center gap-4 mb-4">
           <div
             className={`h-20 w-20 rounded-full flex items-center justify-center text-xl font-bold ${getRankBgColor(
-              rank.name === "Academy Student" ? "Student" : rank.name
+              rank.name === "Academy Student" ? "Student" : rank.name,
             )}`}
           >
             {`${getRankKanji(
-              rank.name === "Academy Student" ? "Student" : rank.name
+              rank.name === "Academy Student" ? "Student" : rank.name,
             )}`}
           </div>
 
@@ -74,7 +74,7 @@ export default function UserSeasonStatus() {
       <div className="w-full lg:w-72 space-y-3">
         <div className="flex items-center justify-between rounded-lg bg-gray-50 px-4 py-3 text-sm">
           <span className="text-muted-foreground">Season</span>
-          <span className="font-medium">{season.name}</span>
+          <span className="font-medium">Season {season.id}</span>
         </div>
 
         <div className="flex items-center justify-between rounded-lg bg-gray-50 px-4 py-3 text-sm">
@@ -85,7 +85,7 @@ export default function UserSeasonStatus() {
         <div className="flex items-center justify-between rounded-lg bg-gray-50 px-4 py-3 text-sm">
           <span className="text-muted-foreground">All-time points</span>
           <span className="font-medium">
-            {points.allTimePoints.toLocaleString()} pts
+            {points.allTimePoints.toFixed(1)} pts
           </span>
         </div>
       </div>

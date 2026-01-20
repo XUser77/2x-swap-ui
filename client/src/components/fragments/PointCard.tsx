@@ -2,7 +2,7 @@ import { ArrowRight, Check } from "lucide-react";
 
 type Step = {
   label: string;
-  value?: string;
+  value?: string | React.ReactNode;
   done?: boolean;
 };
 
@@ -38,35 +38,39 @@ export function PointCard({
       </div>
 
       {/* Steps */}
-      <div className=" rounded-xl p-2 md:p-6 flex items-center justify-around gap-10">
+      <div className="grid grid-cols-[1fr_auto_1fr_auto_1fr] items-center mt-4">
         {steps.map((step, i) => (
-          <div
-            key={i}
-            className="flex items-center justify-center gap-2 md:gap-35"
-          >
-            <div className="flex flex-col items-center">
-              <p className="text-sm text-muted-foreground mb-2">{step.label}</p>
+          <>
+            {/* Step */}
+            <div key={`step-${i}`} className="flex flex-col items-center">
+              <p className="text-xs md:text-sm text-muted-foreground mb-2 text-center">
+                {step.label}
+              </p>
 
               <div
                 className={`w-12 h-12 rounded-xl flex items-center justify-center text-sm font-medium
-                ${
-                  step.done
-                    ? `${colorMap[color]} text-white`
-                    : `border-2 ${colorMap[color]} bg-white`
-                }`}
+          ${
+            step.done
+              ? `${colorMap[color]} text-white`
+              : `border-2 ${colorMap[color]} bg-white`
+          }`}
               >
                 {step.done && !step.value ? (
                   <Check className="w-5 h-5" />
                 ) : (
-                  step.value ?? ""
+                  (step.value ?? "")
                 )}
               </div>
             </div>
 
+            {/* Arrow (between steps only) */}
             {i < steps.length - 1 && (
-              <ArrowRight className="w-5 h-5 text-muted-foreground" />
+              <ArrowRight
+                key={`arrow-${i}`}
+                className="w-5 h-5 text-muted-foreground mx-4"
+              />
             )}
-          </div>
+          </>
         ))}
       </div>
 

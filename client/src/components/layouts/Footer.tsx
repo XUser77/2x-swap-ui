@@ -29,7 +29,7 @@ export default function Footer() {
         src="/footer-half-circle.png"
         alt="footer half circle"
         className="flex md:hidden
-          absolute bottom-0
+          absolute bottom-0.5 scale-105
         "
       />
 
