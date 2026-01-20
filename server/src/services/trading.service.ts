@@ -1,4 +1,4 @@
-import { prisma } from "../../lib/prisma";
+import { prisma } from "../lib/prisma";
 import Decimal from "decimal.js";
 
 const MAX_TRADES_PER_DAY = 20;

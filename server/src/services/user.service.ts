@@ -1,5 +1,5 @@
 // services/user-stats.service.ts
-import { prisma } from "../../lib/prisma";
+import { prisma } from "../lib/prisma";
 
 const RANKS = [
   { name: "Kage", max: 1 },
@@ -81,7 +81,7 @@ export class UserStatsService {
     /** Days remaining */
     const endsInDays = Math.max(
       0,
-      Math.ceil((season.endAt.getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+      Math.ceil((season.endAt.getTime() - Date.now()) / (1000 * 60 * 60 * 24)),
     );
 
     return {

@@ -1,5 +1,5 @@
 import { randomBytes } from "crypto";
-import { prisma } from "../../lib/prisma";
+import { prisma } from "../lib/prisma";
 
 type AttachReferralInput = {
   wallet: string;
@@ -107,7 +107,7 @@ export class ReferralService {
     });
 
     const activeCount = activeInvitees.filter(
-      (u) => u.trades.length > 0 || u.liquiditySnapshots.length > 0
+      (u) => u.trades.length > 0 || u.liquiditySnapshots.length > 0,
     ).length;
 
     return {
@@ -167,12 +167,12 @@ export class ReferralService {
     return invitees.map((invitee) => {
       const tradeVolume = invitee.trades.reduce(
         (sum, t) => sum + Number(t.volume),
-        0
+        0,
       );
 
       const lpVolume = invitee.liquiditySnapshots.reduce(
         (sum, l) => sum + Number(l.avgDailyBalance),
-        0
+        0,
       );
 
       let activityType: "Trading" | "Liquidity" | "Mixed" | "None" = "None";

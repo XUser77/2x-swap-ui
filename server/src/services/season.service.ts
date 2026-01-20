@@ -1,4 +1,4 @@
-import { prisma } from "../../lib/prisma";
+import { prisma } from "../lib/prisma";
 import { addMonths, startOfDay, endOfDay } from "date-fns";
 
 type SeasonConfig = {
@@ -48,7 +48,7 @@ export class SeasonService {
        * 4. Determine next season config
        */
       const currentIndex = SEASONS.findIndex(
-        (s) => s.name === activeSeason.name
+        (s) => s.name === activeSeason.name,
       );
 
       if (currentIndex === -1 || currentIndex === SEASONS.length - 1) {

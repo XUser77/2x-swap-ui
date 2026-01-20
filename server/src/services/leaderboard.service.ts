@@ -1,4 +1,4 @@
-import { prisma } from "../../lib/prisma";
+import { prisma } from "../lib/prisma";
 import { getLeagueFromPercentile } from "../utils/league";
 
 type GetLeaderboardInput = {
@@ -78,7 +78,7 @@ export class LeaderboardService {
 
     const userMap = new Map(users.map((u) => [u.id, u]));
     const seasonMap = new Map(
-      seasonTotals.map((s) => [s.userId, s.totalPoints])
+      seasonTotals.map((s) => [s.userId, s.totalPoints]),
     );
 
     /**

@@ -1,5 +1,5 @@
 import { addMonths, startOfDay, endOfDay } from "date-fns";
-import { prisma } from "../lib/prisma.js";
+import { prisma } from "../src/lib/prisma.js";
 
 const SEASONS = [
   { name: "Alpha", multiplier: 3 },
