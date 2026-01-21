@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { UserStatsService } from "../services/user.service";
+import { UserStatsService } from "../services/user.service.js";
 
 export async function getUserSeasonStatus(req: Request, res: Response) {
   try {

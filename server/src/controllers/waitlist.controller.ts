@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { WaitlistService } from "../services/waitlist.service";
+import { WaitlistService } from "../services/waitlist.service.js";
 import validator from "validator";
 
 export class WaitlistController {

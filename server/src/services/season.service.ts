@@ -1,4 +1,4 @@
-import { prisma } from "../lib/prisma";
+import { prisma } from "../lib/prisma.js";
 import { addMonths, startOfDay, endOfDay } from "date-fns";
 
 type SeasonConfig = {

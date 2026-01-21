@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { ReferralService } from "../services/referral.service";
+import { ReferralService } from "../services/referral.service.js";
 
 /**
  * STEP WHERE REFERRAL IS LOCKED

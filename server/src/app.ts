@@ -1,14 +1,14 @@
 import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
-import referralRoutes from "./routes/referral.routes";
-import authRoutes from "./routes/auth.routes";
-import userRoutes from "./routes/user.routes";
-import leaderboardRoutes from "./routes/leaderboard.routes";
-import waitlistRoutes from "./routes/waitlist.routes";
-import tradingRoutes from "./routes/trading.routes";
-import "./cron/dailyLpSnapshot";
-import "./cron/seasonRotation";
+import referralRoutes from "./routes/referral.routes.js";
+import authRoutes from "./routes/auth.routes.js";
+import userRoutes from "./routes/user.routes.js";
+import leaderboardRoutes from "./routes/leaderboard.routes.js";
+import waitlistRoutes from "./routes/waitlist.routes.js";
+import tradingRoutes from "./routes/trading.routes.js";
+import "./cron/dailyLpSnapshot.js";
+import "./cron/seasonRotation.js";
 
 const app = express();
 const allowedOrigins = process.env.FRONTEND_URL;

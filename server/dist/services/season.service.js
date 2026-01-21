@@ -1,13 +1,16 @@
-import { prisma } from "../lib/prisma";
-import { addMonths, startOfDay, endOfDay } from "date-fns";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.SeasonService = void 0;
+const prisma_js_1 = require("../lib/prisma.js");
+const date_fns_1 = require("date-fns");
 const SEASONS = [
     { name: "Alpha", multiplier: 3 },
     { name: "Beta", multiplier: 2 },
     { name: "Growth", multiplier: 1 },
 ];
-export class SeasonService {
+class SeasonService {
     static async rotateSeason(now = new Date()) {
-        return prisma.$transaction(async (tx) => {
+        return prisma_js_1.prisma.$transaction(async (tx) => {
             /**
              * 1. Find active season
              */
@@ -44,8 +47,8 @@ export class SeasonService {
             /**
              * 5. Create next season
              */
-            const startAt = startOfDay(activeSeason.endAt);
-            const endAt = endOfDay(addMonths(startAt, 3));
+            const startAt = (0, date_fns_1.startOfDay)(activeSeason.endAt);
+            const endAt = (0, date_fns_1.endOfDay)((0, date_fns_1.addMonths)(startAt, 3));
             const newSeason = await tx.season.create({
                 data: {
                     name: next.name,
@@ -71,3 +74,4 @@ export class SeasonService {
         });
     }
 }
+exports.SeasonService = SeasonService;

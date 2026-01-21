@@ -1,28 +1,34 @@
-import { prisma } from "../lib/prisma";
-import Decimal from "decimal.js";
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.TradingService = void 0;
+const prisma_js_1 = require("../lib/prisma.js");
+const decimal_js_1 = __importDefault(require("decimal.js"));
 const MAX_TRADES_PER_DAY = 20;
 const LPHURT_SCORE_CAP = 200;
 const TRADER_SOFTCAP_DAY = 2000;
 const TRADER_SOFTCAP_RATE = 0.25;
 const REF_RATE = 0.25;
 const MIN_ACTIVITY_POINTS = 200;
-export class TradingService {
+class TradingService {
     static async processTrade(input) {
         const { wallet, txHash, volume, pnl, lpHurt, timestamp } = input;
-        const user = await prisma.user.findUnique({
+        const user = await prisma_js_1.prisma.user.findUnique({
             where: { wallet: wallet.toLowerCase() },
             include: { referredBy: true },
         });
         if (!user)
             throw new Error("User not found");
-        const season = await prisma.season.findFirst({
+        const season = await prisma_js_1.prisma.season.findFirst({
             where: { isActive: true },
         });
         if (!season)
             throw new Error("No active season");
         /** ---- Eligibility ---- */
         const V_MIN = season.name === "Alpha" ? 100 : season.name === "Beta" ? 250 : 500;
-        const tradeVolume = new Decimal(volume).div(1e6).toNumber();
+        const tradeVolume = new decimal_js_1.default(volume).div(1e6).toNumber();
         if (tradeVolume < V_MIN) {
             return { skipped: true, reason: "Below V_MIN" };
         }
@@ -30,7 +36,7 @@ export class TradingService {
         const dayStart = new Date(timestamp * 1000);
         dayStart.setUTCHours(0, 0, 0, 0);
         /** ---- Anti-farming ---- */
-        const dailyCount = await prisma.tradeScore.count({
+        const dailyCount = await prisma_js_1.prisma.tradeScore.count({
             where: {
                 userId: user.id,
                 createdAt: { gte: dayStart },
@@ -51,7 +57,7 @@ export class TradingService {
         let finalScore = base * multiplier;
         /** ---- LP hurt cap ---- */
         if (lpHurt) {
-            const lpHurtSum = await prisma.tradeScore.aggregate({
+            const lpHurtSum = await prisma_js_1.prisma.tradeScore.aggregate({
                 where: {
                     userId: user.id,
                     lpHurt: true,
@@ -64,7 +70,7 @@ export class TradingService {
             }
         }
         /** ---- Whale soft cap ---- */
-        const dailySum = await prisma.tradeScore.aggregate({
+        const dailySum = await prisma_js_1.prisma.tradeScore.aggregate({
             where: {
                 userId: user.id,
                 createdAt: { gte: dayStart },
@@ -75,7 +81,7 @@ export class TradingService {
             finalScore *= TRADER_SOFTCAP_RATE;
         }
         /** ---- Persist TradeScore ---- */
-        const trade = await prisma.tradeScore.create({
+        const trade = await prisma_js_1.prisma.tradeScore.create({
             data: {
                 userId: user.id,
                 seasonId: season.id,
@@ -89,7 +95,7 @@ export class TradingService {
         });
         /** ---- Update trader SeasonTotal ---- */
         const effectiveTraderPoints = finalScore * season.multiplier;
-        const traderSeasonTotal = await prisma.seasonTotal.upsert({
+        const traderSeasonTotal = await prisma_js_1.prisma.seasonTotal.upsert({
             where: {
                 userId_seasonId: {
                     userId: user.id,
@@ -124,7 +130,7 @@ export class TradingService {
         const inviteeActivity = invitee.traderActivityPoints + invitee.lpActivityPoints;
         if (inviteeActivity < MIN_ACTIVITY_POINTS)
             return;
-        const referrerTotal = await prisma.seasonTotal.findUnique({
+        const referrerTotal = await prisma_js_1.prisma.seasonTotal.findUnique({
             where: {
                 userId_seasonId: {
                     userId: referrerId,
@@ -144,7 +150,7 @@ export class TradingService {
         if (referralPoints <= 0)
             return;
         /** ---- Persist ReferralEarning ---- */
-        await prisma.referralEarning.upsert({
+        await prisma_js_1.prisma.referralEarning.upsert({
             where: {
                 referrerId_inviteeId_seasonId: {
                     referrerId,
@@ -167,7 +173,7 @@ export class TradingService {
             },
         });
         /** ---- Update referrer SeasonTotal ---- */
-        await prisma.seasonTotal.update({
+        await prisma_js_1.prisma.seasonTotal.update({
             where: {
                 userId_seasonId: {
                     userId: referrerId,
@@ -181,3 +187,4 @@ export class TradingService {
         });
     }
 }
+exports.TradingService = TradingService;

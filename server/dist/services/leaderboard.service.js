@@ -1,8 +1,11 @@
-import { prisma } from "../lib/prisma";
-import { getLeagueFromPercentile } from "../utils/league";
-export class LeaderboardService {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.LeaderboardService = void 0;
+const prisma_js_1 = require("../lib/prisma.js");
+const league_js_1 = require("../utils/league.js");
+class LeaderboardService {
     static async getLeaderboard({ page, limit }) {
-        const activeSeason = await prisma.season.findFirst({
+        const activeSeason = await prisma_js_1.prisma.season.findFirst({
             where: { isActive: true },
         });
         if (!activeSeason)
@@ -12,7 +15,7 @@ export class LeaderboardService {
          * 1️⃣ Compute ALL-TIME points per user
          * Only users with points > 0 are ranked
          */
-        const rankedUsers = await prisma.seasonTotal.groupBy({
+        const rankedUsers = await prisma_js_1.prisma.seasonTotal.groupBy({
             by: ["userId"],
             _sum: {
                 totalPoints: true,
@@ -35,7 +38,7 @@ export class LeaderboardService {
         /**
          * Total ranked users (for percentile math)
          */
-        const totalRankedUsers = await prisma.seasonTotal.groupBy({
+        const totalRankedUsers = await prisma_js_1.prisma.seasonTotal.groupBy({
             by: ["userId"],
             having: {
                 totalPoints: {
@@ -51,11 +54,11 @@ export class LeaderboardService {
          */
         const userIds = rankedUsers.map((r) => r.userId);
         const [users, seasonTotals] = await Promise.all([
-            prisma.user.findMany({
+            prisma_js_1.prisma.user.findMany({
                 where: { id: { in: userIds } },
                 select: { id: true, wallet: true },
             }),
-            prisma.seasonTotal.findMany({
+            prisma_js_1.prisma.seasonTotal.findMany({
                 where: {
                     userId: { in: userIds },
                     seasonId: activeSeason.id,
@@ -73,7 +76,7 @@ export class LeaderboardService {
             return {
                 rank: globalRank,
                 wallet: userMap.get(row.userId)?.wallet ?? "Unknown",
-                league: getLeagueFromPercentile(percentile),
+                league: (0, league_js_1.getLeagueFromPercentile)(percentile),
                 seasonPoints: seasonMap.get(row.userId) ?? 0,
                 totalPoints: row._sum.totalPoints ?? 0,
             };
@@ -87,3 +90,4 @@ export class LeaderboardService {
         };
     }
 }
+exports.LeaderboardService = LeaderboardService;

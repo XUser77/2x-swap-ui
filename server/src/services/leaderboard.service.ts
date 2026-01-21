@@ -1,5 +1,5 @@
-import { prisma } from "../lib/prisma";
-import { getLeagueFromPercentile } from "../utils/league";
+import { prisma } from "../lib/prisma.js";
+import { getLeagueFromPercentile } from "../utils/league.js";
 
 type GetLeaderboardInput = {
   page: number;

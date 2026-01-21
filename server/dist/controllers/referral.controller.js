@@ -1,11 +1,17 @@
-import { ReferralService } from "../services/referral.service";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.AttachReferral = AttachReferral;
+exports.getReferralStats = getReferralStats;
+exports.getReferralCode = getReferralCode;
+exports.getReferralActivity = getReferralActivity;
+const referral_service_js_1 = require("../services/referral.service.js");
 /**
  * STEP WHERE REFERRAL IS LOCKED
  */
-export async function AttachReferral(req, res) {
+async function AttachReferral(req, res) {
     try {
         const { wallet, referralCode } = req.body;
-        const result = await ReferralService.attachReferral({
+        const result = await referral_service_js_1.ReferralService.attachReferral({
             wallet,
             referralCode,
         });
@@ -27,12 +33,12 @@ export async function AttachReferral(req, res) {
 /**
  * GET /referrals/stats
  */
-export async function getReferralStats(req, res) {
+async function getReferralStats(req, res) {
     try {
         const userId = req.user?.id;
         if (!userId)
             return res.status(400).json({ error: "Invalid user id" });
-        const stats = await ReferralService.getReferralStats(userId);
+        const stats = await referral_service_js_1.ReferralService.getReferralStats(userId);
         return res.json(stats);
     }
     catch (err) {
@@ -42,12 +48,12 @@ export async function getReferralStats(req, res) {
 /**
  * GET /referrals/code
  */
-export async function getReferralCode(req, res) {
+async function getReferralCode(req, res) {
     try {
         const userId = req.user?.id;
         if (!userId)
             return res.status(400).json({ error: "Invalid user id" });
-        const data = await ReferralService.getReferralCode(userId);
+        const data = await referral_service_js_1.ReferralService.getReferralCode(userId);
         return res.json(data);
     }
     catch (err) {
@@ -57,12 +63,12 @@ export async function getReferralCode(req, res) {
 /**
  * GET /referrals/activity
  */
-export async function getReferralActivity(req, res) {
+async function getReferralActivity(req, res) {
     try {
         const userId = req.user?.id;
         if (!userId)
             return res.status(400).json({ error: "Invalid user id" });
-        const activity = await ReferralService.getReferralActivity(userId);
+        const activity = await referral_service_js_1.ReferralService.getReferralActivity(userId);
         return res.json(activity);
     }
     catch (err) {

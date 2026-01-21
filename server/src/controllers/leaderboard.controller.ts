@@ -1,6 +1,6 @@
 // controllers/leaderboard.controller.ts
 import { Request, Response } from "express";
-import { LeaderboardService } from "../services/leaderboard.service";
+import { LeaderboardService } from "../services/leaderboard.service.js";
 
 export async function getLeaderboard(req: Request, res: Response) {
   try {

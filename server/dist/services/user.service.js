@@ -1,5 +1,8 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.UserStatsService = void 0;
 // services/user-stats.service.ts
-import { prisma } from "../lib/prisma";
+const prisma_js_1 = require("../lib/prisma.js");
 const RANKS = [
     { name: "Kage", max: 1 },
     { name: "Anbu", max: 5 },
@@ -8,16 +11,16 @@ const RANKS = [
     { name: "Genin", max: 80 },
     { name: "Academy Student", max: 100 },
 ];
-export class UserStatsService {
+class UserStatsService {
     static async getSeasonStatus(userId) {
         /** Active season */
-        const season = await prisma.season.findFirst({
+        const season = await prisma_js_1.prisma.season.findFirst({
             where: { isActive: true },
         });
         if (!season)
             throw new Error("No active season");
         /** User season total */
-        const seasonTotal = await prisma.seasonTotal.findUnique({
+        const seasonTotal = await prisma_js_1.prisma.seasonTotal.findUnique({
             where: {
                 userId_seasonId: {
                     userId,
@@ -27,13 +30,13 @@ export class UserStatsService {
         });
         const seasonPoints = seasonTotal?.totalPoints ?? 0;
         /** All-time points */
-        const allTimeAgg = await prisma.seasonTotal.aggregate({
+        const allTimeAgg = await prisma_js_1.prisma.seasonTotal.aggregate({
             where: { userId },
             _sum: { totalPoints: true },
         });
         const allTimePoints = allTimeAgg._sum.totalPoints ?? 0;
         /** Leaderboard (only users with points) */
-        const leaderboard = await prisma.seasonTotal.findMany({
+        const leaderboard = await prisma_js_1.prisma.seasonTotal.findMany({
             where: {
                 seasonId: season.id,
                 totalPoints: { gt: 0 },
@@ -84,7 +87,7 @@ export class UserStatsService {
         };
     }
     static async checkWallet(wallet) {
-        const user = await prisma.user.findUnique({
+        const user = await prisma_js_1.prisma.user.findUnique({
             where: { wallet: wallet.toLowerCase() },
             select: {
                 id: true,
@@ -105,3 +108,4 @@ export class UserStatsService {
         };
     }
 }
+exports.UserStatsService = UserStatsService;

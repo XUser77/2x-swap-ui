@@ -1,4 +1,7 @@
-export function getLeagueFromPercentile(p) {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getLeagueFromPercentile = getLeagueFromPercentile;
+function getLeagueFromPercentile(p) {
     if (p <= 0.01)
         return "Kage"; // top 1%
     if (p <= 0.05)

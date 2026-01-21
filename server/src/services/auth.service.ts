@@ -1,4 +1,4 @@
-import { prisma } from "../lib/prisma";
+import { prisma } from "../lib/prisma.js";
 import { randomBytes } from "crypto";
 import { verifyMessage } from "ethers";
 

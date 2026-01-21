@@ -1,5 +1,5 @@
 // services/user-stats.service.ts
-import { prisma } from "../lib/prisma";
+import { prisma } from "../lib/prisma.js";
 
 const RANKS = [
   { name: "Kage", max: 1 },

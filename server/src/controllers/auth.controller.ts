@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { AuthService } from "../services/auth.service";
-import { signJwt } from "../lib/jwt";
+import { AuthService } from "../services/auth.service.js";
+import { signJwt } from "../lib/jwt.js";
 
 export async function getNonce(req: Request, res: Response) {
   const { wallet } = req.body;

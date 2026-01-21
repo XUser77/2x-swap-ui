@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getNonce, loginWithWallet } from "../controllers/auth.controller";
+import { getNonce, loginWithWallet } from "../controllers/auth.controller.js";
 
 const router = Router();
 

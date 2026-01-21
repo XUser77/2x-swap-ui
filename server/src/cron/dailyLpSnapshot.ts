@@ -1,6 +1,6 @@
 // cron/dailyLpSnapshot.ts
 import cron from "node-cron";
-import { LiquidityService } from "../services/liquidity.service";
+import { LiquidityService } from "../services/liquidity.service.js";
 
 // Run daily at 00:05 UTC
 cron.schedule("5 0 * * *", async () => {

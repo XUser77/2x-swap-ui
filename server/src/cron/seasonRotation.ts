@@ -1,5 +1,5 @@
 import cron from "node-cron";
-import { SeasonService } from "../services/season.service";
+import { SeasonService } from "../services/season.service.js";
 
 // Run daily at 00:10 UTC (cheap & safe)
 cron.schedule("10 0 * * *", async () => {

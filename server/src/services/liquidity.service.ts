@@ -1,8 +1,8 @@
 // services/liquidity.service.ts
-import { prisma } from "../lib/prisma";
+import { prisma } from "../lib/prisma.js";
 import Decimal from "decimal.js";
 import { startOfDay, endOfDay } from "date-fns";
-import { DAY_QUERY, fetchFromPonder } from "../lib/ponderGraphQl";
+import { DAY_QUERY, fetchFromPonder } from "../lib/ponderGraphQl.js";
 
 const LP_SOFTCAP_DAY = 5000;
 const LP_SOFTCAP_RATE = 0.25;

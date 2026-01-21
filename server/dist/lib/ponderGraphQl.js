@@ -1,6 +1,10 @@
+"use strict";
 // lib/ponderGraphql.ts
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.DAY_QUERY = void 0;
+exports.fetchFromPonder = fetchFromPonder;
 const PONDER_URL = process.env.PONDER_URL;
-export async function fetchFromPonder(query, variables) {
+async function fetchFromPonder(query, variables) {
     console.log(PONDER_URL);
     const res = await fetch(PONDER_URL, {
         method: "POST",
@@ -21,7 +25,7 @@ export async function fetchFromPonder(query, variables) {
     }
     return json.data;
 }
-export const DAY_QUERY = `query DailyLpBalances($start: BigInt!, $end: BigInt!) {
+exports.DAY_QUERY = `query DailyLpBalances($start: BigInt!, $end: BigInt!) {
   lpBalanceCheckpoints(
     where: {
       timestamp_gte: $start

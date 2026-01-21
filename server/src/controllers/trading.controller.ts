@@ -1,6 +1,6 @@
 // controllers/trading.controller.ts
 import { Request, Response } from "express";
-import { TradingService } from "../services/trading.service";
+import { TradingService } from "../services/trading.service.js";
 
 export async function ingestTradeScore(req: Request, res: Response) {
   try {

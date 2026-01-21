@@ -1,11 +1,14 @@
-import { randomBytes } from "crypto";
-import { prisma } from "../lib/prisma";
-export class ReferralService {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ReferralService = void 0;
+const crypto_1 = require("crypto");
+const prisma_js_1 = require("../lib/prisma.js");
+class ReferralService {
     /* ============================
        REFERRAL LOCKING
        ============================ */
     static async attachReferral({ wallet, referralCode }) {
-        const user = await prisma.user.upsert({
+        const user = await prisma_js_1.prisma.user.upsert({
             where: { wallet: wallet.toLowerCase() },
             update: {},
             create: {
@@ -27,14 +30,14 @@ export class ReferralService {
                 message: "No referral code used",
             };
         }
-        const referrer = await prisma.user.findUnique({
+        const referrer = await prisma_js_1.prisma.user.findUnique({
             where: { referralCode },
         });
         if (!referrer)
             throw new Error("Invalid referral code");
         if (referrer.id === user.id)
             throw new Error("Cannot refer yourself");
-        const updatedUser = await prisma.user.update({
+        const updatedUser = await prisma_js_1.prisma.user.update({
             where: { id: user.id },
             data: { referredById: referrer.id },
         });
@@ -49,30 +52,30 @@ export class ReferralService {
        REFERRAL STATS
        ============================ */
     static async getReferralStats(userId) {
-        const activeSeason = await prisma.season.findFirst({
+        const activeSeason = await prisma_js_1.prisma.season.findFirst({
             where: { isActive: true },
         });
         if (!activeSeason)
             throw new Error("No active season");
         const [referredParticipants, seasonPoints, allTimePoints] = await Promise.all([
-            prisma.user.count({
+            prisma_js_1.prisma.user.count({
                 where: { referredById: userId },
             }),
-            prisma.referralEarning.aggregate({
+            prisma_js_1.prisma.referralEarning.aggregate({
                 where: {
                     referrerId: userId,
                     seasonId: activeSeason.id,
                 },
                 _sum: { referralPoints: true },
             }),
-            prisma.referralEarning.aggregate({
+            prisma_js_1.prisma.referralEarning.aggregate({
                 where: { referrerId: userId },
                 _sum: { referralPoints: true },
             }),
         ]);
         // Active referrals (last 30 days)
         const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-        const activeInvitees = await prisma.user.findMany({
+        const activeInvitees = await prisma_js_1.prisma.user.findMany({
             where: { referredById: userId },
             select: {
                 id: true,
@@ -98,7 +101,7 @@ export class ReferralService {
        REFERRAL CODE
        ============================ */
     static async getReferralCode(userId) {
-        const user = await prisma.user.findUnique({
+        const user = await prisma_js_1.prisma.user.findUnique({
             where: { id: userId },
             select: { referralCode: true },
         });
@@ -112,12 +115,12 @@ export class ReferralService {
        REFERRAL ACTIVITY TABLE
        ============================ */
     static async getReferralActivity(userId) {
-        const activeSeason = await prisma.season.findFirst({
+        const activeSeason = await prisma_js_1.prisma.season.findFirst({
             where: { isActive: true },
         });
         if (!activeSeason)
             throw new Error("No active season");
-        const invitees = await prisma.user.findMany({
+        const invitees = await prisma_js_1.prisma.user.findMany({
             where: { referredById: userId },
             include: {
                 trades: {
@@ -158,6 +161,7 @@ export class ReferralService {
        UTIL
        ============================ */
     static generateReferralCode() {
-        return randomBytes(4).toString("hex").toUpperCase();
+        return (0, crypto_1.randomBytes)(4).toString("hex").toUpperCase();
     }
 }
+exports.ReferralService = ReferralService;
