@@ -44,8 +44,8 @@ export default function HowPointsWorkTab() {
         color="violet"
         steps={[
           { label: "Week 1", value: "1.0×" },
-          { label: "Week 4", value: "1.2×" },
-          { label: "Week 12", value: "1.5×", done: true },
+          { label: "Week 2", value: "1.5×" },
+          { label: "Month 1", value: "2.0×", done: true },
         ]}
         description="Applied to liquidity points only. Your multiplier grows over time while providing liquidity without full withdrawal. Partial withdrawals reduce it proportionally."
         note="Multiplier values are illustrative and may change over time."

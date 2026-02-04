@@ -1,7 +1,5 @@
 import type { ClosedPositionAPY } from "@/graphql/types";
 
-const ONE_YEAR_SECONDS = 365n * 24n * 60n * 60n;
-
 export function parseUnits(value: number, decimals: number): bigint {
   return BigInt(Math.floor(value * 10 ** decimals));
 }
@@ -13,19 +11,25 @@ export function formatUSDCompact(value: number) {
   }).format(value);
 }
 
+const ONE_YEAR_SECONDS = 365n * 24n * 60n * 60n;
+
 export function calculatePoolApy(params: {
   positions: ClosedPositionAPY[];
   windowStart: number; // unix seconds
   windowEnd?: number; // defaults to now
+  totalDebt: bigint; // deployed capital
+  tvl: bigint; // total pool capital (idle + deployed)
 }): number {
   const {
     positions,
     windowStart,
     windowEnd = Math.floor(Date.now() / 1000),
+    totalDebt,
+    tvl,
   } = params;
 
   let totalProfit = 0n; // USDC (6 decimals)
-  let totalCapitalTime = 0n; // USDC * seconds
+  let totalCapitalTime = 0n; // deployed USDC * seconds
 
   const windowStartBig = BigInt(windowStart);
   const windowEndBig = BigInt(windowEnd);
@@ -36,28 +40,19 @@ export function calculatePoolApy(params: {
     const openedAt = BigInt(p.opened_at);
     const closedAt = BigInt(p.closed_at);
 
-    // Ignore malformed data
     if (closedAt <= openedAt) continue;
+    if (closedAt <= windowStartBig || openedAt >= windowEndBig) continue;
 
-    // Skip if outside window
-    if (closedAt <= windowStartBig || openedAt >= windowEndBig) {
-      continue;
-    }
-
-    // Pool principal = half of total position size
     const poolPrincipal = assetAmount / 2n;
 
-    // Effective time range inside window
     const effectiveOpen = openedAt > windowStartBig ? openedAt : windowStartBig;
     const effectiveClose = closedAt < windowEndBig ? closedAt : windowEndBig;
     const duration = effectiveClose - effectiveOpen;
 
     if (duration <= 0n) continue;
 
-    // Profit calculation
     const profit = closeAssetAmount - assetAmount;
 
-    // Pool only earns on profitable trades
     const poolBonus =
       profit > 0n ? (profit * BigInt(p.profit_sharing)) / 100n : 0n;
 
@@ -65,16 +60,22 @@ export function calculatePoolApy(params: {
     totalCapitalTime += poolPrincipal * duration;
   }
 
-  // Safety: no deployed capital
-  if (totalCapitalTime === 0n) {
+  // No deployed capital → no yield
+  if (totalCapitalTime === 0n || totalDebt === 0n || tvl === 0n) {
     return 0;
   }
 
-  // Annualize
-  const apy = Number((totalProfit * ONE_YEAR_SECONDS) / totalCapitalTime);
+  // Strategy APY (on used capital only)
+  const strategyApy = (totalProfit * ONE_YEAR_SECONDS) / totalCapitalTime;
 
-  // Convert from USDC units to %
-  return apy;
+  // Utilization = used / total
+  // scaled to 1e18 precision to avoid truncation
+  const utilization = (totalDebt * 1_000_000_000_000_000_000n) / tvl;
+
+  // LP APY = Strategy APY × Utilization
+  const lpApyScaled = (strategyApy * utilization) / 1_000_000_000_000_000_000n;
+
+  return Number(lpApyScaled);
 }
 
 export function floorTo4H(timestamp: number) {

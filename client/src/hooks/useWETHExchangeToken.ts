@@ -1,17 +1,16 @@
 import { useReadContract } from "wagmi";
 import X2UniswapV2Exchange from "@/abi/X2UniswapV2Exchange.json";
-
-const X2_UNISWAP_EXCHANGE = "0xcc61cEB32C2E6e04f1787Ce4B61D8BD78aE4922E";
+import { MOCK_UNISWAP_V2 } from "@/constants/trade";
 
 export function useWETHExchangeTokens() {
   const { data: token0 } = useReadContract({
-    address: X2_UNISWAP_EXCHANGE,
+    address: MOCK_UNISWAP_V2,
     abi: X2UniswapV2Exchange,
     functionName: "token0",
   });
 
   const { data: token1 } = useReadContract({
-    address: X2_UNISWAP_EXCHANGE,
+    address: MOCK_UNISWAP_V2,
     abi: X2UniswapV2Exchange,
     functionName: "token1",
   });

@@ -5,6 +5,8 @@ import { RecentPoolActivity } from "@/components/layouts/RecentPoolActivity";
 import { TVLChart } from "@/components/layouts/TVLChart";
 import { PoolProvider } from "@/contexts/PoolContext";
 import { useClosedPositionsSince } from "@/hooks/useClosedPositionsSince";
+import { useTotalDebt } from "@/hooks/useTotalDebt";
+import { useTotalLiquidity } from "@/hooks/useTotalLiquidity";
 import { calculatePoolApy } from "@/lib/helpers";
 import { useAccount } from "wagmi";
 
@@ -14,11 +16,15 @@ function Pool() {
   const since = (Math.floor(Date.now() / 1000) - 30 * 86400).toString();
 
   const { data, loading } = useClosedPositionsSince(since);
+  const { totalDebt } = useTotalDebt();
+  const { totalLiquidity } = useTotalLiquidity();
 
   if (!loading) {
     apy = calculatePoolApy({
       positions: data?.positions.items!,
       windowStart: Math.floor(Date.now() / 1000) - 30 * 86400, // last 30 days
+      totalDebt,
+      tvl: totalLiquidity!,
     });
   }
 

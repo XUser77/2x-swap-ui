@@ -10,7 +10,7 @@ export const X2_POOL_ADDRESS: AddressMap = {
   // [mainnet.id]: "0xPOOL_MAINNET_ADDRESS",
 };
 
-export const X2_SWAP_ADDRESS: AddressMap = {
+export const X2_WETH_SWAP_ADDRESS: AddressMap = {
   [forkedMainnet.id]: "0xA467e237721370855f71a9F878D90E78defd643d",
   // [mainnet.id]: "0xSWAP_MAINNET_ADDRESS",
 };

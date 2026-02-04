@@ -18,7 +18,7 @@ function PointStatus() {
       await login(address);
       toast.success("Logged in successfully");
     } catch (err: any) {
-      toast.error(err.message || "Login failed");
+      toast.error(err?.shortMessage || err?.message || "Login failed");
     } finally {
       setLoading(false);
     }

@@ -1,8 +1,9 @@
 // services/liquidity.service.ts
 import { prisma } from "../lib/prisma.js";
 import Decimal from "decimal.js";
-import { startOfDay, endOfDay } from "date-fns";
 import { DAY_QUERY, fetchFromPonder } from "../lib/ponderGraphQl.js";
+import { whitelistedReferrer } from "../utils/whitelistedReferrer.js";
+import { getUTCDayBounds } from "../utils/day.js";
 
 const LP_SOFTCAP_DAY = 5000;
 const LP_SOFTCAP_RATE = 0.25;
@@ -15,6 +16,7 @@ function applySoftCap(score: number) {
 
 export class LiquidityService {
   static async runDailySnapshot(date: Date) {
+    console.log("RUN DAILY SNAPSHOT");
     const USDC_DECIMALS = 6;
     const USDC_SCALE = new Decimal(10).pow(USDC_DECIMALS);
 
@@ -23,8 +25,7 @@ export class LiquidityService {
     });
     if (!season) throw new Error("No active season");
 
-    const dayStart = startOfDay(date);
-    const dayEnd = endOfDay(date);
+    const { start: dayStart, end: dayEnd } = getUTCDayBounds(date);
 
     const LP_MIN =
       season.name === "Alpha" ? 200 : season.name === "Beta" ? 500 : 1000;
@@ -42,12 +43,16 @@ export class LiquidityService {
       start: Math.floor(dayStart.getTime() / 1000),
       end: Math.floor(dayEnd.getTime() / 1000),
     });
+    console.log("DAY START:", dayStart.getTime() / 1000);
+    console.log("DAY END:", dayEnd.getTime() / 1000);
 
     /** ---------------- 2. Aggregate per wallet ---------------- */
     const perWallet = new Map<
       string,
       { sum: number; count: number; endBalance: number }
     >();
+
+    console.log("DATA FETCH FROM PONDER:", data.lpBalanceCheckpoints.items);
 
     for (const row of data.lpBalanceCheckpoints.items) {
       const balance = new Decimal(row.assets).div(USDC_SCALE).toNumber();
@@ -81,8 +86,12 @@ export class LiquidityService {
       },
     });
 
+    console.log("MERGED USER:", users);
+
     /** ---------------- 5. Process each LP user ---------------- */
     for (const user of users) {
+      console.log("USER PROCESSED:", user);
+
       const wallet = user.wallet.toLowerCase();
       const checkpoint = perWallet.get(wallet);
       const prevState = previousLPStates.find((s) => s.userId === user.id);
@@ -133,6 +142,7 @@ export class LiquidityService {
       const baseScore = avgDailyBalance / 1000;
       const rawScore = baseScore * loyaltyMultiplier;
       const finalScore = applySoftCap(rawScore);
+      console.log("FINAL SCORE:", finalScore);
 
       /** ---------------- 8. Persist snapshot ---------------- */
       await prisma.liquiditySnapshot.upsert({
@@ -161,6 +171,7 @@ export class LiquidityService {
 
       /** ---------------- 9. Update SeasonTotal ---------------- */
       const seasonPoints = finalScore * season.multiplier;
+      console.log("SEASON POINTS:", seasonPoints);
 
       const seasonTotal = await prisma.seasonTotal.upsert({
         where: {
@@ -216,17 +227,43 @@ export class LiquidityService {
       },
     });
 
+    const existing = await prisma.referralEarning.findUnique({
+      where: {
+        referrerId_inviteeId_seasonId: {
+          referrerId: user.referredById,
+          inviteeId: userId,
+          seasonId: season.id,
+        },
+      },
+    });
+
     const inviteeActivity =
       seasonTotal.traderActivityPoints + seasonTotal.lpActivityPoints;
+
     const referrerActivity =
       (referrerTotal?.traderActivityPoints ?? 0) +
       (referrerTotal?.lpActivityPoints ?? 0);
 
-    if (inviteeActivity < 200 || referrerActivity < 200) return;
+    const referrer = await prisma.user.findUnique({
+      where: { id: user.referredById },
+    });
+    if (!referrer) throw new Error("User not found");
+
+    const isWhitelisted = whitelistedReferrer
+      .map((w) => w.toLowerCase())
+      .includes(referrer.wallet.toLowerCase());
+
+    if (inviteeActivity < 200) return;
+    if (!isWhitelisted && referrerActivity < 200) return;
 
     const rawReferral = inviteeActivity * REF_RATE;
-    const referralCap = referrerActivity * 2;
+    const referralCap = referrerActivity * 10;
     const referralPoints = Math.min(rawReferral, referralCap);
+
+    const previousPoints = existing?.referralPoints ?? 0;
+    const delta = referralPoints - previousPoints;
+
+    if (delta <= 0) return; // nothing new earned
 
     await prisma.referralEarning.upsert({
       where: {
@@ -259,8 +296,8 @@ export class LiquidityService {
         },
       },
       data: {
-        referralPoints: { increment: referralPoints },
-        totalPoints: { increment: referralPoints },
+        referralPoints: { increment: delta },
+        totalPoints: { increment: delta },
       },
     });
   }

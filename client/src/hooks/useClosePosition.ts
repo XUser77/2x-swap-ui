@@ -1,5 +1,5 @@
 import { useWriteContract, useChainId } from "wagmi";
-import { X2_SWAP_ADDRESS } from "@/config/contracts";
+import { X2_WETH_SWAP_ADDRESS } from "@/config/contracts";
 import x2SwapAbi from "@/abi/X2Swap.json";
 import { buildPath, ASSETS } from "@/lib/buildPath";
 import type { SymbolKey } from "./usePrice";
@@ -17,7 +17,9 @@ export function useClosePosition() {
 
     let token0;
     let token1;
+    let swapAddress;
     if (asset === "WETH") {
+      swapAddress = X2_WETH_SWAP_ADDRESS[chainId];
       token0 = TOKEN0WETH;
       token1 = TOKEN1WETH;
     }
@@ -26,13 +28,13 @@ export function useClosePosition() {
     const closePath = buildPath(
       assetAddress,
       token0 as `0x${string}`,
-      token1 as `0x${string}`
+      token1 as `0x${string}`,
     );
 
     const deadline = Math.floor(Date.now() / 1000) + 30 * 60;
 
     return writeContractAsync({
-      address: X2_SWAP_ADDRESS[chainId],
+      address: swapAddress!,
       abi: x2SwapAbi,
       functionName: "closePosition",
       args: [id, MAX_DEVIATION_BPS, MOCK_UNISWAP_V2, closePath, deadline],

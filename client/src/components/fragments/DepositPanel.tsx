@@ -9,10 +9,10 @@ import { useDepositPool } from "@/hooks/useDepositPool";
 import { parseUnits } from "viem";
 import toast from "react-hot-toast";
 import { useActivityPoolSyncStore } from "@/stores/useActivityPoolSyncStore";
-import { useUsdcAllowance } from "@/hooks/useUsdcAllowance";
 import { useApproveUsdc } from "@/hooks/useApproveUsdc";
 import { X2_POOL_ADDRESS } from "@/config/contracts";
 import { usePool } from "@/contexts/PoolContext";
+import { usePoolUsdcAllowance } from "@/hooks/usePoolUsdcAllowance";
 
 export default function DepositPanel() {
   const [amount, setAmount] = useState("");
@@ -22,7 +22,7 @@ export default function DepositPanel() {
   const publicClient = usePublicClient();
   const { deposit, isPending } = useDepositPool();
   const bumpPositions = useActivityPoolSyncStore((s) => s.bump);
-  const { allowance, refetch } = useUsdcAllowance();
+  const { allowance, refetch } = usePoolUsdcAllowance();
   const { approve } = useApproveUsdc();
   const chainId = useChainId();
   const { apy } = usePool();
@@ -57,7 +57,7 @@ export default function DepositPanel() {
       if ((allowance ?? 0n) < depositAmountBn) {
         const approveHash = await approve(
           X2_POOL_ADDRESS[chainId],
-          depositAmountBn
+          depositAmountBn,
         );
         await publicClient?.waitForTransactionReceipt({
           hash: approveHash,
@@ -109,11 +109,9 @@ export default function DepositPanel() {
         <p className="text-xs text-gray-500">Estimated annual return</p>
         <p className="text-lg ">{`$${(
           amountNum +
-          amountNum * (apy / 10000)
+          amountNum * (apy / 100)
         ).toFixed(2)}`}</p>
-        <p className="text-xs text-gray-500">
-          Based on current {apy / 100}% APY
-        </p>
+        <p className="text-xs text-gray-500">Based on current {apy}% APY</p>
       </div>
 
       <button
@@ -124,8 +122,8 @@ export default function DepositPanel() {
         {isPending
           ? "Depositing..."
           : amountNum
-          ? "Deposit to pool"
-          : "Enter amount to deposit"}
+            ? "Deposit to pool"
+            : "Enter amount to deposit"}
       </button>
 
       <div className="text-xs space-y-1">

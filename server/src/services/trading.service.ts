@@ -1,5 +1,6 @@
 import { prisma } from "../lib/prisma.js";
 import Decimal from "decimal.js";
+import { whitelistedReferrer } from "../utils/whitelistedReferrer.js";
 
 const MAX_TRADES_PER_DAY = 20;
 const LPHURT_SCORE_CAP = 200;
@@ -175,14 +176,36 @@ export class TradingService {
     const referrerActivity =
       referrerTotal.traderActivityPoints + referrerTotal.lpActivityPoints;
 
-    if (referrerActivity < MIN_ACTIVITY_POINTS) return;
+    const referrer = await prisma.user.findUnique({
+      where: { id: referrerId },
+    });
+    if (!referrer) throw new Error("User not found");
+
+    const isWhitelisted = whitelistedReferrer.includes(referrer.wallet);
+
+    if (!isWhitelisted && referrerActivity < MIN_ACTIVITY_POINTS) return;
+
+    const existing = await prisma.referralEarning.findUnique({
+      where: {
+        referrerId_inviteeId_seasonId: {
+          referrerId,
+          inviteeId: invitee.userId,
+          seasonId,
+        },
+      },
+    });
 
     /** ---- Referral points ---- */
     const rawReferral = inviteeActivity * REF_RATE;
-    const referralCap = referrerActivity * 2;
+    const referralCap = referrerActivity * 10;
 
     const referralPoints = Math.min(rawReferral, referralCap);
     if (referralPoints <= 0) return;
+
+    const previousPoints = existing?.referralPoints ?? 0;
+    const delta = referralPoints - previousPoints;
+
+    if (delta <= 0) return; // nothing new earned
 
     /** ---- Persist ReferralEarning ---- */
     await prisma.referralEarning.upsert({
@@ -217,8 +240,8 @@ export class TradingService {
         },
       },
       data: {
-        referralPoints: { increment: referralPoints },
-        totalPoints: { increment: referralPoints },
+        referralPoints: { increment: delta },
+        totalPoints: { increment: delta },
       },
     });
   }

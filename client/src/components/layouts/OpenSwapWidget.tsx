@@ -15,7 +15,7 @@ import { useFeeBps } from "@/hooks/useFeeBps";
 import { buildPath, USDC } from "@/lib/buildPath";
 import { parseUnits } from "@/lib/helpers";
 import { toast } from "react-hot-toast";
-import { X2_SWAP_ADDRESS } from "@/config/contracts";
+import { X2_WETH_SWAP_ADDRESS } from "@/config/contracts";
 import { useWETHExchangeTokens } from "@/hooks/useWETHExchangeToken";
 import { usePositionsSyncStore } from "@/stores/usePositionSyncStore";
 import { AdvancedExecutionSettings } from "./AdvancedExecutionSettings";
@@ -39,18 +39,18 @@ export default function OpenSwapWidget({ asset }: Props) {
   const [maxSlippage, setMaxSlippage] = useState(2);
   const [deadlineMinutes, setDeadlineMinutes] = useState(30);
 
-  const { feeBps } = useFeeBps();
+  const { feeBps } = useFeeBps(asset);
   const { balance: usdcBalance, decimals } = useUsdcBalance();
   const { liquidity } = usePoolLiquidity();
-  const { poolShare, traderShare } = useProfitSplit();
-  const { allowance, refetch } = useUsdcAllowance();
+  const { poolShare, traderShare } = useProfitSplit(asset);
+  const { allowance, refetch } = useUsdcAllowance(asset);
   const { price } = usePrice(asset).data ?? { price: 0 };
   const bumpPositions = usePositionsSyncStore((s) => s.bump);
 
   // TODO:
   const { token0: TOKEN0WETH, token1: TOKEN1WETH } = useWETHExchangeTokens();
 
-  const { openPosition, isPending } = useOpenPosition();
+  const { openPosition, isPending } = useOpenPosition(asset);
   const { approve } = useApproveUsdc();
 
   // SAFE NUMBER PARSING
@@ -100,15 +100,16 @@ export default function OpenSwapWidget({ asset }: Props) {
         return;
       }
 
-      const spender = X2_SWAP_ADDRESS[chainId];
+      let spender;
       let path;
 
       if (asset === "WETH") {
         if (!TOKEN0WETH || !TOKEN1WETH) return;
+        spender = X2_WETH_SWAP_ADDRESS[chainId];
         path = buildPath(
           USDC,
           TOKEN0WETH as `0x${string}`,
-          TOKEN1WETH as `0x${string}`
+          TOKEN1WETH as `0x${string}`,
         );
       }
 
@@ -116,7 +117,7 @@ export default function OpenSwapWidget({ asset }: Props) {
       const maxDeviationBps = Math.floor(maxSlippage * 100);
 
       if (allowance < userUsdcBn) {
-        const hash = await approve(spender, userUsdcBn);
+        const hash = await approve(spender!, userUsdcBn);
         await publicClient?.waitForTransactionReceipt({ hash });
       }
       await refetch();
@@ -125,7 +126,7 @@ export default function OpenSwapWidget({ asset }: Props) {
         userUsdcBn,
         maxDeviationBps,
         path!,
-        deadline
+        deadline,
       );
 
       await publicClient?.waitForTransactionReceipt({ hash: tx });
@@ -212,8 +213,8 @@ export default function OpenSwapWidget({ asset }: Props) {
         {isPending
           ? "Opening..."
           : assetAmount
-          ? "Open 2x position"
-          : "Enter amount to open"}
+            ? "Open 2x position"
+            : "Enter amount to open"}
       </button>
 
       <div className="mt-5 space-y-2 text-sm">

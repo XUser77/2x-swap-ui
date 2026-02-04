@@ -41,6 +41,7 @@ export default createConfig({
       address: "0xA467e237721370855f71a9F878D90E78defd643d",
       startBlock: 24197912,
     },
+    // TODO:
     X2ETHPool: {
       chain: "x2swap",
       abi: [

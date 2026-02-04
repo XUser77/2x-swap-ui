@@ -155,7 +155,7 @@ export class ReferralService {
         liquiditySnapshots: {
           where: { seasonId: activeSeason.id },
         },
-        referralEarnings: {
+        referredActivity: {
           where: {
             seasonId: activeSeason.id,
             referrerId: userId,
@@ -181,7 +181,7 @@ export class ReferralService {
       else if (tradeVolume > 0) activityType = "Trading";
       else if (lpVolume > 0) activityType = "Liquidity";
 
-      const pointsAttributed = invitee.referralEarnings[0]?.referralPoints ?? 0;
+      const pointsAttributed = invitee.referredActivity[0]?.referralPoints ?? 0;
 
       return {
         wallet: invitee.wallet,
