@@ -31,6 +31,7 @@ Indexes on‑chain data such as volume, TVL, positions, and events. This data is
 
 ```env
 PONDER_RPC_URL_1=RPC_URL (example: http://185.146.3.206:8545)
+DATABASE_URL=DATABASE_URL (postgres railway db url, you can ignore it in local by fill it blank. But in production, this is mandatory)
 INDEXER_SECRET=INDEXER_SECRET (example: 2xswap)
 BACKEND_BASE_URL=BACKEND_BASE_URL (example: http://localhost:8000)
 ```
@@ -90,7 +91,7 @@ All critical value transfers still happen **on‑chain**.
 **Environment variables (`.env`):**
 
 ```env
-DATABASE_URL=POSTGRES_URL (railway db url)
+DATABASE_URL=POSTGRES_URL (another postgres railway db url)
 JWT_SECRET=JWT_SECRET (example: VERY_SECRET_2XSWAPJWT)
 PONDER_URL=PONDER_URL (example: http://localhost:42069/graphql)
 FRONTEND_URL=FRONTEND_URL (example: http://localhost:5173)
