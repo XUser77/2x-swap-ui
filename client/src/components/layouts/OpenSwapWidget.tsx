@@ -19,6 +19,7 @@ import { X2_WETH_SWAP_ADDRESS } from "@/config/contracts";
 import { useWETHExchangeTokens } from "@/hooks/useWETHExchangeToken";
 import { usePositionsSyncStore } from "@/stores/usePositionSyncStore";
 import { AdvancedExecutionSettings } from "./AdvancedExecutionSettings";
+import { MOCK_UNISWAP_V2, MOCK_UNISWAP_V3 } from "@/constants/trade";
 
 type Props = {
   asset: "WBTC" | "WETH" | "PAXG";
@@ -34,6 +35,7 @@ export default function OpenSwapWidget({ asset }: Props) {
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [showTxDetails, setShowTxDetails] = useState(false);
   const [slippageAuto, setSlippageAuto] = useState(true);
+  const [route, setRoute] = useState<"V2" | "V3">("V2");
   const leverage = 2;
 
   const [maxSlippage, setMaxSlippage] = useState(2);
@@ -122,9 +124,13 @@ export default function OpenSwapWidget({ asset }: Props) {
       }
       await refetch();
 
+      const selectedRouteAddress =
+        route === "V2" ? MOCK_UNISWAP_V2 : MOCK_UNISWAP_V3;
+
       const tx = await openPosition(
         userUsdcBn,
         maxDeviationBps,
+        selectedRouteAddress as `0x${string}`,
         path!,
         deadline,
       );
@@ -157,6 +163,8 @@ export default function OpenSwapWidget({ asset }: Props) {
           setMaxSlippage={setMaxSlippage}
           deadlineMinutes={deadlineMinutes}
           setDeadlineMinutes={setDeadlineMinutes}
+          setRoute={setRoute}
+          route={route}
         />
       )}
 

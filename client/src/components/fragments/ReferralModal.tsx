@@ -37,7 +37,7 @@ export default function ReferralModal({ open, wallet, onComplete }: Props) {
       }
 
       onComplete();
-      toast.success("Account referred successfully");
+      toast.success("Account created successfully");
     } catch (err: any) {
       setError(err.response?.data?.error || "Failed to submit referral");
     } finally {

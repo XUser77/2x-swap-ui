@@ -30,19 +30,9 @@ Indexes on‑chain data such as volume, TVL, positions, and events. This data is
 **Environment variables (`.env.local`):**
 
 ```env
-PONDER_RPC_URL_1=RPC_URL
-DATABASE_URL=POSTGRES_URL   # optional, SQLite if omitted
-INDEXER_SECRET=INDEXER_SECRET
-BACKEND_BASE_URL=BACKEND_BASE_URL
-```
-
-**Scripts:**
-
-```bash
-pnpm dev       # start indexer in dev mode
-pnpm start     # start indexer (prod)
-pnpm db        # manage ponder db
-pnpm codegen   # generate types
+PONDER_RPC_URL_1=RPC_URL (example: http://185.146.3.206:8545)
+INDEXER_SECRET=INDEXER_SECRET (example: 2xswap)
+BACKEND_BASE_URL=BACKEND_BASE_URL (example: http://localhost:8000)
 ```
 
 ---
@@ -68,18 +58,10 @@ The user‑facing frontend for interacting with the 2xSwap protocol, including:
 **Environment variables (`.env.local`):**
 
 ```env
-VITE_WALLETCONNECT_PROJECT_ID=WALLETCONNECT_PROJECT_ID
-VITE_RPC_URL=RPC_URL
-VITE_PONDER_URL=http://localhost:42069
-VITE_BACKEND_URL=http://localhost:5000
-```
-
-**Scripts:**
-
-```bash
-pnpm dev       # start frontend
-pnpm build     # production build
-pnpm preview   # preview build
+VITE_WALLETCONNECT_PROJECT_ID=WALLETCONNECT_PROJECT_ID (get yours from walletconnect official website)
+VITE_RPC_URL=RPC_URL (example: http://185.146.3.206:8545)
+VITE_PONDER_URL=PONDER_URL (example: http://localhost:42069/graphql)
+VITE_BACKEND_URL=BACKEND_URL (example: http://localhost:5000)
 ```
 
 ---
@@ -108,20 +90,12 @@ All critical value transfers still happen **on‑chain**.
 **Environment variables (`.env`):**
 
 ```env
-DATABASE_URL=POSTGRES_URL
-JWT_SECRET=JWT_SECRET
-PONDER_URL=http://localhost:42069
-FRONTEND_URL=http://localhost:5173
-PORT=5000
-INDEXER_SECRET=INDEXER_SECRET
-```
-
-**Scripts:**
-
-```bash
-pnpm dev       # start server with watch mode
-pnpm build     # compile TypeScript
-pnpm start     # start compiled server
+DATABASE_URL=POSTGRES_URL (railway db url)
+JWT_SECRET=JWT_SECRET (example: VERY_SECRET_2XSWAPJWT)
+PONDER_URL=PONDER_URL (example: http://localhost:42069/graphql)
+FRONTEND_URL=FRONTEND_URL (example: http://localhost:5173)
+PORT=PORT (example: 8000)
+INDEXER_SECRET=INDEXER_SECRET (example: 2xswap)
 ```
 
 ---
@@ -131,7 +105,7 @@ pnpm start     # start compiled server
 ### Prerequisites
 
 - Node.js ≥ 18
-- pnpm (recommended)
+- npm (recommended)
 - PostgreSQL (or use SQLite for indexer only)
 
 ---
@@ -141,9 +115,9 @@ pnpm start     # start compiled server
 From the repo root, install dependencies for each package:
 
 ```bash
-cd 2xswap-indexer && pnpm install
-cd ../client && pnpm install
-cd ../server && pnpm install
+cd 2xswap-indexer && npm install
+cd ../client && npm install
+cd ../server && npm install
 ```
 
 ---
@@ -166,39 +140,39 @@ Fill them using the provided `.env.example` files as reference.
 
 ```bash
 cd server
-pnpm prisma migrate dev
-pnpm prisma db seed
+npx prisma migrate dev
+npx prisma generate
 ```
 
 ---
 
 ### 4️⃣ Run services (recommended order)
 
-#### Start indexer
-
-```bash
-cd 2xswap-indexer
-pnpm dev
-```
-
 #### Start backend
 
 ```bash
 cd server
-pnpm dev
+npm run dev
 ```
 
 #### Start frontend
 
 ```bash
 cd client
-pnpm dev
+npm run dev
 ```
 
 Frontend will be available at:
 
 ```
 http://localhost:5173
+```
+
+#### Start indexer
+
+```bash
+cd 2xswap-indexer
+npm run dev
 ```
 
 ---

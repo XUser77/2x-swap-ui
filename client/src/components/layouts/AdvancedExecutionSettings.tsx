@@ -7,6 +7,8 @@ type Props = {
   setMaxSlippage: (v: number) => void;
   deadlineMinutes: number;
   setDeadlineMinutes: (v: number) => void;
+  setRoute: (v: "V2" | "V3") => void;
+  route: "V2" | "V3";
 };
 
 export function AdvancedExecutionSettings({
@@ -16,6 +18,8 @@ export function AdvancedExecutionSettings({
   setMaxSlippage,
   deadlineMinutes,
   setDeadlineMinutes,
+  setRoute,
+  route,
 }: Props) {
   return (
     <div className="mb-4 p-2 rounded-lg border border-gray-200 bg-gray-50 space-y-3">
@@ -68,12 +72,30 @@ export function AdvancedExecutionSettings({
         />
       </div>
 
-      <div className="flex justify-between">
-        <p className="text-xs">
-          Trade route{" "}
-          <InfoTooltip content="A route is identified considering v2, v3, and certain v4 pools, factoring in estimated price impact and network costs." />
-        </p>
-        <p className="text-xs">Uniswap V2</p>
+      <div className="mt-3">
+        <label className="text-xs text-gray-600 font-medium">Trade Route</label>
+        <div className="flex gap-2 mt-1">
+          <button
+            onClick={() => setRoute("V2")}
+            className={`flex-1 py-2 rounded-md border text-xs font-medium ${
+              route === "V2"
+                ? "bg-blue-900 text-white border-blue-900"
+                : "bg-white text-gray-700 border-gray-300"
+            }`}
+          >
+            Uniswap V2
+          </button>
+          <button
+            onClick={() => setRoute("V3")}
+            className={`flex-1 py-2 rounded-md border text-xs font-medium ${
+              route === "V3"
+                ? "bg-blue-900 text-white border-blue-900"
+                : "bg-white text-gray-700 border-gray-300"
+            }`}
+          >
+            Uniswap V3
+          </button>
+        </div>
       </div>
     </div>
   );

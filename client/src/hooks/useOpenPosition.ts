@@ -2,7 +2,6 @@
 import { useWriteContract, useChainId } from "wagmi";
 import { X2_WETH_SWAP_ADDRESS } from "@/config/contracts";
 import x2SwapAbi from "@/abi/X2Swap.json";
-import { MOCK_UNISWAP_V2 } from "@/constants/trade";
 
 export function useOpenPosition(asset: string) {
   const chainId = useChainId();
@@ -16,6 +15,7 @@ export function useOpenPosition(asset: string) {
   const openPosition = async (
     assetAmount: bigint,
     maxDeviationBps: number,
+    route: `0x${string}`,
     path: `0x${string}`,
     deadline: number,
   ) => {
@@ -23,7 +23,7 @@ export function useOpenPosition(asset: string) {
       address: swapAddress!,
       abi: x2SwapAbi,
       functionName: "openPosition",
-      args: [assetAmount, maxDeviationBps, MOCK_UNISWAP_V2, path, deadline],
+      args: [assetAmount, maxDeviationBps, route, path, deadline],
     });
   };
 
