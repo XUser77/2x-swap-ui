@@ -21,7 +21,7 @@ export default function Points() {
             <TabsList className="bg-transparent p-0 border-b border-gray-200 rounded-none px-6 gap-2 md:gap-4">
               <TabsTrigger
                 value="referrals"
-                className="relative rounded-none px-1 pb-3 text-xs md:text-sm font-medium text-gray-500
+                className="relative rounded-none px-0 md:px-1 pb-3 text-[11px] md:text-sm font-medium text-gray-500
                   data-[state=active]:text-black
                   data-[state=active]:border-b-2
                   data-[state=active]:border-b-black
@@ -32,7 +32,7 @@ export default function Points() {
 
               <TabsTrigger
                 value="how"
-                className="relative rounded-none px-1 pb-3 text-xs md:text-sm font-medium text-gray-500
+                className="relative rounded-none px-0 md:px-1 pb-3 text-[11px] md:text-sm font-medium text-gray-500
                   data-[state=active]:text-black
                   data-[state=active]:border-b-2
                   data-[state=active]:border-b-black
@@ -43,7 +43,7 @@ export default function Points() {
 
               <TabsTrigger
                 value="leagues"
-                className="relative rounded-none px-1 pb-3 text-xs md:text-sm font-medium text-gray-500
+                className="relative rounded-none px-0 md:px-1 pb-3 text-[11px] md:text-sm font-medium text-gray-500
                   data-[state=active]:text-black
                   data-[state=active]:border-b-2
                   data-[state=active]:border-b-black
@@ -54,7 +54,7 @@ export default function Points() {
 
               <TabsTrigger
                 value="leaderboard"
-                className="relative rounded-none px-1 pb-3 text-xs md:text-sm font-medium text-gray-500
+                className="relative rounded-none px-0 md:px-1 pb-3 text-[11px] md:text-sm font-medium text-gray-500
                   data-[state=active]:text-black
                   data-[state=active]:border-b-2
                   data-[state=active]:border-b-black

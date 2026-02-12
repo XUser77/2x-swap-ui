@@ -1,16 +1,16 @@
 import { useReadContract } from "wagmi";
 import X2UniswapV2Exchange from "@/abi/X2UniswapV2Exchange.json";
-import { UNISWAP_ETH_V2 } from "@/config/contracts";
+import { UNISWAP_PAXG_V2 } from "@/config/contracts";
 
-export function useWETHExchangeTokens() {
+export function usePAXGExchangeTokens() {
   const { data: token0 } = useReadContract({
-    address: UNISWAP_ETH_V2,
+    address: UNISWAP_PAXG_V2,
     abi: X2UniswapV2Exchange,
     functionName: "token0",
   });
 
   const { data: token1 } = useReadContract({
-    address: UNISWAP_ETH_V2,
+    address: UNISWAP_PAXG_V2,
     abi: X2UniswapV2Exchange,
     functionName: "token1",
   });

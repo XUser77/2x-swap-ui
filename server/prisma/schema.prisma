@@ -73,7 +73,7 @@ model TradeScore {
   seasonId Int
   season   Season @relation(fields: [seasonId], references: [id])
 
-  txHash     String
+  txHash     String  @unique
   volume     Decimal
   baseScore  Float
   multiplier Float

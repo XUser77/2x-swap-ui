@@ -49,6 +49,8 @@ export function AdvancedExecutionSettings({
             value={maxSlippage}
             disabled={slippageAuto}
             onChange={(e) => setMaxSlippage(Number(e.target.value))}
+            max={5}
+            min={0}
             className={`w-20 border border-gray-200 rounded px-2 py-1 text-xs ${
               slippageAuto
                 ? "bg-gray-100 text-gray-400 cursor-not-allowed"
@@ -69,6 +71,7 @@ export function AdvancedExecutionSettings({
           value={deadlineMinutes}
           onChange={(e) => setDeadlineMinutes(Number(e.target.value))}
           className="w-20 border border-gray-200 rounded px-2 py-1 text-xs"
+          min={0}
         />
       </div>
 

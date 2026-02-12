@@ -12,14 +12,25 @@ import { useUsdcAllowance } from "@/hooks/useUsdcAllowance";
 import { usePrice } from "@/hooks/usePrice";
 import { usePoolLiquidity } from "@/hooks/usePoolLiquidity";
 import { useFeeBps } from "@/hooks/useFeeBps";
-import { buildPath, USDC } from "@/lib/buildPath";
+import { buildPath, buildV3Path, USDC } from "@/lib/buildPath";
 import { parseUnits } from "@/lib/helpers";
 import { toast } from "react-hot-toast";
-import { X2_WETH_SWAP_ADDRESS } from "@/config/contracts";
+import {
+  UNISWAP_BTC_V2,
+  UNISWAP_BTC_V3,
+  UNISWAP_ETH_V2,
+  UNISWAP_ETH_V3,
+  UNISWAP_PAXG_V2,
+  UNISWAP_PAXG_V3,
+  X2_PAXG_SWAP_ADDRESS,
+  X2_WBTC_SWAP_ADDRESS,
+  X2_WETH_SWAP_ADDRESS,
+} from "@/config/contracts";
 import { useWETHExchangeTokens } from "@/hooks/useWETHExchangeToken";
 import { usePositionsSyncStore } from "@/stores/usePositionSyncStore";
 import { AdvancedExecutionSettings } from "./AdvancedExecutionSettings";
-import { MOCK_UNISWAP_V2, MOCK_UNISWAP_V3 } from "@/constants/trade";
+import { usePAXGExchangeTokens } from "@/hooks/usePAXGExchangeToken";
+import { useWBTCExchangeTokens } from "@/hooks/useWBTCExchangeToken";
 
 type Props = {
   asset: "WBTC" | "WETH" | "PAXG";
@@ -49,8 +60,9 @@ export default function OpenSwapWidget({ asset }: Props) {
   const { price } = usePrice(asset).data ?? { price: 0 };
   const bumpPositions = usePositionsSyncStore((s) => s.bump);
 
-  // TODO:
   const { token0: TOKEN0WETH, token1: TOKEN1WETH } = useWETHExchangeTokens();
+  const { token0: TOKEN0WBTC, token1: TOKEN1WBTC } = useWBTCExchangeTokens();
+  const { token0: TOKEN0PAXG, token1: TOKEN1PAXG } = usePAXGExchangeTokens();
 
   const { openPosition, isPending } = useOpenPosition(asset);
   const { approve } = useApproveUsdc();
@@ -104,15 +116,62 @@ export default function OpenSwapWidget({ asset }: Props) {
 
       let spender;
       let path;
+      let selectedRouteAddress;
 
       if (asset === "WETH") {
         if (!TOKEN0WETH || !TOKEN1WETH) return;
         spender = X2_WETH_SWAP_ADDRESS[chainId];
-        path = buildPath(
-          USDC,
-          TOKEN0WETH as `0x${string}`,
-          TOKEN1WETH as `0x${string}`,
-        );
+        path =
+          route === "V2"
+            ? buildPath(
+                USDC,
+                TOKEN0WETH as `0x${string}`,
+                TOKEN1WETH as `0x${string}`,
+              )
+            : buildV3Path(
+                USDC,
+                TOKEN0WETH as `0x${string}`,
+                TOKEN1WETH as `0x${string}`,
+                500,
+              ); // 0.05% pool;
+        selectedRouteAddress = route === "V2" ? UNISWAP_ETH_V2 : UNISWAP_ETH_V3;
+      }
+      if (asset === "WBTC") {
+        if (!TOKEN0WBTC || !TOKEN1WBTC) return;
+        spender = X2_WBTC_SWAP_ADDRESS[chainId];
+        path =
+          route === "V2"
+            ? buildPath(
+                USDC,
+                TOKEN0WBTC as `0x${string}`,
+                TOKEN1WBTC as `0x${string}`,
+              )
+            : buildV3Path(
+                USDC,
+                TOKEN0WBTC as `0x${string}`,
+                TOKEN1WBTC as `0x${string}`,
+                3000,
+              ); // 0.3% pool;
+        selectedRouteAddress = route === "V2" ? UNISWAP_BTC_V2 : UNISWAP_BTC_V3;
+      }
+      if (asset === "PAXG") {
+        if (!TOKEN0PAXG || !TOKEN1PAXG) return;
+        spender = X2_PAXG_SWAP_ADDRESS[chainId];
+        path =
+          route === "V2"
+            ? buildPath(
+                USDC,
+                TOKEN0PAXG as `0x${string}`,
+                TOKEN1PAXG as `0x${string}`,
+              )
+            : buildV3Path(
+                USDC,
+                TOKEN0WBTC as `0x${string}`,
+                TOKEN1WBTC as `0x${string}`,
+                3000,
+              ); // 0.3% pool;;
+        selectedRouteAddress =
+          route === "V2" ? UNISWAP_PAXG_V2 : UNISWAP_PAXG_V3;
       }
 
       const deadline = Math.floor(Date.now() / 1000) + deadlineMinutes * 60;
@@ -123,9 +182,6 @@ export default function OpenSwapWidget({ asset }: Props) {
         await publicClient?.waitForTransactionReceipt({ hash });
       }
       await refetch();
-
-      const selectedRouteAddress =
-        route === "V2" ? MOCK_UNISWAP_V2 : MOCK_UNISWAP_V3;
 
       const tx = await openPosition(
         userUsdcBn,
@@ -250,7 +306,7 @@ export default function OpenSwapWidget({ asset }: Props) {
 
         {showTxDetails && (
           <div className="mt-3 space-y-2 text-sm text-gray-600">
-            <Row label="Oracle price" value={`$${price}`} />
+            <Row label="Oracle price" value={`$${price.toFixed(2)}`} />
             <Row label="Swap execution" value="Uniswap" />
             <Row label="Protocol fee" value={`${Number(feeBps) / 100}%`} />
           </div>

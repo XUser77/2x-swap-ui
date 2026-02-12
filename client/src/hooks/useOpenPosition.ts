@@ -1,6 +1,10 @@
 // src/hooks/useOpenPosition.ts
 import { useWriteContract, useChainId } from "wagmi";
-import { X2_WETH_SWAP_ADDRESS } from "@/config/contracts";
+import {
+  X2_PAXG_SWAP_ADDRESS,
+  X2_WBTC_SWAP_ADDRESS,
+  X2_WETH_SWAP_ADDRESS,
+} from "@/config/contracts";
 import x2SwapAbi from "@/abi/X2Swap.json";
 
 export function useOpenPosition(asset: string) {
@@ -10,6 +14,12 @@ export function useOpenPosition(asset: string) {
   let swapAddress;
   if (asset === "WETH") {
     swapAddress = X2_WETH_SWAP_ADDRESS[chainId];
+  }
+  if (asset === "WBTC") {
+    swapAddress = X2_WBTC_SWAP_ADDRESS[chainId];
+  }
+  if (asset === "PAXG") {
+    swapAddress = X2_PAXG_SWAP_ADDRESS[chainId];
   }
 
   const openPosition = async (

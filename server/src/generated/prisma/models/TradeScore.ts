@@ -293,12 +293,12 @@ export type TradeScoreOrderByWithRelationInput = {
 
 export type TradeScoreWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  txHash?: string
   AND?: Prisma.TradeScoreWhereInput | Prisma.TradeScoreWhereInput[]
   OR?: Prisma.TradeScoreWhereInput[]
   NOT?: Prisma.TradeScoreWhereInput | Prisma.TradeScoreWhereInput[]
   userId?: Prisma.StringFilter<"TradeScore"> | string
   seasonId?: Prisma.IntFilter<"TradeScore"> | number
-  txHash?: Prisma.StringFilter<"TradeScore"> | string
   volume?: Prisma.DecimalFilter<"TradeScore"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   baseScore?: Prisma.FloatFilter<"TradeScore"> | number
   multiplier?: Prisma.FloatFilter<"TradeScore"> | number
@@ -307,7 +307,7 @@ export type TradeScoreWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"TradeScore"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   season?: Prisma.XOR<Prisma.SeasonScalarRelationFilter, Prisma.SeasonWhereInput>
-}, "id">
+}, "id" | "txHash">
 
 export type TradeScoreOrderByWithAggregationInput = {
   id?: Prisma.SortOrder

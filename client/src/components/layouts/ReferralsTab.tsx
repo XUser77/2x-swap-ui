@@ -64,11 +64,11 @@ export default function ReferralsTab() {
         />
         <ReferralStatCard
           label="Referral points (season)"
-          value={stats?.referralPointsSeason.toFixed(4) ?? 0}
+          value={stats?.referralPointsSeason.toFixed(2) ?? 0}
         />
         <ReferralStatCard
           label="Referral points (all-time)"
-          value={stats?.referralPointsAllTime.toFixed(4) ?? 0}
+          value={stats?.referralPointsAllTime.toFixed(2) ?? 0}
         />
         <ReferralStatCard
           label="Active referrals (30d)"

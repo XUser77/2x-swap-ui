@@ -20,6 +20,14 @@ export class TradingService {
   }) {
     const { wallet, txHash, volume, pnl, lpHurt, timestamp } = input;
 
+    const existingTrade = await prisma.tradeScore.findUnique({
+      where: { txHash: txHash },
+    });
+
+    if (existingTrade) {
+      return { skipped: true, reason: "Trade already processed" };
+    }
+
     const user = await prisma.user.findUnique({
       where: { wallet: wallet.toLowerCase() },
       include: { referredBy: true },

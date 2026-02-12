@@ -22,7 +22,7 @@ export function ReferralStatCard({ label, value }: ReferralStatCardProps) {
           <Activity className=" text-gray-500" />
         )}
       </div>
-      <p className="text-2xl font-semibold mt-2">{value}</p>
+      <p className="text-xl font-semibold mt-2">{value}</p>
       <p className="text-xs text-muted-foreground">{label}</p>
     </div>
   );
