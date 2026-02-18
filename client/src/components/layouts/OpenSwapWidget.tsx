@@ -20,16 +20,12 @@ import {
   UNISWAP_BTC_V3,
   UNISWAP_ETH_V2,
   UNISWAP_ETH_V3,
-  UNISWAP_PAXG_V2,
-  UNISWAP_PAXG_V3,
-  X2_PAXG_SWAP_ADDRESS,
   X2_WBTC_SWAP_ADDRESS,
   X2_WETH_SWAP_ADDRESS,
 } from "@/config/contracts";
 import { useWETHExchangeTokens } from "@/hooks/useWETHExchangeToken";
 import { usePositionsSyncStore } from "@/stores/usePositionSyncStore";
 import { AdvancedExecutionSettings } from "./AdvancedExecutionSettings";
-import { usePAXGExchangeTokens } from "@/hooks/usePAXGExchangeToken";
 import { useWBTCExchangeTokens } from "@/hooks/useWBTCExchangeToken";
 
 type Props = {
@@ -62,7 +58,6 @@ export default function OpenSwapWidget({ asset }: Props) {
 
   const { token0: TOKEN0WETH, token1: TOKEN1WETH } = useWETHExchangeTokens();
   const { token0: TOKEN0WBTC, token1: TOKEN1WBTC } = useWBTCExchangeTokens();
-  const { token0: TOKEN0PAXG, token1: TOKEN1PAXG } = usePAXGExchangeTokens();
 
   const { openPosition, isPending } = useOpenPosition(asset);
   const { approve } = useApproveUsdc();
@@ -153,25 +148,6 @@ export default function OpenSwapWidget({ asset }: Props) {
                 3000,
               ); // 0.3% pool;
         selectedRouteAddress = route === "V2" ? UNISWAP_BTC_V2 : UNISWAP_BTC_V3;
-      }
-      if (asset === "PAXG") {
-        if (!TOKEN0PAXG || !TOKEN1PAXG) return;
-        spender = X2_PAXG_SWAP_ADDRESS[chainId];
-        path =
-          route === "V2"
-            ? buildPath(
-                USDC,
-                TOKEN0PAXG as `0x${string}`,
-                TOKEN1PAXG as `0x${string}`,
-              )
-            : buildV3Path(
-                USDC,
-                TOKEN0WBTC as `0x${string}`,
-                TOKEN1WBTC as `0x${string}`,
-                3000,
-              ); // 0.3% pool;;
-        selectedRouteAddress =
-          route === "V2" ? UNISWAP_PAXG_V2 : UNISWAP_PAXG_V3;
       }
 
       const deadline = Math.floor(Date.now() / 1000) + deadlineMinutes * 60;

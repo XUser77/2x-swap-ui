@@ -19,13 +19,14 @@ function Pool() {
   const { totalDebt } = useTotalDebt();
   const { totalLiquidity } = useTotalLiquidity();
 
-  if (!loading) {
+  if (!loading && data !== undefined) {
     apy = calculatePoolApy({
       positions: data?.positions.items!,
       windowStart: Math.floor(Date.now() / 1000) - 30 * 86400, // last 30 days
       totalDebt,
       tvl: totalLiquidity!,
     });
+    apy = Number((apy * 100).toFixed(2));
   }
 
   return (

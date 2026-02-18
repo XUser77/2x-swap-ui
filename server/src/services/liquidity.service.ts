@@ -16,7 +16,6 @@ function applySoftCap(score: number) {
 
 export class LiquidityService {
   static async runDailySnapshot(date: Date) {
-    console.log("RUN DAILY SNAPSHOT");
     const USDC_DECIMALS = 6;
     const USDC_SCALE = new Decimal(10).pow(USDC_DECIMALS);
 
@@ -43,17 +42,12 @@ export class LiquidityService {
       start: Math.floor(dayStart.getTime() / 1000),
       end: Math.floor(dayEnd.getTime() / 1000),
     });
-    console.log("DAY START:", dayStart.getTime() / 1000);
-    console.log("DAY END:", dayEnd.getTime() / 1000);
 
     /** ---------------- 2. Aggregate per wallet ---------------- */
     const perWallet = new Map<
       string,
       { sum: number; count: number; endBalance: number }
     >();
-
-    console.log("DATA FETCH FROM PONDER:", data.lpBalanceCheckpoints.items);
-
     for (const row of data.lpBalanceCheckpoints.items) {
       const balance = new Decimal(row.assets).div(USDC_SCALE).toNumber();
       const wallet = row.user.toLowerCase();
@@ -86,11 +80,9 @@ export class LiquidityService {
       },
     });
 
-    console.log("MERGED USER:", users);
 
     /** ---------------- 5. Process each LP user ---------------- */
     for (const user of users) {
-      console.log("USER PROCESSED:", user);
 
       const wallet = user.wallet.toLowerCase();
       const checkpoint = perWallet.get(wallet);
@@ -142,7 +134,6 @@ export class LiquidityService {
       const baseScore = avgDailyBalance / 1000;
       const rawScore = baseScore * loyaltyMultiplier;
       const finalScore = applySoftCap(rawScore);
-      console.log("FINAL SCORE:", finalScore);
 
       /** ---------------- 8. Persist snapshot ---------------- */
       await prisma.liquiditySnapshot.upsert({
@@ -171,8 +162,6 @@ export class LiquidityService {
 
       /** ---------------- 9. Update SeasonTotal ---------------- */
       const seasonPoints = finalScore * season.multiplier;
-      console.log("SEASON POINTS:", seasonPoints);
-
       const seasonTotal = await prisma.seasonTotal.upsert({
         where: {
           userId_seasonId: {

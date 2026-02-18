@@ -11,17 +11,12 @@ export function useTotalLiquidity() {
     abi: x2PoolAbi,
     functionName: "totalAssets",
   });
-  const { data: debt, isLoading: debtLoading } = useReadContract({
-    address: X2_POOL_ADDRESS[chainId],
-    abi: x2PoolAbi,
-    functionName: "totalDebt",
-  });
 
-  if (!assetsLoading && !debtLoading) {
-    tvl = (assets as bigint) + (debt as bigint);
+  if (!assetsLoading) {
+    tvl = assets as bigint;
   }
 
   return {
-    totalLiquidity: tvl,
+    totalLiquidity: tvl ?? 0n,
   };
 }

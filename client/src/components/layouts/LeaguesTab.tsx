@@ -86,8 +86,6 @@ export default function LeaguesTab() {
 
   const activeLeagueId = rank.name;
 
-  console.log(activeLeagueId);
-
   return (
     <div className="space-y-6">
       {/* Header */}

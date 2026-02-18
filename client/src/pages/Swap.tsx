@@ -9,7 +9,7 @@ function Swap() {
   const SYMBOLS: SymbolOption[] = [
     { label: "WBTC / USDC", tvSymbol: "WBTCUSDC", key: "WBTC" },
     { label: "WETH / USDC", tvSymbol: "WETHUSDC", key: "WETH" },
-    { label: "PAXG / USDC", tvSymbol: "PAXGUSDC", key: "PAXG" },
+    // { label: "PAXG / USDC", tvSymbol: "PAXGUSDC", key: "PAXG" },
   ];
 
   const [symbol, setSymbol] = useState(SYMBOLS[0]);
@@ -21,7 +21,7 @@ function Swap() {
         <div className="mx-10 py-3">
           <div className="flex flex-col md:flex-row gap-5">
             <TradingViewWidget symbol={symbol} />
-            <OpenSwapWidget asset={symbol.key as "WBTC" | "WETH" | "PAXG"} />
+            <OpenSwapWidget asset={symbol.key as "WBTC" | "WETH"} />
           </div>
           <PositionWidget />
         </div>

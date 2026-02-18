@@ -1,7 +1,7 @@
 "use client";
 
-import { useAvailableLiquidity } from "@/hooks/useAvailableLiquidity";
 import { useLpBalance } from "@/hooks/useLpBalance";
+import { usePoolLiquidity } from "@/hooks/usePoolLiquidity";
 import { usePreviewWithdraw } from "@/hooks/usePreviewWithdraw";
 import { useWithdrawPool } from "@/hooks/useWithdrawPool";
 import { useActivityPoolSyncStore } from "@/stores/useActivityPoolSyncStore";
@@ -12,7 +12,7 @@ import { useAccount, usePublicClient } from "wagmi";
 
 export default function WithdrawPanel() {
   const [amount, setAmount] = useState("");
-  const { assets } = useAvailableLiquidity();
+  const { liquidity: assets } = usePoolLiquidity();
   const { isConnected } = useAccount();
   const { assetValue: userBalanceLp } = useLpBalance();
   const { shares } = usePreviewWithdraw(Number(amount));
@@ -117,8 +117,8 @@ export default function WithdrawPanel() {
         {isPending
           ? "Withdrawing..."
           : amountNum
-          ? "Withdraw from pool"
-          : "Enter amount to withdraw"}
+            ? "Withdraw from pool"
+            : "Enter amount to withdraw"}
       </button>
     </div>
   );
