@@ -7,12 +7,6 @@ import { ORACLE_ADDRESS } from "@/config/contracts";
 
 export type SymbolKey = "WBTC" | "WETH" | "PAXG";
 
-const idMap: Record<SymbolKey, string> = {
-  WBTC: "bitcoin",
-  WETH: "ethereum",
-  PAXG: "pax-gold",
-};
-
 export function usePrice(symbol: SymbolKey) {
   const chainId = useChainId();
   const oracle = ORACLE_ADDRESS[chainId]?.[symbol];
@@ -39,20 +33,15 @@ export function usePrice(symbol: SymbolKey) {
     queryKey: ["cg-24h", symbol],
     queryFn: async () => {
       const res = await axios.get(
-        "https://api.coingecko.com/api/v3/simple/price",
-        {
-          params: {
-            ids: idMap[symbol],
-            vs_currencies: "usd",
-            include_24hr_change: true,
-          },
-        },
+        `${import.meta.env.VITE_BACKEND_URL}/api/price/24h-change`,
+        { params: { symbol } },
       );
 
-      const data = res.data[idMap[symbol]];
-      return data.usd_24h_change as number;
+      return res.data.change24h as number;
     },
+    staleTime: 60_000,
     refetchInterval: 60_000,
+    refetchOnWindowFocus: false,
   });
 
   // ----------- FORMAT FINAL RESULT -----------

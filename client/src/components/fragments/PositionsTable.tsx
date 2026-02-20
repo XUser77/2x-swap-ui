@@ -9,6 +9,7 @@ import toast from "react-hot-toast";
 import { usePublicClient } from "wagmi";
 import { usePositionsSyncStore } from "@/stores/usePositionSyncStore";
 import { MobilePositionCard } from "./MobilePositionCard";
+import { extractRevertReason } from "@/lib/errorHandling";
 
 type Props = {
   owner: `0x${string}`;
@@ -17,6 +18,7 @@ type Props = {
 
 function PositionsTable({ owner, limit = 10 }: Props) {
   const [page, setPage] = useState(0);
+  const [isProcessing, setIsProcessing] = useState(false);
   const { data, loading, error, refetch } = useActivePosition(
     owner,
     page,
@@ -57,6 +59,8 @@ function PositionsTable({ owner, limit = 10 }: Props) {
     asset: "WBTC" | "WETH" | "PAXG",
   ) => {
     try {
+      setIsProcessing(true);
+
       const hash = await closePosition(id, asset);
       await publicClient?.waitForTransactionReceipt({ hash });
       toast.success("Position closed successfully");
@@ -64,7 +68,11 @@ function PositionsTable({ owner, limit = 10 }: Props) {
         bumpPositions();
       }, 1500);
     } catch (err: any) {
-      toast.error(err?.shortMessage || err?.message || "Transaction failed");
+      const reason = extractRevertReason(err);
+
+      toast.error(reason);
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -123,11 +131,11 @@ function PositionsTable({ owner, limit = 10 }: Props) {
                   <td className="opacity-50">{p.maturity}</td>
                   <td className="text-center">
                     <button
-                      disabled={isPending}
+                      disabled={isPending || isProcessing}
                       onClick={() => handleClosePosition(BigInt(p.id), p.asset)}
                       className="px-3 py-1 text-sm rounded-lg bg-[#cddff8] hover:bg-[#92befc] text-blue-800 font-semibold disabled:opacity-50"
                     >
-                      Close
+                      {isPending || isProcessing ? "Closing..." : "Close"}
                     </button>
                   </td>
                 </tr>

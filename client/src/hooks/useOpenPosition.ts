@@ -1,13 +1,24 @@
-// src/hooks/useOpenPosition.ts
-import { useWriteContract, useChainId } from "wagmi";
-import { X2_WBTC_SWAP_ADDRESS, X2_WETH_SWAP_ADDRESS } from "@/config/contracts";
+import { 
+  useWriteContract, 
+  useChainId, 
+  usePublicClient,
+  useAccount 
+} from "wagmi";
+
+import { 
+  X2_WBTC_SWAP_ADDRESS, 
+  X2_WETH_SWAP_ADDRESS 
+} from "@/config/contracts";
+
 import x2SwapAbi from "@/abi/X2Swap.json";
 
 export function useOpenPosition(asset: string) {
   const chainId = useChainId();
+  const publicClient = usePublicClient();
+  const { address } = useAccount();
   const { writeContractAsync, isPending } = useWriteContract();
 
-  let swapAddress;
+  let swapAddress: `0x${string}`;
   if (asset === "WETH") {
     swapAddress = X2_WETH_SWAP_ADDRESS[chainId];
   }
@@ -22,12 +33,20 @@ export function useOpenPosition(asset: string) {
     path: `0x${string}`,
     deadline: number,
   ) => {
-    return writeContractAsync({
-      address: swapAddress!,
+    if (!swapAddress || !publicClient || !address) {
+      throw new Error("Missing dependencies");
+    }
+
+    // Simulate
+    const { request } = await publicClient.simulateContract({
+      address: swapAddress,
       abi: x2SwapAbi,
       functionName: "openPosition",
       args: [assetAmount, maxDeviationBps, route, path, deadline],
+      account: address,
     });
+
+    return writeContractAsync(request);
   };
 
   return { openPosition, isPending };

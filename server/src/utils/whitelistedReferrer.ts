@@ -1,3 +1,1 @@
-export const whitelistedReferrer: string[] = [
-  "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
-];
+export const whitelistedReferrer: string[] = [];

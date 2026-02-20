@@ -4,6 +4,7 @@ import { useLpBalance } from "@/hooks/useLpBalance";
 import { usePoolLiquidity } from "@/hooks/usePoolLiquidity";
 import { usePreviewWithdraw } from "@/hooks/usePreviewWithdraw";
 import { useWithdrawPool } from "@/hooks/useWithdrawPool";
+import { extractRevertReason } from "@/lib/errorHandling";
 import { useActivityPoolSyncStore } from "@/stores/useActivityPoolSyncStore";
 import { useState, useMemo } from "react";
 import toast from "react-hot-toast";
@@ -12,6 +13,7 @@ import { useAccount, usePublicClient } from "wagmi";
 
 export default function WithdrawPanel() {
   const [amount, setAmount] = useState("");
+  const [isProcessing, setIsProcessing] = useState(false);
   const { liquidity: assets } = usePoolLiquidity();
   const { isConnected } = useAccount();
   const { assetValue: userBalanceLp } = useLpBalance();
@@ -51,6 +53,7 @@ export default function WithdrawPanel() {
         toast.error("Withdrawal amount exceeds liquidity");
         return;
       }
+      setIsProcessing(true);
 
       const hash = await withdraw(withdrawAmountBn);
       await publicClient?.waitForTransactionReceipt({ hash });
@@ -61,8 +64,12 @@ export default function WithdrawPanel() {
       setTimeout(() => {
         bumpPositions();
       }, 1500);
-    } catch {
-      toast.error("Withdrawal failed");
+    } catch (err: any) {
+      const reason = extractRevertReason(err);
+
+      toast.error(reason);
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -111,10 +118,10 @@ export default function WithdrawPanel() {
 
       <button
         onClick={handleWithdraw}
-        disabled={!amountNum || !isConnected || isPending}
+        disabled={!amountNum || !isConnected || isPending || isProcessing}
         className="w-full bg-blue-900 text-white min-h-8 rounded-md p-2 font-semibold disabled:bg-gray-400"
       >
-        {isPending
+        {isPending || isProcessing
           ? "Withdrawing..."
           : amountNum
             ? "Withdraw from pool"

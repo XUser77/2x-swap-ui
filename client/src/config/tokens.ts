@@ -1,7 +1,5 @@
 // src/config/tokens.ts
-// import { mainnet } from "wagmi/chains";
-
-import { forkedMainnet } from "./customChain";
+import { sepolia } from "wagmi/chains";
 
 export type TokenConfig = {
   symbol: string;
@@ -15,7 +13,7 @@ export const USDC: TokenConfig = {
   name: "USD Coin",
   decimals: 6,
   addresses: {
-    [forkedMainnet.id]: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+    [sepolia.id]: "0x1c7d4b196cb0c7b01d743fbc6116a902379c7238",
   },
 };
 

@@ -27,6 +27,7 @@
   "dependencies": {
     "@prisma/adapter-pg": "^7.2.0",
     "@prisma/client": "^7.2.0",
+    "axios": "^1.13.5",
     "body-parser": "^2.2.2",
     "cors": "^2.8.5",
     "date-fns": "^4.1.0",

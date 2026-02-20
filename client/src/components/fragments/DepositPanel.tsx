@@ -13,9 +13,11 @@ import { useApproveUsdc } from "@/hooks/useApproveUsdc";
 import { X2_POOL_ADDRESS } from "@/config/contracts";
 import { usePool } from "@/contexts/PoolContext";
 import { usePoolUsdcAllowance } from "@/hooks/usePoolUsdcAllowance";
+import { extractRevertReason } from "@/lib/errorHandling";
 
 export default function DepositPanel() {
   const [amount, setAmount] = useState("");
+  const [isProcessing, setIsProcessing] = useState(false);
   const { balance: usdcBalance, decimals } = useUsdcBalance();
   const { isConnected } = useAccount();
   const { lpPrice } = useLpPrice();
@@ -54,6 +56,8 @@ export default function DepositPanel() {
     try {
       if (!amountNum || depositAmountBn === 0n) return;
 
+      setIsProcessing(true);
+
       if ((allowance ?? 0n) < depositAmountBn) {
         const approveHash = await approve(
           X2_POOL_ADDRESS[chainId],
@@ -73,8 +77,12 @@ export default function DepositPanel() {
       setTimeout(() => {
         bumpPositions();
       }, 1500);
-    } catch {
-      toast.error("Deposit failed");
+    } catch (err: any) {
+      const reason = extractRevertReason(err);
+
+      toast.error(reason);
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -116,10 +124,10 @@ export default function DepositPanel() {
 
       <button
         onClick={handleDeposit}
-        disabled={!amountNum || !isConnected || isPending}
+        disabled={!amountNum || !isConnected || isPending || isProcessing}
         className="w-full bg-blue-900 text-white min-h-8 rounded-md p-2 font-semibold disabled:bg-gray-400"
       >
-        {isPending
+        {isPending || isProcessing
           ? "Depositing..."
           : amountNum
             ? "Deposit to pool"

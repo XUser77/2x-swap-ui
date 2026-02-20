@@ -2,16 +2,16 @@ import { createConfig } from "ponder";
 
 export default createConfig({
   chains: {
-    x2swap: {
-      id: 31337,
-      rpc: process.env.PONDER_RPC_URL_1,
-      ethGetLogsBlockRange: 5000,
+    sepolia: {
+      id: 11155111,
+      rpc: process.env.PONDER_RPC_URL_1, 
+      ethGetLogsBlockRange: 2000, // safer for public RPCs
     },
   },
 
   contracts: {
     X2ETHSwap: {
-      chain: "x2swap",
+      chain: "sepolia",
       abi: [
         // OpenPosition
         {
@@ -37,11 +37,11 @@ export default createConfig({
           ],
         },
       ],
-      address: "0xe026c437DfD4b1e831C55b71ff185B7c510c6101",
-      startBlock: 24419616,
+      address: "0x354a40B470c888F216F66e14e3C930506C38b788",
+      startBlock: 10296604,
     },
     X2BTCSwap: {
-      chain: "x2swap",
+      chain: "sepolia",
       abi: [
         // OpenPosition
         {
@@ -68,10 +68,10 @@ export default createConfig({
         },
       ],
       address: "0x606A69d06C687aaFd6567f8001218F678c21dFf3",
-      startBlock: 24419616,
+      startBlock: 10296604,
     },
     X2ETHPool: {
-      chain: "x2swap",
+      chain: "sepolia",
       abi: [
         // Deposit
         {
@@ -98,8 +98,8 @@ export default createConfig({
           ],
         },
       ],
-      address: "0x9c9784f08dAe28FEdB72490e9a6c739eb731160a",
-      startBlock: 24419616,
+      address: "0xe2c95f4877658a6305247d481d489862baa9a5e1",
+      startBlock: 10296604,
     },
   },
 });

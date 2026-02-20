@@ -7,6 +7,7 @@ import userRoutes from "./routes/user.routes.js";
 import leaderboardRoutes from "./routes/leaderboard.routes.js";
 import waitlistRoutes from "./routes/waitlist.routes.js";
 import tradingRoutes from "./routes/trading.routes.js";
+import priceRoutes from "./routes/price.routes.js";
 import "./cron/dailyLpSnapshot.js";
 import "./cron/seasonRotation.js";
 
@@ -28,6 +29,8 @@ app.use("/api/user", userRoutes);
 app.use("/api/leaderboard", leaderboardRoutes);
 app.use("/api/waitlist", waitlistRoutes);
 app.use("/api/trading", tradingRoutes);
+app.use("/api/price", priceRoutes);
+
 
 app.get("/health", (_, res) => {
   res.json({ status: "ok" });

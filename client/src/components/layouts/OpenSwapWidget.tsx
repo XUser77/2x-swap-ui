@@ -27,6 +27,7 @@ import { useWETHExchangeTokens } from "@/hooks/useWETHExchangeToken";
 import { usePositionsSyncStore } from "@/stores/usePositionSyncStore";
 import { AdvancedExecutionSettings } from "./AdvancedExecutionSettings";
 import { useWBTCExchangeTokens } from "@/hooks/useWBTCExchangeToken";
+import { extractRevertReason } from "@/lib/errorHandling";
 
 type Props = {
   asset: "WBTC" | "WETH" | "PAXG";
@@ -43,6 +44,7 @@ export default function OpenSwapWidget({ asset }: Props) {
   const [showTxDetails, setShowTxDetails] = useState(false);
   const [slippageAuto, setSlippageAuto] = useState(true);
   const [route, setRoute] = useState<"V2" | "V3">("V2");
+  const [isProcessing, setIsProcessing] = useState(false);
   const leverage = 2;
 
   const [maxSlippage, setMaxSlippage] = useState(2);
@@ -59,8 +61,9 @@ export default function OpenSwapWidget({ asset }: Props) {
   const { token0: TOKEN0WETH, token1: TOKEN1WETH } = useWETHExchangeTokens();
   const { token0: TOKEN0WBTC, token1: TOKEN1WBTC } = useWBTCExchangeTokens();
 
-  const { openPosition, isPending } = useOpenPosition(asset);
-  const { approve } = useApproveUsdc();
+  const { openPosition, isPending: openPositionLoading } =
+    useOpenPosition(asset);
+  const { approve, isPending } = useApproveUsdc();
 
   // SAFE NUMBER PARSING
   const assetAmountNum = useMemo(() => {
@@ -108,6 +111,8 @@ export default function OpenSwapWidget({ asset }: Props) {
         toast.error("Amount exceeds available liquidity");
         return;
       }
+
+      setIsProcessing(true);
 
       let spender;
       let path;
@@ -171,8 +176,12 @@ export default function OpenSwapWidget({ asset }: Props) {
       toast.success("Position opened");
       setAssetAmount("");
       setTimeout(() => bumpPositions(), 1500);
-    } catch {
-      toast.error("Open Position Failed");
+    } catch (err: any) {
+      const reason = extractRevertReason(err);
+
+      toast.error(reason);
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -228,7 +237,7 @@ export default function OpenSwapWidget({ asset }: Props) {
         min={0}
         max={maxLeveragedAllowed}
         value={clampedLeveragedUsdc}
-        disabled={!isConnected || isPending}
+        disabled={!isConnected || openPositionLoading}
         onChange={(e) => handleSliderChange(Number(e.target.value))}
         className="w-full my-3 accent-blue-900"
       />
@@ -247,11 +256,19 @@ export default function OpenSwapWidget({ asset }: Props) {
 
       <button
         onClick={handleOpen}
-        disabled={!isConnected || isPending || !assetAmount}
+        disabled={
+          !isConnected ||
+          !assetAmount ||
+          isProcessing ||
+          openPositionLoading ||
+          isPending
+        }
         className="w-full bg-blue-900 text-white py-3 rounded-xl font-semibold disabled:bg-gray-400"
       >
-        {isPending
-          ? "Opening..."
+        {isProcessing || openPositionLoading || isPending
+          ? allowance < userUsdcBn
+            ? "Approving..."
+            : "Opening..."
           : assetAmount
             ? "Open 2x position"
             : "Enter amount to open"}

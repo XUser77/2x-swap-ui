@@ -12,22 +12,17 @@ import {
 export async function snapshotTVL(context: Context, event: Event) {
   const { db, client } = context;
 
-  const poolAddress = "0x9c9784f08dAe28FEdB72490e9a6c739eb731160a"; // X2Pool address
+  const poolAddress = "0xe2c95f4877658a6305247d481d489862baa9a5e1"; // X2Pool address
 
-  const [assets, debt] = await Promise.all([
+  const [assets] = await Promise.all([
     client.readContract({
       address: poolAddress,
       abi: X2PoolAbi,
       functionName: "totalAssets",
     }),
-    client.readContract({
-      address: poolAddress,
-      abi: X2PoolAbi,
-      functionName: "totalDebt",
-    }),
   ]);
 
-  const tvl = (assets as bigint) + (debt as bigint);
+  const tvl = (assets as bigint);
 
   await db
     .insert(tvl_hourly)
