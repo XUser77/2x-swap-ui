@@ -25,7 +25,7 @@ export default function DepositPanel() {
   const { deposit, isPending } = useDepositPool();
   const bumpPositions = useActivityPoolSyncStore((s) => s.bump);
   const { allowance, refetch } = usePoolUsdcAllowance();
-  const { approve } = useApproveUsdc();
+  const { approve, isPending: approveLoading } = useApproveUsdc();
   const chainId = useChainId();
   const { apy } = usePool();
 
@@ -124,11 +124,19 @@ export default function DepositPanel() {
 
       <button
         onClick={handleDeposit}
-        disabled={!amountNum || !isConnected || isPending || isProcessing}
+        disabled={
+          !amountNum ||
+          !isConnected ||
+          isPending ||
+          isProcessing ||
+          approveLoading
+        }
         className="w-full bg-blue-900 text-white min-h-8 rounded-md p-2 font-semibold disabled:bg-gray-400"
       >
-        {isPending || isProcessing
-          ? "Depositing..."
+        {isProcessing || isPending || approveLoading
+          ? (allowance ?? 0n) < depositAmountBn
+            ? "Approving..."
+            : "Depositing..."
           : amountNum
             ? "Deposit to pool"
             : "Enter amount to deposit"}
