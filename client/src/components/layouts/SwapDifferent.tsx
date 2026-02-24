@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { preloadImages } from "@/lib/preloadImages";
 
 const slides = [
   "/images/different-1.png",
@@ -13,11 +12,6 @@ const slides = [
 export default function SwapDifferent() {
   const [index, setIndex] = useState(0);
   const [fading, setFading] = useState(false);
-  const [loaded, setLoaded] = useState(false);
-
-  useEffect(() => {
-    preloadImages(slides).then(() => setLoaded(true));
-  }, []);
 
   const changeSlide = (nextIndex: number) => {
     if (fading || nextIndex === index) return;
@@ -30,8 +24,6 @@ export default function SwapDifferent() {
       setFading(false);
     }, 250);
   };
-
-  if (!loaded) return null;
 
   const prev = () => changeSlide(index === 0 ? slides.length - 1 : index - 1);
 
@@ -47,12 +39,10 @@ export default function SwapDifferent() {
       <div className="relative w-275 max-w-full md:max-w-[70%] mt-3">
         <img
           src={slides[index]}
-          alt={`slide-${index}`}
-          className={`
-            w-full
-            transition-opacity duration-300 ease-in-out
-            ${fading ? "opacity-0" : "opacity-100"}
-          `}
+          alt="How 2xSwap is different"
+          loading={index === 0 ? "eager" : "lazy"}
+          fetchPriority={index === 0 ? "high" : "auto"}
+          className={`w-full transition-opacity duration-300 ease-in-out ${fading ? "opacity-0" : "opacity-100"}`}
         />
 
         {/* Left Chevron */}
