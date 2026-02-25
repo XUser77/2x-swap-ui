@@ -2,12 +2,11 @@
 import { encodeAbiParameters, type Address } from "viem";
 import { encodePacked } from "viem";
 
-export const USDC: Address = "0x1c7d4b196cb0c7b01d743fbc6116a902379c7238";
+export const USDC: Address = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
 
-export const ASSETS: Record<"WBTC" | "WETH" | "PAXG", Address> = {
-  WBTC: "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
-  WETH: "0xfff9976782d46cc05630d1f6ebab18b2324d6b14",
-  PAXG: "0x45804880De22913dAFE09f4980848ECE6EcbAf78",
+export const ASSETS: Record<"WBTC" | "WETH", Address> = {
+  WBTC: "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+  WETH: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
 };
 
 export function buildPath(tokenIn: Address, token0: Address, token1: Address) {
