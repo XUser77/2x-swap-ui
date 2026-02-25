@@ -1,5 +1,5 @@
 // src/config/tokens.ts
-import { sepolia } from "wagmi/chains";
+import { mainnet } from "wagmi/chains";
 
 export type TokenConfig = {
   symbol: string;
@@ -13,7 +13,7 @@ export const USDC: TokenConfig = {
   name: "USD Coin",
   decimals: 6,
   addresses: {
-    [sepolia.id]: "0x1c7d4b196cb0c7b01d743fbc6116a902379c7238",
+    [mainnet.id]: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
   },
 };
 

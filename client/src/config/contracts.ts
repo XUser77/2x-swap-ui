@@ -1,38 +1,29 @@
 // src/config/contracts.ts
-import { sepolia } from "wagmi/chains";
+import { mainnet } from "wagmi/chains";
 
 import type { SymbolKey } from "@/hooks/usePrice";
 
 type AddressMap = Record<number, `0x${string}`>;
 
 export const X2_POOL_ADDRESS: AddressMap = {
-  [sepolia.id]: "0xe2c95f4877658a6305247d481d489862baa9a5e1",
-  // [mainnet.id]: "0xPOOL_MAINNET_ADDRESS",
+  [mainnet.id]: "0x2a315Fef86916B30905086C85A9cB55E5DCD7ED3",
 };
 
 export const X2_WETH_SWAP_ADDRESS: AddressMap = {
-  [sepolia.id]: "0x354a40B470c888F216F66e14e3C930506C38b788",
-  // [mainnet.id]: "0xSWAP_MAINNET_ADDRESS",
+  [mainnet.id]: "0x3E77Ad644B4F5FF6AE0B9893bd7bD3CD0136A578",
 };
 
 export const X2_WBTC_SWAP_ADDRESS: AddressMap = {
-  [sepolia.id]: "0x606A69d06C687aaFd6567f8001218F678c21dFf3",
-  // [mainnet.id]: "0xSWAP_MAINNET_ADDRESS",
+  [mainnet.id]: "0x8d47d68c92C445c4b583cFfAC6016730CB2059e5",
 };
-
-// export const X2_PAXG_SWAP_ADDRESS: AddressMap = {
-//   [sepolia.id]: "0x354a40B470c888F216F66e14e3C930506C38b788",
-//   // [mainnet.id]: "0xSWAP_MAINNET_ADDRESS",
-// };
 
 export const ORACLE_ADDRESS: Record<
   number,
   Record<SymbolKey, `0x${string}`>
 > = {
-  [sepolia.id]: {
-    WETH: "0x49ce8087368E36723106D9e39D99AaBF8E36a428",
-    WBTC: "0xcd154d0d095E52e0A18d782AC8F143c5E084f706",
-    PAXG: "0x_PAXG_ADDRESS",
+  [mainnet.id]: {
+    WETH: "0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419",
+    WBTC: "0xF4030086522a5bEEa4988F8cA5B36dbC97BeE88c",
   },
 };
 

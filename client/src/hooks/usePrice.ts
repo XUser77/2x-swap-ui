@@ -5,7 +5,7 @@ import { formatUnits } from "viem";
 import fakeOracleAbi from "@/abi/FakeOracle.json";
 import { ORACLE_ADDRESS } from "@/config/contracts";
 
-export type SymbolKey = "WBTC" | "WETH" | "PAXG";
+export type SymbolKey = "WBTC" | "WETH";
 
 export function usePrice(symbol: SymbolKey) {
   const chainId = useChainId();
