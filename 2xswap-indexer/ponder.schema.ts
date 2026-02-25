@@ -1,4 +1,4 @@
-import { onchainEnum, onchainTable, index } from "ponder";
+import {onchainEnum, onchainTable, index, primaryKey} from "ponder";
 
 // Enum for position status
 export const position_status = onchainEnum("position_status", [
@@ -14,7 +14,7 @@ export const asset_enum = onchainEnum("asset_enum", ["WBTC", "WETH", "PAXG"]);
 export const position = onchainTable(
   "position",
   (t) => ({
-    id: t.text().primaryKey(),
+    id: t.text().notNull(),
     owner: t.hex().notNull(),
     asset: asset_enum().notNull(),
     asset_amount: t.bigint().notNull(),
@@ -30,7 +30,9 @@ export const position = onchainTable(
   }),
   (table) => ({
     owner_idx: index().on(table.owner),
-  })
+    pk: primaryKey({ columns: [table.id, table.asset]})
+  }),
+
 );
 
 export const poolActivity = onchainTable("poolActivity", (t) => ({
