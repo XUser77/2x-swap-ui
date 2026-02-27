@@ -7,7 +7,7 @@ import { sendTradeScore } from "../helpers/sendTradeScore";
 
 const ONE_YEAR_SECONDS = 365 * 24 * 60 * 60;
 const PRICE_SCALE_WETH = 1_000_000_000_000_00n;
-const PRICE_SCALE_WBTC = 100_000n;
+const PRICE_SCALE_WBTC = 10_000n;
 
 // Handle OpenPosition events
 ponder.on("X2ETHSwap:OpenPosition", async ({ event, context }) => {
