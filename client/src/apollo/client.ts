@@ -6,10 +6,7 @@ export const apolloClient = new ApolloClient({
   }),
   cache: new InMemoryCache({
     typePolicies: {
-      OpenPosition: {
-        keyFields: ["id", "asset"],
-      },
-      ClosedPosition: {
+      position: {
         keyFields: ["id", "asset"],
       },
     },
