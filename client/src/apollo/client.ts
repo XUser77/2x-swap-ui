@@ -4,5 +4,14 @@ export const apolloClient = new ApolloClient({
   link: new HttpLink({
     uri: import.meta.env.VITE_PONDER_URL, //  ponder server
   }),
-  cache: new InMemoryCache(),
+  cache: new InMemoryCache({
+    typePolicies: {
+      OpenPosition: {
+        keyFields: ["id", "asset"],
+      },
+      ClosedPosition: {
+        keyFields: ["id", "asset"],
+      },
+    },
+  }),
 });
