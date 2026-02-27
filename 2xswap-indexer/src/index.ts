@@ -76,7 +76,10 @@ ponder.on("X2BTCSwap:OpenPosition", async ({ event, context }) => {
 ponder.on("X2ETHSwap:ClosePosition", async ({ event, context }) => {
   const { db } = context;
 
-  const existing = await db.find(position, { id: event.args.id.toString() });
+  const existing = await db.find(position, {
+    id: event.args.id.toString(),
+    asset: "WETH",
+  });
 
   if (!existing) return;
 
@@ -146,7 +149,10 @@ ponder.on("X2BTCSwap:ClosePosition", async ({ event, context }) => {
   const { db } = context;
 
   // Read the stored position
-  const existing = await db.find(position, { id: event.args.id.toString() });
+  const existing = await db.find(position, {
+    id: event.args.id.toString(),
+    asset: "WBTC",
+  });
 
   if (!existing) return;
 
