@@ -253,7 +253,7 @@ ponder.on("X2ETHPool:Withdraw", async ({ event, context }) => {
 
   await snapshotLpBalance({
     context,
-    pool: "0xe2c95f4877658a6305247d481d489862baa9a5e1",
+    pool: "0x2a315Fef86916B30905086C85A9cB55E5DCD7ED3",
     user: event.args.owner,
     event,
   });
