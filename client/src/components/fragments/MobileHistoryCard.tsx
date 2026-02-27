@@ -37,11 +37,11 @@ export function MobileHistoryCard({
       {/* Details */}
       <div className="text-sm text-gray-600 space-y-1">
         <div className="flex justify-between">
-          Entry <span>${h.entryPrice}</span>
+          Entry <span>${h.entryPrice.toLocaleString()}</span>
         </div>
 
         <div className="flex justify-between">
-          Exit <span>${h.exitPrice}</span>
+          Exit <span>${h.exitPrice.toLocaleString()}</span>
         </div>
 
         {/* NEW: Profit Share */}

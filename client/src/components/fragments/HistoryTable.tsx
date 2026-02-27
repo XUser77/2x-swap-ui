@@ -88,8 +88,8 @@ function HistoryTable({ owner, limit = 10 }: Props) {
                 >
                   <td className="py-3 font-medium">{h.asset}-USDC</td>
                   <td>${h.size.toFixed(2)}</td>
-                  <td>${h.entryPrice}</td>
-                  <td>${h.exitPrice}</td>
+                  <td>${h.entryPrice.toLocaleString()}</td>
+                  <td>${h.exitPrice.toLocaleString()}</td>
                   <td
                     className={`font-medium ${
                       h.pnl >= 0 ? "text-green-500" : "text-red-500"
