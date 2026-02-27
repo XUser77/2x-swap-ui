@@ -6,7 +6,8 @@ import { snapshotLpBalance } from "../helpers/snapshotLpBalance";
 import { sendTradeScore } from "../helpers/sendTradeScore";
 
 const ONE_YEAR_SECONDS = 365 * 24 * 60 * 60;
-const PRICE_SCALE = 1_000_000_000_000_00n;
+const PRICE_SCALE_WETH = 1_000_000_000_000_00n;
+const PRICE_SCALE_WBTC = 100_000_000n;
 
 // Handle OpenPosition events
 ponder.on("X2ETHSwap:OpenPosition", async ({ event, context }) => {
@@ -20,7 +21,7 @@ ponder.on("X2ETHSwap:OpenPosition", async ({ event, context }) => {
     asset_amount: event.args.assetAmount,
     target_amount: event.args.targetAmount,
     entry_price:
-      (event.args.assetAmount * PRICE_SCALE) / event.args.targetAmount,
+      (event.args.assetAmount * PRICE_SCALE_WETH) / event.args.targetAmount,
     profit_sharing: 100 - Number(event.args.profitSharing),
     opened_at: event.block.timestamp,
     maturity: event.block.timestamp + BigInt(ONE_YEAR_SECONDS),
@@ -52,7 +53,7 @@ ponder.on("X2BTCSwap:OpenPosition", async ({ event, context }) => {
     asset_amount: event.args.assetAmount,
     target_amount: event.args.targetAmount,
     entry_price:
-      (event.args.assetAmount * PRICE_SCALE) / event.args.targetAmount,
+      (event.args.assetAmount * PRICE_SCALE_WBTC) / event.args.targetAmount,
     profit_sharing: 100 - Number(event.args.profitSharing),
     opened_at: event.block.timestamp,
     maturity: event.block.timestamp + BigInt(ONE_YEAR_SECONDS),
@@ -84,7 +85,7 @@ ponder.on("X2ETHSwap:ClosePosition", async ({ event, context }) => {
   if (!existing) return;
 
   const exitPrice =
-    (event.args.closeAssetAmount * PRICE_SCALE) / existing.target_amount;
+    (event.args.closeAssetAmount * PRICE_SCALE_WETH) / existing.target_amount;
 
   const pnl = Number(exitPrice - existing.entry_price);
 
@@ -157,7 +158,7 @@ ponder.on("X2BTCSwap:ClosePosition", async ({ event, context }) => {
   if (!existing) return;
 
   const exitPrice =
-    (event.args.closeAssetAmount * PRICE_SCALE) / existing.target_amount;
+    (event.args.closeAssetAmount * PRICE_SCALE_WBTC) / existing.target_amount;
 
   const pnl = Number(exitPrice - existing.entry_price);
 

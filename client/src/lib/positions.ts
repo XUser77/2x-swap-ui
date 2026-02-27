@@ -6,9 +6,7 @@ export function mapOpenPosition(
   position: OpenPosition,
   priceData: { price: number }
 ) {
-  const entryPrice = position.asset === 'WBTC' ?
-    Number(position.entry_price) / 1_000_000_000_000 :
-    Number(position.entry_price) / 100;
+  const entryPrice = Number(position.entry_price) / 100;
   const currentPrice = priceData.price;
   const size = Number(position.asset_amount) / 1_000_000;
 
