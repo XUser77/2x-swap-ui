@@ -1,6 +1,6 @@
 import { ponder } from "ponder:registry";
 import { poolActivity, position, volume_24h } from "ponder:schema";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { snapshotTVL } from "../helpers/snapshotTVL";
 import { snapshotLpBalance } from "../helpers/snapshotLpBalance";
 import { sendTradeScore } from "../helpers/sendTradeScore";
@@ -124,7 +124,10 @@ ponder.on("X2ETHSwap:ClosePosition", async ({ event, context }) => {
       exit_price: exitPrice,
       status: "CLOSED",
     })
-    .where(eq(position.id, event.args.id.toString()));
+    .where(and(
+      eq(position.id, event.args.id.toString()),
+      eq(position.asset, "WETH")
+    ));
 
   // Track the 24h volume for closes
   await db.insert(volume_24h).values({
@@ -197,7 +200,10 @@ ponder.on("X2BTCSwap:ClosePosition", async ({ event, context }) => {
       exit_price: exitPrice,
       status: "CLOSED",
     })
-    .where(eq(position.id, event.args.id.toString()));
+    .where(and(
+      eq(position.id, event.args.id.toString()),
+      eq(position.asset, "WBTC")
+    ));
 
   // Track the 24h volume for closes
   await db.insert(volume_24h).values({
