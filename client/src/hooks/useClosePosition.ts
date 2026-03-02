@@ -13,7 +13,7 @@ import {
 } from "@/config/contracts";
 
 import x2SwapAbi from "@/abi/X2Swap.json";
-import { buildPath, ASSETS } from "@/lib/buildPath";
+import {buildPath, ASSETS, USDC} from "@/lib/buildPath";
 import { MAX_DEVIATION_BPS } from "@/constants/trade";
 import { useWETHExchangeTokens } from "./useWETHExchangeToken";
 import { useWBTCExchangeTokens } from "./useWBTCExchangeToken";
@@ -27,7 +27,7 @@ export function useClosePosition() {
   const { token0: TOKEN0WETH, token1: TOKEN1WETH } = useWETHExchangeTokens();
   const { token0: TOKEN0WBTC, token1: TOKEN1WBTC } = useWBTCExchangeTokens();
 
-  const closePosition = async (id: bigint, asset: "WBTC" | "WETH" | "PAXG") => {
+  const closePosition = async (id: bigint, asset: "WBTC" | "WETH") => {
     if (!publicClient || !address) {
       throw new Error("Wallet not connected");
     }
@@ -57,11 +57,14 @@ export function useClosePosition() {
       throw new Error("Invalid asset configuration");
     }
 
-    const closePath = buildPath(
-      assetAddress,
-      token0 as `0x${string}`,
-      token1 as `0x${string}`,
-    );
+    const closePath = asset === "WETH" ? buildPath(
+      ASSETS.WETH as `0x${string}`,
+      USDC as `0x${string}`,
+    ) : asset === "WBTC" ? buildPath(
+      ASSETS.WBTC as `0x${string}`,
+      ASSETS.WETH as `0x${string}`,
+      USDC as `0x${string}`,
+    ) : null;
 
     const deadline = Math.floor(Date.now() / 1000) + 30 * 60;
 

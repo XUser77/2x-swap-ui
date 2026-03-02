@@ -9,28 +9,22 @@ export const ASSETS: Record<"WBTC" | "WETH", Address> = {
   WETH: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
 };
 
-export function buildPath(tokenIn: Address, token0: Address, token1: Address) {
-  let path: Address[];
-
-  if (tokenIn.toLowerCase() === token0.toLowerCase()) {
-    path = [token0, token1];
-  } else {
-    path = [token1, token0];
-  }
-
+export function buildPath(...path: Address[]) {
   return encodeAbiParameters([{ type: "address[]" }], [path]);
 }
 
-export function buildV3Path(
-  tokenIn: Address,
-  token0: Address,
-  token1: Address,
-  fee: number, // e.g. 500, 3000, 10000
-) {
-  const [from, to] =
-    tokenIn.toLowerCase() === token0.toLowerCase()
-      ? [token0, token1]
-      : [token1, token0];
+export function buildV3Path(...path: any[]) {
+  const types: string[] = [];
+  const params = [];
 
-  return encodePacked(["address", "uint24", "address"], [from, fee, to]);
+  types.push("address");
+  params.push(path[0]);
+  for (let i=1; i<path.length; i+=2) {
+    types.push("uint24");
+    types.push("address");
+    params.push(path[i]);
+    params.push(path[i+1]);
+  }
+
+  return encodePacked(types, params);
 }

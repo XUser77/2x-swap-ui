@@ -12,7 +12,7 @@ import { useUsdcAllowance } from "@/hooks/useUsdcAllowance";
 import { usePrice } from "@/hooks/usePrice";
 import { usePoolLiquidity } from "@/hooks/usePoolLiquidity";
 import { useFeeBps } from "@/hooks/useFeeBps";
-import { buildPath, buildV3Path, USDC } from "@/lib/buildPath";
+import {ASSETS, buildPath, buildV3Path, USDC} from "@/lib/buildPath";
 import { parseUnits } from "@/lib/helpers";
 import { toast } from "react-hot-toast";
 import {
@@ -23,14 +23,12 @@ import {
   X2_WBTC_SWAP_ADDRESS,
   X2_WETH_SWAP_ADDRESS,
 } from "@/config/contracts";
-import { useWETHExchangeTokens } from "@/hooks/useWETHExchangeToken";
 import { usePositionsSyncStore } from "@/stores/usePositionSyncStore";
 import { AdvancedExecutionSettings } from "./AdvancedExecutionSettings";
-import { useWBTCExchangeTokens } from "@/hooks/useWBTCExchangeToken";
 import { extractRevertReason } from "@/lib/errorHandling";
 
 type Props = {
-  asset: "WBTC" | "WETH" | "PAXG";
+  asset: "WBTC" | "WETH";
 };
 
 export default function OpenSwapWidget({ asset }: Props) {
@@ -57,9 +55,6 @@ export default function OpenSwapWidget({ asset }: Props) {
   const { allowance, refetch } = useUsdcAllowance(asset);
   const { price } = usePrice(asset).data ?? { price: 0 };
   const bumpPositions = usePositionsSyncStore((s) => s.bump);
-
-  const { token0: TOKEN0WETH, token1: TOKEN1WETH } = useWETHExchangeTokens();
-  const { token0: TOKEN0WBTC, token1: TOKEN1WBTC } = useWBTCExchangeTokens();
 
   const { openPosition, isPending: openPositionLoading } =
     useOpenPosition(asset);
@@ -119,39 +114,36 @@ export default function OpenSwapWidget({ asset }: Props) {
       let selectedRouteAddress;
 
       if (asset === "WETH") {
-        if (!TOKEN0WETH || !TOKEN1WETH) return;
         spender = X2_WETH_SWAP_ADDRESS[chainId];
         path =
           route === "V2"
             ? buildPath(
-                USDC,
-                TOKEN0WETH as `0x${string}`,
-                TOKEN1WETH as `0x${string}`,
+                USDC as `0x${string}`,
+                ASSETS.WETH as `0x${string}`,
               )
             : buildV3Path(
                 USDC,
-                TOKEN0WETH as `0x${string}`,
-                TOKEN1WETH as `0x${string}`,
+                ASSETS.WETH as `0x${string}`,
                 500,
               ); // 0.05% pool;
         selectedRouteAddress = route === "V2" ? UNISWAP_ETH_V2 : UNISWAP_ETH_V3;
       }
       if (asset === "WBTC") {
-        if (!TOKEN0WBTC || !TOKEN1WBTC) return;
         spender = X2_WBTC_SWAP_ADDRESS[chainId];
         path =
           route === "V2"
             ? buildPath(
                 USDC,
-                TOKEN0WBTC as `0x${string}`,
-                TOKEN1WBTC as `0x${string}`,
+                ASSETS.WETH as `0x${string}`,
+                ASSETS.WBTC as `0x${string}`,
               )
             : buildV3Path(
                 USDC,
-                TOKEN0WBTC as `0x${string}`,
-                TOKEN1WBTC as `0x${string}`,
-                3000,
-              ); // 0.3% pool;
+                3000, // 0.3% pool;
+                ASSETS.WETH as `0x${string}`,
+                3000, // 0.3% pool;
+                ASSETS.WBTC as `0x${string}`
+              );
         selectedRouteAddress = route === "V2" ? UNISWAP_BTC_V2 : UNISWAP_BTC_V3;
       }
 
