@@ -39,7 +39,7 @@ export default function OpenSwapWidget({ asset }: Props) {
   const chainId = useChainId();
 
   // STRING STATE
-  const [assetAmount, setAssetAmount] = useState("");
+  const [assetAmount, setAssetAmount] = useState("0");
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [showTxDetails, setShowTxDetails] = useState(false);
   const [slippageAuto, setSlippageAuto] = useState(true);
@@ -79,8 +79,8 @@ export default function OpenSwapWidget({ asset }: Props) {
   const maxLeveragedByPool = poolLiquidityUsdc * leverage * 0.99;
   const maxLeveragedAllowed = Math.min(maxLeveragedByUser, maxLeveragedByPool);
 
-  const leveragedUsdc = price > 0 ? assetAmountNum * price : 0;
-  const clampedLeveragedUsdc = Math.min(leveragedUsdc, maxLeveragedAllowed);
+  const clampedLeveragedUsdc = Math.min(assetAmountNum * leverage, maxLeveragedAllowed);
+  const clampedLeveragedTarget = clampedLeveragedUsdc / price;
   const userUsdc = clampedLeveragedUsdc / leverage;
   const userUsdcBn = parseUnits(userUsdc, decimals);
   const feeFactor = 1 - Number(feeBps) / 10_000;
@@ -98,7 +98,7 @@ export default function OpenSwapWidget({ asset }: Props) {
 
   const handleSliderChange = (value: number) => {
     if (price === 0) return;
-    setAssetAmount((value / price).toString());
+    setAssetAmount((value).toString());
   };
 
   const handleOpen = async () => {
@@ -210,7 +210,7 @@ export default function OpenSwapWidget({ asset }: Props) {
       )}
 
       {/* INPUT */}
-      <label className="text-md text-gray-500 font-semibold">You buy</label>
+      <label className="text-md text-gray-500 font-semibold">You invest</label>
       <div className="border border-gray-200 rounded-md px-3 py-4 mt-1">
         <div className="flex w-full justify-between">
           <input
@@ -223,20 +223,20 @@ export default function OpenSwapWidget({ asset }: Props) {
             placeholder="0"
           />
           <p className="bg-gray-200 py-1 px-2 rounded-md text-sm font-semibold">
-            {asset}
+            USDC
           </p>
         </div>
 
         <p className="text-sm text-gray-500 pl-2">
-          ≈ ${clampedLeveragedUsdc.toFixed(2)} USDC
+          ≈ {clampedLeveragedTarget} {asset}
         </p>
       </div>
 
       <input
         type="range"
         min={0}
-        max={maxLeveragedAllowed}
-        value={clampedLeveragedUsdc}
+        max={userBalanceUsdc}
+        value={assetAmount}
         disabled={!isConnected || openPositionLoading}
         onChange={(e) => handleSliderChange(Number(e.target.value))}
         className="w-full my-3 accent-blue-900"
