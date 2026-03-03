@@ -102,38 +102,11 @@ function LandingPage() {
           </p>
 
           <div className="flex flex-col gap-4 md:gap-6 items-center mt-10 mx-10">
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="user@gmail.com"
-              disabled={loading || success}
-              className="w-full px-10 py-1.5 md:py-3 rounded-full text-black outline-none bg-white shadow-md disabled:opacity-70"
-            />
 
-            <button
-              onClick={handleSubmit}
-              disabled={loading || success}
-              className="w-full px-6 py-1.5 md:py-3 rounded-full bg-linear-to-b from-[#436FF9] to-[#4C50DF] hover:from-[#3357c1] hover:to-[#4C50DF] transition font-medium shadow-md disabled:opacity-60"
-            >
-              {loading
-                ? "Submitting..."
-                : success
-                  ? "You're on the waitlist"
-                  : "Submit"}
-            </button>
+            <a href="/swap" className="w-full px-6 py-1.5 md:py-3 rounded-full bg-linear-to-b from-[#436FF9] to-[#4C50DF] hover:from-[#3357c1] hover:to-[#4C50DF] transition font-medium shadow-md disabled:opacity-60">
+              Launch App
+            </a>
 
-            {/* Error */}
-            {error && (
-              <p className="text-sm text-red-200 font-medium">{error}</p>
-            )}
-
-            {/* Success */}
-            {success && (
-              <p className="text-sm text-green-200 font-medium">
-                Successfully joined the waitlist!
-              </p>
-            )}
           </div>
         </motion.div>
       </motion.main>
