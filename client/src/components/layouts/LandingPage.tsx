@@ -96,10 +96,7 @@ function LandingPage() {
         {/* Waitlist */}
         <motion.div variants={itemUp} className="mt-15 md:mt-6 w-sm md:w-md">
           <p className="flex flex-col mb-4 text-xl md:text-3xl font-semibold">
-            Join the waitlist
-            <span className="text-md md:text-2xl text-white/70">
-              to collect early user points
-            </span>
+            Live on Ethereum mainnet
           </p>
 
           <div className="flex flex-col gap-4 md:gap-6 items-center mt-10 mx-10">
