@@ -102,11 +102,11 @@ export default function Footer() {
 
         {/* Links */}
         <div className="flex flex-wrap justify-center gap-2 text-[6px] md:text-sm text-white font-medium">
-          <a href="#" className="hover:underline">
+          <a href="https://2xswap.gitbook.io/2xswap-docs/protocol-disclosures/2xswap-protocol-terms" target="_blank" className="hover:underline">
             Terms of Use
           </a>
           <span>|</span>
-          <a href="#" className="hover:underline">
+          <a href="https://2xswap.gitbook.io/2xswap-docs/protocol-disclosures/privacy-policy" target="_blank" className="hover:underline">
             Privacy Policy
           </a>
           <span>|</span>
