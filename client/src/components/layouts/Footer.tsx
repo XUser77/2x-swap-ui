@@ -91,7 +91,7 @@ export default function Footer() {
 
         {/* Copyright */}
         <p className="text-[6px] md:text-sm text-white">
-          © 2025 2xSwap. All rights reserved.
+          © 2026 2xSwap. All rights reserved.
         </p>
 
         {/* Description */}

@@ -3,6 +3,7 @@ import HomeNavbar from "../fragments/HomeNavbar";
 import { container, itemUp } from "@/lib/animation";
 import { useState } from "react";
 import { api } from "@/lib/axios";
+import {Link} from "react-router";
 
 function isValidEmail(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -103,9 +104,10 @@ function LandingPage() {
 
           <div className="flex flex-col gap-4 md:gap-6 items-center mt-10 mx-10">
 
-            <a href="/swap" className="w-full px-6 py-1.5 md:py-3 rounded-full bg-linear-to-b from-[#436FF9] to-[#4C50DF] hover:from-[#3357c1] hover:to-[#4C50DF] transition font-medium shadow-md disabled:opacity-60">
+            <Link
+              to="/swap" className="w-full px-6 py-1.5 md:py-3 rounded-full bg-linear-to-b from-[#436FF9] to-[#4C50DF] hover:from-[#3357c1] hover:to-[#4C50DF] transition font-medium shadow-md disabled:opacity-60">
               Launch App
-            </a>
+            </Link>
 
           </div>
         </motion.div>
