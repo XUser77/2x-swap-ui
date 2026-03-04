@@ -86,12 +86,11 @@ export class LeaderboardService {
      */
     const data = rankedUsers.map((row, index) => {
       const globalRank = skip + index + 1;
-      const percentile = globalRank / totalUsers;
 
       return {
         rank: globalRank,
         wallet: userMap.get(row.userId)?.wallet ?? "Unknown",
-        league: getLeagueFromPercentile(percentile),
+        league: getLeagueFromPercentile(globalRank, totalUsers),
         seasonPoints: seasonMap.get(row.userId) ?? 0,
         totalPoints: row._sum.totalPoints ?? 0,
       };
