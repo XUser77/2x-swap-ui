@@ -85,7 +85,7 @@ function LandingPage() {
           <iframe
             width="100%"
             height="100%"
-            src="https://www.youtube.com/embed/cTTQW8vIzs4?si=wWj1yWc5bJZjnnK5"
+            src="https://www.youtube.com/embed/TpMjZ8YkBI0"
             title="YouTube video player"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             referrerPolicy="strict-origin-when-cross-origin"
