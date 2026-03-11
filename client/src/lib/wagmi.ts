@@ -5,6 +5,7 @@ import {
   coinbaseWallet,
   trustWallet,
   phantomWallet,
+  injectedWallet,
 } from "@rainbow-me/rainbowkit/wallets";
 import { createConfig, http } from "wagmi";
 import { mainnet } from "wagmi/chains";
@@ -20,6 +21,7 @@ const connectors = connectorsForWallets(
         trustWallet,
         phantomWallet,
         coinbaseWallet,
+        injectedWallet,
         walletConnectWallet,
       ],
     },
